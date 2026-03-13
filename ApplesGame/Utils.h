@@ -1,11 +1,11 @@
 #pragma once
 #include <vector>
 #include <algorithm>
-#include "Leaderboard.h" // ВАЖНО: включаем сюда!
+#include "Leaderboard.h" 
 
 namespace ApplesGame
 {
-    // Универсальная функция сортировки для любых типов
+    
     template<typename T>
     void Sort(std::vector<T>& items, bool (*comparator)(const T& a, const T& b))
     {

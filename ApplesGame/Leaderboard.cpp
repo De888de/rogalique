@@ -1,66 +1,98 @@
 #include "Leaderboard.h"
-#include "Utils.h"
 #include <sstream>
+#include <algorithm>
 
 namespace ApplesGame
 {
     void Leaderboard::Generate()
     {
-        entries.clear();
+        entriesByScore.clear();
 
-        // Fictional players
-        std::vector<std::string> names = { "Alice", "Bob", "Carol", "Dave", "Eve", "Frank", "Grace", "Henry", "Ivy", "Jack" };
-        std::vector<int> scores = { 120, 85, 55, 30, 150, 95, 70, 45, 110, 65 };
+        std::vector<std::pair<std::string, int>> fakePlayers = {
+            {"Alice", 120}, {"Bob", 85}, {"Carol", 55}, {"Dave", 30},
+            {"Eve", 150}, {"Frank", 95}, {"Grace", 70}, {"Henry", 45},
+            {"Ivy", 110}, {"Jack", 65}
+        };
 
-        for (size_t i = 0; i < names.size(); ++i)
+        for (const auto& player : fakePlayers)
         {
             LeaderboardEntry entry;
-            entry.name = names[i];
-            entry.score = scores[i];
-            entries.push_back(entry);
+            entry.name = player.first;
+            entry.score = player.second;
+            entriesByScore[player.second].push_back(entry);
         }
 
         LeaderboardEntry playerEntry;
         playerEntry.name = playerName;
         playerEntry.score = 0;
-        entries.push_back(playerEntry);
-
-        Sort();
+        entriesByScore[0].push_back(playerEntry);
     }
 
     void Leaderboard::UpdatePlayerScore(int score)
     {
-        for (auto& entry : entries)
+        
+        for (auto it = entriesByScore.begin(); it != entriesByScore.end(); )
         {
-            if (entry.name == playerName)
+            auto& entries = it->second;
+            auto playerIt = std::find_if(entries.begin(), entries.end(),
+                [this](const LeaderboardEntry& e) { return e.name == playerName; });
+
+            if (playerIt != entries.end())
             {
-                entry.score = score;
+                entries.erase(playerIt);
+                if (entries.empty())
+                {
+                    it = entriesByScore.erase(it);
+                }
+                else
+                {
+                    ++it;
+                }
                 break;
+            }
+            else
+            {
+                ++it;
             }
         }
 
-        Sort();
+        // Adding a new entry
+        LeaderboardEntry playerEntry;
+        playerEntry.name = playerName;
+        playerEntry.score = score;
+        entriesByScore[score].push_back(playerEntry);
     }
 
-    void Leaderboard::Sort()
+    std::vector<LeaderboardEntry> Leaderboard::GetTopEntries(int count) const
     {
-        
-        ApplesGame::Sort(entries, CompareLeaderboardByScoreDesc);
+        std::vector<LeaderboardEntry> result;
+
+        for (auto it = entriesByScore.rbegin(); it != entriesByScore.rend() && result.size() < count; ++it)
+        {
+            for (const auto& entry : it->second)
+            {
+                if (result.size() < count)
+                {
+                    result.push_back(entry);
+                }
+            }
+        }
+
+        return result;
     }
 
     std::string Leaderboard::Format() const
     {
         std::stringstream ss;
-        ss << "===== LEADERBOARD =====\n\n";
+        ss << "=====================\n\n";
 
-        int count = 0;
-        for (const auto& entry : entries)
+        auto topEntries = GetTopEntries(5);
+
+        int rank = 1;
+        for (const auto& entry : topEntries)
         {
-            if (count >= 5) break; // We only show the top 5
+            ss << rank << ". " << entry.name;
 
-            ss << count + 1 << ". " << entry.name;
-
-            // Adding alignment points
             int dotsCount = 20 - static_cast<int>(entry.name.length()) - static_cast<int>(std::to_string(entry.score).length());
             for (int i = 0; i < dotsCount; ++i)
             {
@@ -68,10 +100,15 @@ namespace ApplesGame
             }
 
             ss << " " << entry.score << "\n";
-            count++;
+            rank++;
         }
 
-        ss << "\n=======================";
+        ss << "\n=====================";
         return ss.str();
+    }
+
+    void Leaderboard::Clear()
+    {
+        entriesByScore.clear();
     }
 }

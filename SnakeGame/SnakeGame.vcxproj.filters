@@ -7,37 +7,31 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameMain.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="GameStatePlaying.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStateGameOver.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStatePauseMenu.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStateMainMenu.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Menu.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStateRecords.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Snake.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Apple.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuManager.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="DifficultyMenu.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Rock.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -45,30 +39,38 @@
     <ClInclude Include="Game.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="GameSettings.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStatePlaying.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateGameOver.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStatePauseMenu.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateMainMenu.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="Menu.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateRecords.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
     <ClInclude Include="Vector.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Text.h" />
-    <ClInclude Include="Snake.h" />
+    <ClInclude Include="Grid.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Leaderboard.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Snake.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Apple.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuManager.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Rock.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundPopup.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="DifficultyMenu.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

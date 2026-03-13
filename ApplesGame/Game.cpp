@@ -1,7 +1,6 @@
 #include "Game.h"
 #include "Math.h"
 #include "Constants.h"
-#include "Utils.h" 
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Window.hpp>
 #include <cassert>
@@ -11,6 +10,73 @@
 
 namespace ApplesGame
 {
+    
+    GridPosition WorldToGrid(const Position2D& worldPos)
+    {
+        GridPosition gridPos;
+        gridPos.x = static_cast<int>(worldPos.x / APPLE_SIZE);
+        gridPos.y = static_cast<int>(worldPos.y / APPLE_SIZE);
+        return gridPos;
+    }
+
+    
+    Position2D GridToWorld(const GridPosition& gridPos)
+    {
+        Position2D worldPos;
+        worldPos.x = gridPos.x * APPLE_SIZE + APPLE_SIZE / 2.f;
+        worldPos.y = gridPos.y * APPLE_SIZE + APPLE_SIZE / 2.f;
+        return worldPos;
+    }
+
+    
+    void UpdateAppleGrid(Game& game)
+    {
+        game.applePositions.clear();
+        game.appleGrid.clear();
+
+        for (size_t i = 0; i < game.apples.size(); ++i)
+        {
+            GridPosition gridPos = WorldToGrid(game.apples[i].position);
+            game.applePositions.insert(gridPos);
+            game.appleGrid[gridPos] = static_cast<int>(i);
+        }
+    }
+
+    // Checking for an apple in a position
+    bool IsAppleAtPosition(const Game& game, const GridPosition& gridPos)
+    {
+        return game.applePositions.find(gridPos) != game.applePositions.end();
+    }
+
+    // Initializing the pause menu text
+    void InitPauseMenuText(Game& game)
+    {
+        game.pauseMenuText.setFont(game.texts.font);
+        game.pauseMenuText.setCharacterSize(20);
+        game.pauseMenuText.setFillColor(sf::Color::White);
+        game.pauseMenuText.setString(
+            "=== PAUSE MENU ===\n\n"
+            "BACKSPACE - Continue\n"
+            "L - View Leaderboard\n"
+            "M - Return to Menu\n"
+            "ESC - Exit Game"
+        );
+
+        sf::FloatRect textRect = game.pauseMenuText.getLocalBounds();
+        game.pauseMenuText.setOrigin(textRect.left + textRect.width / 2.0f,
+            textRect.top + textRect.height / 2.0f);
+        game.pauseMenuText.setPosition(SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f);
+    }
+
+    // Initializing the text for viewing the high score table
+    void InitLeaderboardViewText(Game& game)
+    {
+        game.leaderboardViewText.setFont(game.texts.font);
+        game.leaderboardViewText.setCharacterSize(24);
+        game.leaderboardViewText.setFillColor(sf::Color::Cyan);
+        
+    }
+
     // Initialization of menu texts
     void InitModeSelectionText(Game& game)
     {
@@ -26,38 +92,61 @@ namespace ApplesGame
             "5 - 20 apples, infinite apples, without acceleration\n"
             "6 - 50 apples, infinite apples, with acceleration\n"
             "7 - 50 apples, infinite apples, high speed, with acceleration\n\n"
-            "Press 1-7 to select mode\n"
-            "Press ESC to exit"
+            "L - View Leaderboard\n"
+            "ESC - Exit"
         );
 
         sf::FloatRect textRect = game.modeSelectionText.getLocalBounds();
         game.modeSelectionText.setOrigin(textRect.left + textRect.width / 2.0f,
             textRect.top + textRect.height / 2.0f);
-        game.modeSelectionText.setPosition(SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f);
+        game.modeSelectionText.setPosition(SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f - 50);
     }
 
     void InitGameOverMenuText(Game& game)
     {
         game.gameOverMenuText.setFont(game.texts.font);
-        game.gameOverMenuText.setCharacterSize(30);
+        game.gameOverMenuText.setCharacterSize(20);
         game.gameOverMenuText.setFillColor(sf::Color::Yellow);
         game.gameOverMenuText.setString(
+            "Congratulations, you've scored " + std::to_string(game.score) + " points!\n\n"
             "Press SPACE to play again\n"
+            "Press L to view Leaderboard\n"
             "Press M to return to menu\n"
             "Press ESC to exit"
         );
+
+        sf::FloatRect textRect = game.gameOverMenuText.getLocalBounds();
+        game.gameOverMenuText.setOrigin(textRect.left + textRect.width / 2.0f,
+            textRect.top + textRect.height / 2.0f);
+        game.gameOverMenuText.setPosition(SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f);
+    }
+
+    void UpdateGameOverMenuText(Game& game)
+    {
+        game.gameOverMenuText.setString(
+            "Congratulations, you've scored " + std::to_string(game.score) + " points!\n\n"
+            "Press SPACE to play again\n"
+            "Press L to view Leaderboard\n"
+            "Press M to return to menu\n"
+            "Press ESC to exit"
+        );
+
+        sf::FloatRect textRect = game.gameOverMenuText.getLocalBounds();
+        game.gameOverMenuText.setOrigin(textRect.left + textRect.width / 2.0f,
+            textRect.top + textRect.height / 2.0f);
+        game.gameOverMenuText.setPosition(SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f);
     }
 
     void InitExitConfirmText(Game& game)
     {
         game.exitConfirmText.setFont(game.texts.font);
         game.exitConfirmText.setCharacterSize(20);
-        game.exitConfirmText.setFillColor(sf::Color::Red);
+        game.exitConfirmText.setFillColor(sf::Color::White);
         game.exitConfirmText.setStyle(sf::Text::Bold);
         game.exitConfirmText.setString(
             "Are you sure you want to exit?\n\n"
             "Y - Yes, exit the game\n"
-            "N - No, return to game"
+            "N - No, return"
         );
 
         sf::FloatRect textRect = game.exitConfirmText.getLocalBounds();
@@ -81,18 +170,6 @@ namespace ApplesGame
         game.congratulationText.setStyle(sf::Text::Bold);
     }
 
-    void UpdateCongratulationText(Game& game)
-    {
-        std::stringstream ss;
-        ss << "Congratulations, you've scored " << game.score << " points!";
-        game.congratulationText.setString(ss.str());
-
-        sf::FloatRect textRect = game.congratulationText.getLocalBounds();
-        game.congratulationText.setOrigin(textRect.left + textRect.width / 2.0f,
-            textRect.top + textRect.height / 2.0f);
-        game.congratulationText.setPosition(SCREEN_WIDTH / 2.f, 80);
-    }
-
     // Functions for working with modes
     void SetGameMode(Game& game, unsigned int mode)
     {
@@ -109,7 +186,7 @@ namespace ApplesGame
         // We determine the number of apples
         int numApples = HasGameMode(game, GAME_MODE_50_APPLES) ? 50 : 20;
 
-        // We clean and fill the vector of apples
+        
         game.apples.clear();
         game.apples.reserve(numApples);
 
@@ -119,6 +196,9 @@ namespace ApplesGame
             apple.Init(game);
             game.apples.push_back(apple);
         }
+
+        // Updating the apple grid
+        UpdateAppleGrid(game);
 
         // Applying speed
         if (HasGameMode(game, GAME_MODE_HIGH_SPEED))
@@ -139,7 +219,7 @@ namespace ApplesGame
         {
             game.gameMode = GAME_MODE_WITH_ACCELERATION;
             ApplyGameMode(game);
-            game.leaderboard.Generate(); 
+            game.leaderboard.Generate();
             game.gameState = GameStateType::PLAYING;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
@@ -184,6 +264,13 @@ namespace ApplesGame
             game.leaderboard.Generate();
             game.gameState = GameStateType::PLAYING;
         }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+        {
+            
+            game.leaderboard.Generate();
+            game.previousState = game.gameState;
+            game.gameState = GameStateType::VIEW_LEADERBOARD;
+        }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
         {
             game.previousState = game.gameState;
@@ -191,10 +278,54 @@ namespace ApplesGame
         }
     }
 
-    // initializing the game
+    // A function for processing the pause menu
+    void HandlePauseMenu(Game& game, sf::RenderWindow& window)
+    {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace))
+        {
+            game.gameState = GameStateType::PLAYING; // Continue playing on the Backspace
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+        {
+            game.leaderboard.Generate(); 
+            game.previousState = game.gameState;
+            game.gameState = GameStateType::VIEW_LEADERBOARD; // table review
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+        {
+            ReturnToMenu(game); // Exit the menu
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        {
+            game.previousState = game.gameState;
+            game.gameState = GameStateType::CONFIRM_EXIT; // Exit the game
+        }
+    }
+
+    // A function for processing leaderboard
+    void HandleLeaderboardView(Game& game)
+    {
+        // Updating the table text
+        game.leaderboardViewText.setString("=== LEADERBOARD ===\n\n" + game.leaderboard.Format() +
+            "\n\nPress BACKSPACE to return");
+
+        // Centering the text
+        sf::FloatRect textRect = game.leaderboardViewText.getLocalBounds();
+        game.leaderboardViewText.setOrigin(textRect.left + textRect.width / 2.0f,
+            textRect.top + textRect.height / 2.0f);
+        game.leaderboardViewText.setPosition(SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f);
+
+        // We return by pressing Backspace
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace))
+        {
+            game.gameState = game.previousState;
+        }
+    }
+
+    // Basic initialization of the game
     void InitGame(Game& game)
     {
-        //  Загрузка ресурсов
+        // Loading resources
         assert(game.playerTexture.loadFromFile(RESOURCES_PATH + "Player.png"));
         assert(game.appleTexture.loadFromFile(RESOURCES_PATH + "Apple.png"));
         assert(game.rockTexture.loadFromFile(RESOURCES_PATH + "Rock.png"));
@@ -217,6 +348,8 @@ namespace ApplesGame
         InitLeaderboardText(game);
         InitCongratulationText(game);
         InitExitConfirmText(game);
+        InitPauseMenuText(game);
+        InitLeaderboardViewText(game);
 
         // Initialization of stones (vector)
         game.rocks.clear();
@@ -233,6 +366,9 @@ namespace ApplesGame
         game.score = 0;
         game.gameState = GameStateType::SELECTING_MODE;
         game.apples.clear();
+        game.applePositions.clear();
+        game.appleGrid.clear();
+        game.leaderboard.Clear();
     }
 
     void ResetGame(Game& game)
@@ -240,10 +376,10 @@ namespace ApplesGame
         game.background.SetNormalColor();
         game.player.Reset();
 
-        // Applying the mode 
+       
         ApplyGameMode(game);
 
-        // Updating the leaderboard
+        // Updating leaderboard
         game.leaderboard.UpdatePlayerScore(game.score);
 
         // Dropping the stones
@@ -260,6 +396,8 @@ namespace ApplesGame
     void ReturnToMenu(Game& game)
     {
         game.apples.clear();
+        game.applePositions.clear();
+        game.appleGrid.clear();
         game.background.SetNormalColor();
         game.player.Reset();
 
@@ -298,50 +436,46 @@ namespace ApplesGame
         }
     }
 
+    // Updated apple collision handling feature
     void HandleAppleCollisions(Game& game)
     {
-        for (auto it = game.apples.begin(); it != game.apples.end(); )
+        GridPosition playerGridPos = WorldToGrid(game.player.position);
+
+        // Quick check via unordered_set
+        if (IsAppleAtPosition(game, playerGridPos))
         {
-            if (IsCirclesCollide(game.player.position, PLAYER_SIZE / 2.f,
-                it->position, APPLE_SIZE / 2.f))
+            // We find the apple index through unordered_map
+            int appleIndex = game.appleGrid[playerGridPos];
+
+            // The sound of eating
+            game.sound.setBuffer(game.eatenApplesBuffer);
+            game.sound.play();
+
+            if (HasGameMode(game, GAME_MODE_INFINITE_APPLES))
             {
-                // The sound of eating
-                game.sound.setBuffer(game.eatenApplesBuffer);
-                game.sound.play();
-
-                if (HasGameMode(game, GAME_MODE_INFINITE_APPLES))
-                {
-                    it->Reset();
-                    ++it;
-                }
-                else
-                {
-                    it = game.apples.erase(it);
-                }
-
-                game.score++;
-
-                if (HasGameMode(game, GAME_MODE_WITH_ACCELERATION))
-                {
-                    game.player.speed += ACCELERATION;
-                }
-
-                game.texts.UpdateScore(game.score);
-
-                if (!HasGameMode(game, GAME_MODE_INFINITE_APPLES) && game.apples.empty())
-                {
-                    game.leaderboard.UpdatePlayerScore(game.score); 
-                    game.gameState = GameStateType::GAME_OVER;
-                }
-
-                if (!HasGameMode(game, GAME_MODE_INFINITE_APPLES))
-                {
-                    break;
-                }
+                game.apples[appleIndex].Reset();
             }
             else
             {
-                ++it;
+                game.apples.erase(game.apples.begin() + appleIndex);
+            }
+
+            game.score++;
+
+            if (HasGameMode(game, GAME_MODE_WITH_ACCELERATION))
+            {
+                game.player.speed += ACCELERATION;
+            }
+
+            game.texts.UpdateScore(game.score);
+
+           
+            UpdateAppleGrid(game);
+
+            if (!HasGameMode(game, GAME_MODE_INFINITE_APPLES) && game.apples.empty())
+            {
+                game.leaderboard.UpdatePlayerScore(game.score);
+                game.gameState = GameStateType::GAME_OVER;
             }
         }
     }
@@ -355,7 +489,7 @@ namespace ApplesGame
             {
                 game.sound.setBuffer(game.brokenApplesBuffer);
                 game.sound.play();
-                game.leaderboard.UpdatePlayerScore(game.score); 
+                game.leaderboard.UpdatePlayerScore(game.score);
                 game.gameState = GameStateType::GAME_OVER;
                 break;
             }
@@ -371,7 +505,7 @@ namespace ApplesGame
         {
             game.sound.setBuffer(game.brokenApplesBuffer);
             game.sound.play();
-            game.leaderboard.UpdatePlayerScore(game.score); 
+            game.leaderboard.UpdatePlayerScore(game.score);
             game.gameState = GameStateType::GAME_OVER;
         }
     }
@@ -381,6 +515,12 @@ namespace ApplesGame
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
         {
             ResetGame(game);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+        {
+            game.leaderboard.Generate(); 
+            game.previousState = game.gameState;
+            game.gameState = GameStateType::VIEW_LEADERBOARD;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
         {
@@ -423,24 +563,34 @@ namespace ApplesGame
             HandleRockCollisions(game);
             HandleBorderCollisions(game);
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+            // Opening the pause menu using the P key
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
             {
                 game.previousState = game.gameState;
-                game.gameState = GameStateType::CONFIRM_EXIT;
+                game.gameState = GameStateType::PAUSE_MENU;
             }
             break;
 
         case GameStateType::GAME_OVER:
+            UpdateGameOverMenuText(game); // Updating the text with the current account
             HandleGameOverInput(game);
             break;
 
         case GameStateType::CONFIRM_EXIT:
             HandleExitConfirmation(game, window);
             break;
+
+        case GameStateType::PAUSE_MENU:
+            HandlePauseMenu(game, window);
+            break;
+
+        case GameStateType::VIEW_LEADERBOARD:
+            HandleLeaderboardView(game);
+            break;
         }
     }
 
-    // The rendering function
+    // rendering function
     void DrawGame(Game& game, sf::RenderWindow& window)
     {
         window.draw(game.background.sprite);
@@ -479,24 +629,6 @@ namespace ApplesGame
             game.background.SetGameOverColor();
             window.draw(game.background.sprite);
 
-            UpdateCongratulationText(game);
-            window.draw(game.congratulationText);
-
-            // Using the Format() method of the Leaderboard class
-            game.leaderboardText.setString(game.leaderboard.Format());
-
-            leaderboardRect = game.leaderboardText.getLocalBounds();
-            game.leaderboardText.setOrigin(leaderboardRect.left + leaderboardRect.width / 2.0f,
-                leaderboardRect.top + leaderboardRect.height / 2.0f);
-            game.leaderboardText.setPosition(SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f - 40);
-
-            window.draw(game.leaderboardText);
-
-            menuRect = game.gameOverMenuText.getLocalBounds();
-            game.gameOverMenuText.setOrigin(menuRect.left + menuRect.width / 2.0f,
-                menuRect.top + menuRect.height / 2.0f);
-            game.gameOverMenuText.setPosition(SCREEN_WIDTH / 2.f, SCREEN_HEIGHT / 2.f + 120);
-
             window.draw(game.gameOverMenuText);
             break;
         }
@@ -511,6 +643,28 @@ namespace ApplesGame
             window.draw(game.exitConfirmText);
             break;
         }
+
+        case GameStateType::PAUSE_MENU:
+        {
+            sf::RectangleShape darkOverlay;
+            darkOverlay.setSize(sf::Vector2f(SCREEN_WIDTH, SCREEN_HEIGHT));
+            darkOverlay.setFillColor(sf::Color(0, 0, 0, 200));
+            window.draw(darkOverlay);
+
+            window.draw(game.pauseMenuText);
+            break;
+        }
+
+        case GameStateType::VIEW_LEADERBOARD:
+        {
+            sf::RectangleShape darkOverlay;
+            darkOverlay.setSize(sf::Vector2f(SCREEN_WIDTH, SCREEN_HEIGHT));
+            darkOverlay.setFillColor(sf::Color(0, 0, 0, 200));
+            window.draw(darkOverlay);
+
+            window.draw(game.leaderboardViewText);
+            break;
+        }
         }
     }
 
@@ -518,6 +672,8 @@ namespace ApplesGame
     {
         game.apples.clear();
         game.rocks.clear();
+        game.applePositions.clear();
+        game.appleGrid.clear();
         game.leaderboard.Clear();
     }
 }

@@ -2,17 +2,19 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <SFML/Audio.hpp>
+#include <unordered_set>
+#include <unordered_map>
 #include "Player.h"
 #include "Apple.h"
 #include "Rock.h"
 #include "GameTexts.h"
 #include "Background.h"
-#include "Leaderboard.h" 
+#include "Leaderboard.h"
+#include <SFML/Audio.hpp>
 
 namespace ApplesGame
 {
-    
+    // Bit flags for game modes
     enum GameModeFlags
     {
         GAME_MODE_NONE = 0,
@@ -28,7 +30,30 @@ namespace ApplesGame
         SELECTING_MODE,
         PLAYING,
         GAME_OVER,
-        CONFIRM_EXIT
+        CONFIRM_EXIT,
+        PAUSE_MENU,        
+        VIEW_LEADERBOARD   
+    };
+
+    // The structure for the position in the grid
+    struct GridPosition
+    {
+        int x = 0;
+        int y = 0;
+
+        bool operator==(const GridPosition& other) const
+        {
+            return x == other.x && y == other.y;
+        }
+    };
+
+    // Hash function for GridPosition (for use in unordered_set/map)
+    struct GridPositionHash
+    {
+        std::size_t operator()(const GridPosition& pos) const
+        {
+            return std::hash<int>()(pos.x) ^ (std::hash<int>()(pos.y) << 1);
+        }
     };
 
     struct Game
@@ -39,22 +64,28 @@ namespace ApplesGame
         GameTexts texts;
         Background background;
 
+        // New Apple Mesh Containers
+        std::unordered_set<GridPosition, GridPositionHash> applePositions;  
+        std::unordered_map<GridPosition, int, GridPositionHash> appleGrid;  
+
         int score = 0;
         GameStateType gameState = GameStateType::SELECTING_MODE;
         GameStateType previousState = GameStateType::SELECTING_MODE;
 
-    
+        // Game mode (bitmask)
         unsigned int gameMode = GAME_MODE_WITH_ACCELERATION;
 
-        // Texts for different states
+        
         sf::Text modeSelectionText;
         sf::Text gameOverMenuText;
         sf::Text leaderboardText;
         sf::Text congratulationText;
         sf::Text exitConfirmText;
+        sf::Text pauseMenuText;        
+        sf::Text leaderboardViewText;   
 
-        // Leaderboard
-        Leaderboard leaderboard; 
+        // Table of leaderboard
+        Leaderboard leaderboard;
 
         //Resources
         sf::Texture playerTexture;
@@ -68,7 +99,7 @@ namespace ApplesGame
         sf::Music music;
     };
 
-    // Main functions of the game
+    // The main functions of the game
     void InitGame(Game& game);
     void ResetGame(Game& game);
     void ReturnToMenu(Game& game);
@@ -82,6 +113,12 @@ namespace ApplesGame
     void ApplyGameMode(Game& game);
     void HandleModeSelection(Game& game);
 
+    // New functions for working with the grid
+    GridPosition WorldToGrid(const Position2D& worldPos);
+    Position2D GridToWorld(const GridPosition& gridPos);
+    void UpdateAppleGrid(Game& game);
+    bool IsAppleAtPosition(const Game& game, const GridPosition& gridPos);
+
     // Auxiliary functions for updateGame
     void HandlePlayerInput(Game& game);
     void HandleAppleCollisions(Game& game);
@@ -89,6 +126,8 @@ namespace ApplesGame
     void HandleBorderCollisions(Game& game);
     void HandleGameOverInput(Game& game);
     void HandleExitConfirmation(Game& game, sf::RenderWindow& window);
+    void HandlePauseMenu(Game& game, sf::RenderWindow& window);     
+    void HandleLeaderboardView(Game& game);                          
 
     // Functions for initializing texts
     void InitModeSelectionText(Game& game);
@@ -96,6 +135,8 @@ namespace ApplesGame
     void InitLeaderboardText(Game& game);
     void InitCongratulationText(Game& game);
     void InitExitConfirmText(Game& game);
+    void InitPauseMenuText(Game& game);        
+    void InitLeaderboardViewText(Game& game);   
 
     // The function of updating the greeting text
     void UpdateCongratulationText(Game& game);

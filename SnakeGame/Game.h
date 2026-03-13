@@ -1,77 +1,149 @@
 #pragma once
+
 #include <SFML/Graphics.hpp>
+#include <vector>
+#include <memory>
 
 #include "Snake.h"
-#include "Sprite.h"
-#include "GameSettings.h"
-#include <unordered_map>
+#include "Apple.h"
+#include "Rock.h"
+#include "Grid.h"
+#include "Leaderboard.h"
+#include "SoundManager.h"
+#include "MenuManager.h"
+#include "SoundPopup.h"
+#include "DifficultyMenu.h"
+#include "Constants.h"
 
-namespace SnakeGame
-{
-	enum class GameOptions: std::uint8_t
-	{
-		InfiniteApples = 1 << 0,
-		WithAcceleration = 1 << 1,
+namespace SnakeGame {
 
-		Default = InfiniteApples | WithAcceleration,
-		Empty = 0
-	};
+    enum class GameState {
+        MAIN_MENU,
+        PLAYING,
+        PAUSED,
+        MENU,
+        GAME_OVER,
+        DIFFICULTY_SELECT,
+        LEADERBOARD,
+        SOUND_POPUP
+    };
 
-	enum class GameStateType
-	{
-		None = 0,
-		MainMenu,
-		Playing,
-		GameOver,
-		ExitDialog,
-		Records,
-	};
+    class Game {
+    private:
+        // ==================== Основные игровые объекты ====================
+        Snake snake;
+        Apple apple;
+        Grid grid;
+        Leaderboard leaderboard;
+        SoundManager soundManager;
+        sf::Font font;
+        MenuManager menuManager;
+        std::unique_ptr<SoundPopup> soundPopup;
 
-	struct GameState
-	{
-		GameStateType type = GameStateType::None;
-		void* data = nullptr;
-		bool isExclusivelyVisible = false;
-	};
+        // ==================== Состояние игры ====================
+        GameState state = GameState::MAIN_MENU;
+        Difficulty m_currentDifficulty = Difficulty::MEDIUM;
+        int score = 0;
+        float moveTimer = 0.0f;
 
-	enum class GameStateChangeType
-	{
-		None,
-		Push,
-		Pop,
-		Switch
-	};
 
-	struct Game
-	{
-		std::vector<GameState> gameStateStack;
-		GameStateChangeType gameStateChangeType = GameStateChangeType::None;
-		GameStateType pendingGameStateType = GameStateType::None;
-		bool pendingGameStateIsExclusivelyVisible = false;
+       
 
-		GameOptions options = GameOptions::Default;
-		std::unordered_map<std::string, int> recordsTable;
-	};
+        // ==================== Объекты уровня ====================
+        std::vector<Rock> rocks;
+        GridPosition portalPos1{};
+        GridPosition portalPos2{};
 
-	
-	void InitGame(Game& game);
-	void HandleWindowEvents(Game& game, sf::RenderWindow& window);
-	bool UpdateGame(Game& game, float timeDelta); // Return false if game should be closed
-	void DrawGame(Game& game, sf::RenderWindow& window);
-	void ShutdownGame(Game& game);
+        // ==================== Ресурсы ====================
+        sf::Texture appleTexture;
+        sf::Text scoreText;
+        sf::Text gameOverText;
+        sf::Text finalScoreText;
+        sf::Text menuHintText;
+        sf::CircleShape portalShape;
 
-	// Add new game state on top of the stack
-	void PushGameState(Game& game, GameStateType stateType, bool isExclusivelyVisible);
+       
 
-	// Remove current game state from the stack
-	void PopGameState(Game& game);
+        // ==================== ФЛАГИ ДЛЯ КЛАВИАТУРЫ (централизованные) ====================
+        bool upPressed = false;
+        bool downPressed = false;
+        bool enterPressed = false;
+        bool escPressed = false;
+        bool sPressed = false;
+        bool pPressed = false;
+        bool mPressed = false;        // для вызова игрового меню
 
-	// Remove all game states from the stack and add new one
-	void SwitchGameState(Game& game, GameStateType newState);
+        void ResetInputFlags();
 
-	void InitGameState(Game& game, GameState& state);
-	void ShutdownGameState(Game& game, GameState& state);
-	void HandleWindowEventGameState(Game& game, GameState& state, sf::Event& event);
-	void UpdateGameState(Game& game, GameState& state, float timeDelta);
-	void DrawGameState(Game& game, GameState& state, sf::RenderWindow& window);
-}
+        // ==================== Вспомогательные методы ====================
+        void SetupTexts();
+        void LoadTextures();
+        void GenerateLevel();
+        void ClearLevel();
+        bool IsPositionOccupied(const GridPosition& pos);
+        const DifficultySettings& GetDifficultySettings(Difficulty diff) const;
+
+        //void HandleStartScreenInput();
+
+
+        float portalGlowScale = 1.0f;
+        float portalGlowTargetScale = 1.0f;
+        float portalGlowSpeed = 0.2f;
+
+       
+
+        // Методы порталов
+        void GeneratePortals();
+        void TeleportSnakeThroughPortal(const GridPosition& from, const GridPosition& to);
+        int GetManhattanDistance(const GridPosition& a, const GridPosition& b) const;
+        bool IsFarFromObstacles(const GridPosition& pos, int minDist) const;
+
+        void GenerateMagicApple();
+
+        void GeneratePoisonApple();
+
+        // ==================== ВОЛШЕБНОЕ ЯБЛОКО ====================
+        sf::Texture magicAppleTexture;
+        GridPosition magicApplePos{};
+        bool magicAppleActive = false;
+        int applesEatenSinceLastMagic = 0;     
+        const int MAGIC_APPLE_MIN_INTERVAL = 5;
+        const int MAGIC_APPLE_MAX_INTERVAL = 10;
+
+        // ==================== ОТРАВЛЯЮЩЕЕ ЯБЛОКО ====================
+          
+        GridPosition poisonApplePos{};
+        bool poisonAppleActive = false;
+        float poisonEffectTimer = 0.0f;
+        bool isPoisoned = false;
+
+        int applesEatenSinceLastPoison = 0;
+
+        const float POISON_DURATION = 15.0f;
+        const int POISON_APPLE_MIN_INTERVAL = 8;
+        const int POISON_APPLE_MAX_INTERVAL = 14;
+
+        // Обработчики ввода
+        void HandleMainMenuInput();
+        void HandleDifficultyInput();
+        void HandleGameMenuInput();
+        void HandlePlayingInput();
+        void HandleSoundPopupInput();
+
+        void CheckCollisions();
+        void DrawGame(sf::RenderWindow& window, float deltaTime = 0.0f);
+
+        
+        bool justTeleported = false;   // флаг, что в этом кадре произошла телепортация
+
+    public:
+        Game();
+        void Init();
+        void Reset();
+        void HandleInput();
+        void Update(float deltaTime);
+        void Draw(sf::RenderWindow& window);
+        void GameOver();
+    };
+
+} 
