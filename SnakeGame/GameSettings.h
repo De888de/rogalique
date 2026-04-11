@@ -1,28 +1,23 @@
 #pragma once
 #include <string>
 
-namespace SnakeGame
+namespace ArkanoidGame
 {
-	// Resources path
-	const std::string RESOURCES_PATH = "Resources/";
-	const std::string TEXTURES_PATH = RESOURCES_PATH + "Textures/";
-	const std::string FONTS_PATH = RESOURCES_PATH + "Fonts/";
-	const std::string SOUNDS_PATH = RESOURCES_PATH + "Sounds/";
+    struct GameSettings
+    {
+        static constexpr float SCREEN_WIDTH = 800.0f;
+        static constexpr float SCREEN_HEIGHT = 600.0f;
 
-	// Game settings constants
-	const float SNAKE_SIZE = 20.f;
-	const unsigned int INITIAL_SNAKE_SIZE = 3;
-	const unsigned int APPLE_SIZE = 20;
-	const unsigned int ROCK_SIZE = 15;
-	const float INITIAL_SPEED = 200.f;	// 
-	const float ACCELERATION = 10.f;	// For each eaten apple snake speed will be increased by this value
-	const int MIN_APPLES = 40;
-	const int MAX_APPLES = 80;
-	const unsigned int SCREEN_WIDTH = 800;
-	const unsigned int SCREEN_HEGHT = 600;
-	const float TIME_PER_FRAME = 1.f / 60.f; // 60 fps
-	const unsigned int ROCKS_COUNT = 20;
+        static constexpr float PLATFORM_WIDTH = 100.0f;
+        static constexpr float PLATFORM_HEIGHT = 20.0f;
+        static constexpr float PLATFORM_SPEED = 600.0f;
 
-	const int MAX_RECORDS_TABLE_SIZE = 5;
-	extern const char* PLAYER_NAME; // We need to define this constant in some SPP
+        static constexpr float BALL_SIZE = 16.0f;
+        static constexpr float BALL_SPEED = 450.0f;
+
+        static constexpr const char* TEXTURES_PATH = "Resources/textures/";
+        static constexpr const char* FONTS_PATH = "Resources/Fonts/";
+    };
+
+    inline const GameSettings SETTINGS;
 }

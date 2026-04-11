@@ -1,67 +1,48 @@
-﻿// ©2023, XYZ School. All rights reserved.
-// Authored by Aleksandr Rybalka (polterageist@gmail.com)
-
 #include <SFML/Graphics.hpp>
-#include <cstdlib>
-
 #include "Game.h"
 
-using namespace SnakeGame;
+// Глобальный указатель
+ArkanoidGame::Game* g_Game = nullptr;
+
+namespace ArkanoidGame
+{
+    Game& GetGame()
+    {
+        if (g_Game == nullptr)
+        {
+            static Game dummy;
+            return dummy;
+        }
+        return *g_Game;
+    }
+}
 
 int main()
 {
-	// Init random number generator
-	unsigned int seed = (unsigned int)time(nullptr); // Get current time as seed. You can also use any other number to fix randomization
-	srand(seed);
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Arkanoid");
+    window.setFramerateLimit(60);
 
-	// Init window
-	sf::RenderWindow window(sf::VideoMode(SnakeGame::SCREEN_WIDTH, SnakeGame::SCREEN_HEGHT), "SnakeGame");
+    ArkanoidGame::Game game;
+    g_Game = &game;
 
-	// We now use too much memory for stack, so we need to allocate it on heap
-	SnakeGame::Game* game = new SnakeGame::Game();
-	InitGame(*game);
+    sf::Clock clock;
 
-	// Init game clock
-	sf::Clock gameClock;
-	
-	// Game loop
-	while (window.isOpen()) {
-		
-		float startTime = gameClock.getElapsedTime().asSeconds();
-		
-		HandleWindowEvents(*game, window);
+    while (window.isOpen())
+    {
+        float timeDelta = clock.restart().asSeconds();
 
-		if (!window.isOpen()) {
-			break;
-		}
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
 
-		if (UpdateGame(*game, TIME_PER_FRAME))
-		{
-			// Draw everything here
-			// Clear the window first
-			window.clear();
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+                window.close();
+        }
 
-			DrawGame(*game, window);
+        game.UpdateGame(timeDelta, window);
+    }
 
-			// End the current frame, display window contents on screen
-			window.display();
-		}
-		else
-		{
-			window.close();
-		}
-
-		float endTime = gameClock.getElapsedTime().asSeconds();
-		float deltaTime = endTime - startTime;
-		if (deltaTime < TIME_PER_FRAME) {
-			// Reduce framerate to not spam CPU and GPU
-			sf::sleep(sf::seconds(TIME_PER_FRAME - deltaTime));
-		}
-	}
-
-	ShutdownGame(*game);
-	delete game;
-	game = nullptr;
-
-	return 0;
+    return 0;
 }
