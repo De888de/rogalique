@@ -9,9 +9,6 @@ namespace ArkanoidGame
     private:
         sf::Vector2f velocity;
         float speed;
-
-        void BounceX();
-        void BounceY();
         bool hasFallenThisFrame = false;
 
     public:
@@ -29,8 +26,11 @@ namespace ArkanoidGame
 
         sf::Vector2f GetPosition() const;
 
-
         bool HasFallen() const;
         void ClearFallenFlag();
+
+        
+        void BounceX();
+        void BounceY();
     };
 }

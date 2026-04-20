@@ -2,6 +2,7 @@
 #include "Ball.h"
 #include "GameSettings.h"
 #include <cmath>
+#include <algorithm>
 
 namespace ArkanoidGame
 {
@@ -15,7 +16,7 @@ namespace ArkanoidGame
 
     void Block::Update(float timeDelta)
     {
-       
+        // Ничего не делаем
     }
 
     void Block::Draw(sf::RenderWindow& window)
@@ -48,7 +49,6 @@ namespace ArkanoidGame
         if (!active_) return false;
         auto other = std::dynamic_pointer_cast<GameObject>(collidable);
         if (!other) return false;
-       
         return GetCollisionRect().intersects(other->GetRect());
     }
 
@@ -61,16 +61,56 @@ namespace ArkanoidGame
     {
         if (!active_) return false;
 
-        if (!GetCollisionRect().intersects(ball.GetRect()))
+        sf::FloatRect ballRect = ball.GetRect();
+        sf::FloatRect blockRect = GetCollisionRect();
+        if (!ballRect.intersects(blockRect))
             return false;
 
-        sf::Vector2f vel = ball.GetVelocity();
-        vel.y = -std::abs(vel.y); // отскок вверх
+        // Вычисляем пересечение
+        sf::FloatRect intersection;
+        ballRect.intersects(blockRect, intersection);
 
+        sf::Vector2f ballPos = ball.GetPosition();
+        sf::Vector2f correction(0.f, 0.f);
+
+        // Перекрытие с каждой стороны
+        float leftOverlap = ballRect.left + ballRect.width - blockRect.left;
+        float rightOverlap = blockRect.left + blockRect.width - ballRect.left;
+        float topOverlap = ballRect.top + ballRect.height - blockRect.top;
+        float bottomOverlap = blockRect.top + blockRect.height - ballRect.top;
+
+        float minX = std::min(leftOverlap, rightOverlap);
+        float minY = std::min(topOverlap, bottomOverlap);
+
+        // Отталкиваем по той оси, где перекрытие меньше
+        if (minX < minY)
+        {
+            // Горизонтальный отскок
+            if (leftOverlap < rightOverlap)
+                correction.x = -leftOverlap;
+            else
+                correction.x = rightOverlap;
+            ball.BounceX();   // меняем направление по X
+        }
+        else
+        {
+            // Вертикальный отскок
+            if (topOverlap < bottomOverlap)
+                correction.y = -topOverlap;
+            else
+                correction.y = bottomOverlap;
+            ball.BounceY();   // меняем направление по Y
+        }
+
+        // Применяем коррекцию позиции (выталкиваем мяч из блока)
+        ball.SetPosition(ballPos + correction);
+
+        // Добавляем эффект от удара по горизонтали (зависимость от центра блока)
+        sf::Vector2f vel = ball.GetVelocity();
         float hitOffset = (ball.GetPosition().x - GetPosition().x) / (SETTINGS.BLOCK_WIDTH / 2.0f);
         vel.x += hitOffset * 70.0f;
 
-        // Сохраняем постоянную скорость мяча
+        // Нормализуем скорость до BALL_SPEED
         float currentSpeed = std::sqrt(vel.x * vel.x + vel.y * vel.y);
         if (currentSpeed > 0.0f)
         {
@@ -79,7 +119,8 @@ namespace ArkanoidGame
             vel.y = (vel.y / currentSpeed) * targetSpeed;
         }
         ball.SetVelocity(vel);
-        OnHit();
+
+        OnHit();   // деактивируем блок
         return true;
     }
 }

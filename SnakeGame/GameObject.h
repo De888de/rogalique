@@ -1,3 +1,4 @@
+// GameObject.h
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -8,6 +9,7 @@ namespace ArkanoidGame
     {
     protected:
         sf::Sprite sprite;
+        sf::Texture texture;
 
     public:
         GameObject(const std::string& texturePath, const sf::Vector2f& position,
@@ -22,8 +24,6 @@ namespace ArkanoidGame
         sf::Vector2f GetPosition() const;
         void SetPosition(const sf::Vector2f& pos);
 
-
         sf::Sprite& GetSprite() { return sprite; }
     };
 }
-

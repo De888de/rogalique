@@ -7,7 +7,6 @@
 #include "Game.h"
 #include <string>
 
-
 namespace ArkanoidGame
 {
     Game& GetGame();
@@ -61,12 +60,9 @@ namespace ArkanoidGame
         const int   rows = SETTINGS.BLOCK_ROWS;
         const int   cols = SETTINGS.BLOCK_COLUMNS;
 
-        // Вычисляем общую ширину всех блоков с отступами
         float totalBlocksWidth = cols * blockW + (cols - 1) * padding;
-        // Стартовая X для ЛЕВОГО ВЕРХНЕГО УГЛА первого блока
         float startX = (SETTINGS.SCREEN_WIDTH - totalBlocksWidth) / 2.0f;
 
-        // ========== ОТЛАДОЧНЫЙ ВЫВОД (без повторных объявлений) ==========
         std::cout << "===== CENTERING DEBUG =====" << std::endl;
         std::cout << "SCREEN_WIDTH: " << SETTINGS.SCREEN_WIDTH << std::endl;
         std::cout << "BLOCK_WIDTH: " << blockW << std::endl;
@@ -75,7 +71,6 @@ namespace ArkanoidGame
         std::cout << "totalBlocksWidth: " << totalBlocksWidth << std::endl;
         std::cout << "startX (left edge): " << startX << std::endl;
         std::cout << "First block center X: " << startX + blockW / 2 << std::endl;
-        // ================================================================
 
         for (int r = 0; r < rows; ++r)
         {
@@ -118,14 +113,25 @@ namespace ArkanoidGame
 
         platform_->CheckCollision(*ball_);
 
-        for (auto& block : blocks_)
+        // Цикл обработки столкновений с блоками (максимум 5 итераций)
+        const int MAX_ITER = 5;
+        int iter = 0;
+        bool anyCollision = true;
+
+        while (anyCollision && iter < MAX_ITER)
         {
-            if (block->CheckCollision(*ball_))
+            anyCollision = false;
+            for (auto& block : blocks_)
             {
-                score += SETTINGS.SCORE_PER_BLOCK;
-                scoreText.setString("Score: " + std::to_string(score));
-                break;
+                if (block->CheckCollision(*ball_))
+                {
+                    score += SETTINGS.SCORE_PER_BLOCK;
+                    scoreText.setString("Score: " + std::to_string(score));
+                    anyCollision = true;
+                    break;   // выходим из for, но while продолжит
+                }
             }
+            iter++;
         }
 
         if (ball_->HasFallen())
@@ -157,13 +163,6 @@ namespace ArkanoidGame
             block->Draw(window);
         }
 
-        window.draw(scoreText);
-        window.draw(livesText);
-        window.draw(controlsText);
-
-
-
-        // Текст
         window.draw(scoreText);
         window.draw(livesText);
         window.draw(controlsText);
@@ -308,4 +307,4 @@ namespace ArkanoidGame
             }
         }
     }
-} 
+}

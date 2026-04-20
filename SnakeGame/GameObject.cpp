@@ -7,10 +7,10 @@ namespace ArkanoidGame
     GameObject::GameObject(const std::string& texturePath, const sf::Vector2f& position,
         float width, float height)
     {
-        static sf::Texture texture; // упрощённо — в реальном проекте лучше TextureManager
+
         if (!texture.loadFromFile(texturePath))
         {
-            // Можно добавить assert или fallback
+
         }
 
         sprite.setTexture(texture);
