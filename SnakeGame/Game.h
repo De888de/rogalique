@@ -23,6 +23,7 @@ namespace ArkanoidGame
         void StartGame();
         void ExitGame();
         void GoToGameOver(int finalScore);
+        void GoToWin(int finalScore);        // ← НОВЫЙ метод для перехода в состояние победы
 
     private:
         void HandleWindowEvents(sf::RenderWindow& window);

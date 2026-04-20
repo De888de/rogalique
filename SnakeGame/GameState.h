@@ -1,16 +1,20 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <vector>
 
 namespace ArkanoidGame
 {
     class Game;
+    class Block;
     Game& GetGame();
+
     enum class GameStateType
     {
         None,
         Playing,
-        GameOver
+        GameOver,
+        Win
     };
 
     class GameState
@@ -31,11 +35,13 @@ namespace ArkanoidGame
         bool isExclusivelyVisible_;
     };
 
+    // ====================== GameStatePlayingData ======================
     class GameStatePlayingData
     {
     private:
         std::unique_ptr<class Platform> platform_;
         std::unique_ptr<class Ball> ball_;
+        std::vector<std::unique_ptr<class Block>> blocks_;
 
         int score = 0;
         int lives = 3;
@@ -46,6 +52,8 @@ namespace ArkanoidGame
         sf::Text controlsText;
 
         void InitText();
+        void InitBlocks();
+        bool IsWinCondition() const;
 
     public:
         GameStatePlayingData();
@@ -84,6 +92,25 @@ namespace ArkanoidGame
 
     public:
         GameStateGameOver(int score);
+
+        void Update(float timeDelta) override;
+        void Draw(sf::RenderWindow& window) override;
+        void HandleWindowEvent(const sf::Event& event) override;
+    };
+
+    class GameStateWin : public GameState
+    {
+    private:
+        int finalScore = 0;
+        sf::Font font;
+        sf::Text winText;
+        sf::Text finalScoreText;
+        sf::Text pressText;
+
+        void InitText();
+
+    public:
+        GameStateWin(int score);
 
         void Update(float timeDelta) override;
         void Draw(sf::RenderWindow& window) override;

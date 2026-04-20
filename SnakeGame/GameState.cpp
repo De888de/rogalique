@@ -1,10 +1,12 @@
+#include <iostream>
 #include "GameState.h"
 #include "Platform.h"
 #include "Ball.h"
+#include "Block.h"
 #include "GameSettings.h"
 #include "Game.h"
 #include <string>
-#include <iostream>
+
 
 namespace ArkanoidGame
 {
@@ -13,13 +15,13 @@ namespace ArkanoidGame
 
 namespace ArkanoidGame
 {
-    //  GameState  
+    // ====================== GameState ======================
     GameState::GameState(GameStateType type, bool isExclusivelyVisible)
         : type_(type), isExclusivelyVisible_(isExclusivelyVisible)
     {
     }
 
-    //  GameStatePlayingData 
+    // ====================== GameStatePlayingData ======================
     void GameStatePlayingData::InitText()
     {
         if (!font.loadFromFile("Resources/Fonts/Roboto-Black.ttf"))
@@ -48,6 +50,45 @@ namespace ArkanoidGame
         controlsText.setString("< A / D >  move    ESC exit");
     }
 
+    void GameStatePlayingData::InitBlocks()
+    {
+        blocks_.clear();
+
+        const float blockW = SETTINGS.BLOCK_WIDTH;
+        const float blockH = SETTINGS.BLOCK_HEIGHT;
+        const float padding = SETTINGS.BLOCK_PADDING;
+        const float startY = SETTINGS.BLOCK_START_Y;
+        const int   rows = SETTINGS.BLOCK_ROWS;
+        const int   cols = SETTINGS.BLOCK_COLUMNS;
+
+        // Вычисляем общую ширину всех блоков с отступами
+        float totalBlocksWidth = cols * blockW + (cols - 1) * padding;
+        // Стартовая X для ЛЕВОГО ВЕРХНЕГО УГЛА первого блока
+        float startX = (SETTINGS.SCREEN_WIDTH - totalBlocksWidth) / 2.0f;
+
+        // ========== ОТЛАДОЧНЫЙ ВЫВОД (без повторных объявлений) ==========
+        std::cout << "===== CENTERING DEBUG =====" << std::endl;
+        std::cout << "SCREEN_WIDTH: " << SETTINGS.SCREEN_WIDTH << std::endl;
+        std::cout << "BLOCK_WIDTH: " << blockW << std::endl;
+        std::cout << "BLOCK_COLUMNS: " << cols << std::endl;
+        std::cout << "BLOCK_PADDING: " << padding << std::endl;
+        std::cout << "totalBlocksWidth: " << totalBlocksWidth << std::endl;
+        std::cout << "startX (left edge): " << startX << std::endl;
+        std::cout << "First block center X: " << startX + blockW / 2 << std::endl;
+        // ================================================================
+
+        for (int r = 0; r < rows; ++r)
+        {
+            for (int c = 0; c < cols; ++c)
+            {
+                float x = startX + c * (blockW + padding);
+                float y = startY + r * (blockH + padding);
+                auto block = std::make_unique<Block>(sf::Vector2f(x + blockW / 2, y + blockH / 2));
+                blocks_.push_back(std::move(block));
+            }
+        }
+    }
+
     GameStatePlayingData::GameStatePlayingData()
     {
         platform_ = std::make_unique<Platform>(
@@ -56,7 +97,18 @@ namespace ArkanoidGame
         ball_ = std::make_unique<Ball>(
             sf::Vector2f(SETTINGS.SCREEN_WIDTH / 2.0f, SETTINGS.SCREEN_HEIGHT / 2.0f));
 
+        InitBlocks();
         InitText();
+    }
+
+    bool GameStatePlayingData::IsWinCondition() const
+    {
+        for (const auto& block : blocks_)
+        {
+            if (block->IsActive())
+                return false;
+        }
+        return true;
     }
 
     void GameStatePlayingData::Update(float timeDelta)
@@ -64,10 +116,16 @@ namespace ArkanoidGame
         platform_->Update(timeDelta);
         ball_->Update(timeDelta);
 
-        if (platform_->CheckCollision(*ball_))
+        platform_->CheckCollision(*ball_);
+
+        for (auto& block : blocks_)
         {
-            score++;
-            scoreText.setString("Score: " + std::to_string(score));
+            if (block->CheckCollision(*ball_))
+            {
+                score += SETTINGS.SCORE_PER_BLOCK;
+                scoreText.setString("Score: " + std::to_string(score));
+                break;
+            }
         }
 
         if (ball_->HasFallen())
@@ -79,7 +137,13 @@ namespace ArkanoidGame
             if (lives <= 0)
             {
                 ArkanoidGame::GetGame().GoToGameOver(score);
+                return;
             }
+        }
+
+        if (IsWinCondition())
+        {
+            ArkanoidGame::GetGame().GoToWin(score);
         }
     }
 
@@ -87,12 +151,25 @@ namespace ArkanoidGame
     {
         platform_->Draw(window);
         ball_->Draw(window);
+
+        for (const auto& block : blocks_)
+        {
+            block->Draw(window);
+        }
+
+        window.draw(scoreText);
+        window.draw(livesText);
+        window.draw(controlsText);
+
+
+
+        // Текст
         window.draw(scoreText);
         window.draw(livesText);
         window.draw(controlsText);
     }
 
-    // GameStatePlaying 
+    // ====================== GameStatePlaying ======================
     GameStatePlaying::GameStatePlaying()
         : GameState(GameStateType::Playing, true)
     {
@@ -110,7 +187,7 @@ namespace ArkanoidGame
 
     void GameStatePlaying::HandleWindowEvent(const sf::Event& event) {}
 
-    //  GameStateGameOver
+    // ====================== GameStateGameOver ======================
     void GameStateGameOver::InitText()
     {
         if (!font.loadFromFile("Resources/Fonts/Roboto-Black.ttf"))
@@ -134,8 +211,8 @@ namespace ArkanoidGame
         pressText.setFont(font);
         pressText.setCharacterSize(24);
         pressText.setFillColor(sf::Color::Yellow);
-        pressText.setString("Press ESC to Exit");
-        pressText.setPosition(SETTINGS.SCREEN_WIDTH / 2.f - 130.f, 340.f);
+        pressText.setString("Press R or SPACE to Restart\nESC to Exit");
+        pressText.setPosition(SETTINGS.SCREEN_WIDTH / 2.f - 170.f, 340.f);
     }
 
     GameStateGameOver::GameStateGameOver(int score)
@@ -158,10 +235,77 @@ namespace ArkanoidGame
     {
         if (event.type == sf::Event::KeyPressed)
         {
-            if (event.key.code == sf::Keyboard::Escape)
+            switch (event.key.code)
             {
+            case sf::Keyboard::R:
+            case sf::Keyboard::Space:
+                ArkanoidGame::GetGame().StartGame();
+                break;
+            case sf::Keyboard::Escape:
                 ArkanoidGame::GetGame().ExitGame();
+                break;
             }
         }
     }
-}
+
+    // ====================== GameStateWin ======================
+    void GameStateWin::InitText()
+    {
+        if (!font.loadFromFile("Resources/Fonts/Roboto-Black.ttf"))
+        {
+            font.loadFromFile("D:/xyz/HW_03/xyz-cpp-course/ArkanoidGame/Resources/Fonts/Roboto-Black.ttf");
+        }
+
+        winText.setFont(font);
+        winText.setCharacterSize(60);
+        winText.setFillColor(sf::Color::Green);
+        winText.setStyle(sf::Text::Bold);
+        winText.setString("YOU WIN!");
+        winText.setPosition(SETTINGS.SCREEN_WIDTH / 2.f - 170.f, 160.f);
+
+        finalScoreText.setFont(font);
+        finalScoreText.setCharacterSize(36);
+        finalScoreText.setFillColor(sf::Color::White);
+        finalScoreText.setString("Final Score: 0");
+        finalScoreText.setPosition(SETTINGS.SCREEN_WIDTH / 2.f - 150.f, 250.f);
+
+        pressText.setFont(font);
+        pressText.setCharacterSize(24);
+        pressText.setFillColor(sf::Color::Yellow);
+        pressText.setString("Play again?  Y - Yes    N / ESC - No");
+        pressText.setPosition(SETTINGS.SCREEN_WIDTH / 2.f - 180.f, 340.f);
+    }
+
+    GameStateWin::GameStateWin(int score)
+        : GameState(GameStateType::Win, true), finalScore(score)
+    {
+        InitText();
+        finalScoreText.setString("Final Score: " + std::to_string(score));
+    }
+
+    void GameStateWin::Update(float timeDelta) {}
+
+    void GameStateWin::Draw(sf::RenderWindow& window)
+    {
+        window.draw(winText);
+        window.draw(finalScoreText);
+        window.draw(pressText);
+    }
+
+    void GameStateWin::HandleWindowEvent(const sf::Event& event)
+    {
+        if (event.type == sf::Event::KeyPressed)
+        {
+            switch (event.key.code)
+            {
+            case sf::Keyboard::Y:
+                ArkanoidGame::GetGame().StartGame();
+                break;
+            case sf::Keyboard::N:
+            case sf::Keyboard::Escape:
+                ArkanoidGame::GetGame().ExitGame();
+                break;
+            }
+        }
+    }
+} 

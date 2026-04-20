@@ -42,6 +42,10 @@ namespace ArkanoidGame
             {
                 stateStack.push_back(std::make_unique<GameStateGameOver>(pendingScore));
             }
+            else if (pendingGameStateType == GameStateType::Win)
+            {
+                stateStack.push_back(std::make_unique<GameStateWin>(pendingScore));
+            }
 
             pendingGameStateType = GameStateType::None;
             pendingScore = 0;
@@ -80,20 +84,20 @@ namespace ArkanoidGame
         SwitchStateTo(GameStateType::GameOver, finalScore);
     }
 
+    void Game::GoToWin(int finalScore)
+    {
+        SwitchStateTo(GameStateType::Win, finalScore);
+    }
 
     void Game::StartGame()
     {
-
         stateStack.clear();
         stateChangeType = GameStateChangeType::None;
         pendingGameStateType = GameStateType::None;
         pendingScore = 0;
 
-
         SwitchStateTo(GameStateType::Playing);
     }
-
-
 
     void Game::ExitGame()
     {

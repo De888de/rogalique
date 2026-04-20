@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include "Game.h"
 
-// Глобальный указатель
+
 ArkanoidGame::Game* g_Game = nullptr;
 
 namespace ArkanoidGame
@@ -31,15 +31,6 @@ int main()
     {
         float timeDelta = clock.restart().asSeconds();
 
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
-                window.close();
-        }
 
         game.UpdateGame(timeDelta, window);
     }
