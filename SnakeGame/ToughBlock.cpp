@@ -1,60 +1,56 @@
-#include "Block.h"
+#include "ToughBlock.h"
 #include "Ball.h"
 #include "GameSettings.h"
 #include <cmath>
+#include <algorithm>
 
 namespace ArkanoidGame
 {
-    Block::Block(const sf::Vector2f& position)
-        : GameObject(SETTINGS.TEXTURES_PATH + std::string("block.png"),
-            position,
-            SETTINGS.BLOCK_WIDTH,
-            SETTINGS.BLOCK_HEIGHT)
+    ToughBlock::ToughBlock(const sf::Vector2f& position)
+        : Block(position)  // ← вызываем конструктор обычного блока
     {
+        // Загружаем шрифт
+        if (!font.loadFromFile("D:/xyz/HW_03/xyz-cpp-course/ArkanoidGame/Resources/Fonts/Roboto-Black.ttf"))
+        {
+            font.loadFromFile("Resources/Fonts/Roboto-Black.ttf");
+        }
+
+        hitCounterText.setFont(font);
+        hitCounterText.setCharacterSize(18);
+        hitCounterText.setFillColor(sf::Color::Black);
+        hitCounterText.setStyle(sf::Text::Bold);
+        UpdateHitCounterText();
+
+        active_ = true;
     }
 
-    void Block::Update(float timeDelta)
+    void ToughBlock::UpdateHitCounterText()
     {
+        hitCounterText.setString(std::to_string(hitsRemaining));
+        sf::FloatRect blockRect = GetCollisionRect();
+        float textX = blockRect.left + blockRect.width - 18.f;
+        float textY = blockRect.top + 4.f;
+        hitCounterText.setPosition(textX, textY);
     }
 
-    void Block::Draw(sf::RenderWindow& window)
+    void ToughBlock::Draw(sf::RenderWindow& window)
     {
         if (!active_) return;
 
+        // Рисуем красный блок
         sf::RectangleShape rect(sf::Vector2f(SETTINGS.BLOCK_WIDTH, SETTINGS.BLOCK_HEIGHT));
         rect.setOrigin(SETTINGS.BLOCK_WIDTH / 2.f, SETTINGS.BLOCK_HEIGHT / 2.f);
         rect.setPosition(GetPosition());
-        rect.setFillColor(sf::Color::White);
-        rect.setOutlineColor(sf::Color::Red);
+        rect.setFillColor(sf::Color::Red);
+        rect.setOutlineColor(sf::Color::Yellow);
         rect.setOutlineThickness(2);
         window.draw(rect);
+
+        // Рисуем счётчик ударов
+        window.draw(hitCounterText);
     }
 
-    sf::FloatRect Block::GetCollisionRect() const
-    {
-        sf::Vector2f center = GetPosition();
-        return sf::FloatRect(
-            center.x - SETTINGS.BLOCK_WIDTH / 2.f,
-            center.y - SETTINGS.BLOCK_HEIGHT / 2.f,
-            SETTINGS.BLOCK_WIDTH,
-            SETTINGS.BLOCK_HEIGHT
-        );
-    }
-
-    bool Block::GetCollision(std::shared_ptr<Colladiable> collidable) const
-    {
-        if (!active_) return false;
-        auto other = std::dynamic_pointer_cast<GameObject>(collidable);
-        if (!other) return false;
-        return GetCollisionRect().intersects(other->GetRect());
-    }
-
-    void Block::OnHit()
-    {
-        active_ = false;
-    }
-
-    bool Block::CheckCollision(Ball& ball)
+    bool ToughBlock::CheckCollision(Ball& ball)
     {
         if (!active_) return false;
 
@@ -63,6 +59,7 @@ namespace ArkanoidGame
         if (!ballRect.intersects(blockRect))
             return false;
 
+        // Выталкивание мяча
         sf::Vector2f ballPos = ball.GetPosition();
         sf::Vector2f correction(0.f, 0.f);
 
@@ -92,6 +89,7 @@ namespace ArkanoidGame
         }
         ball.SetPosition(ballPos + correction);
 
+        // Эффект от удара по горизонтали
         sf::Vector2f vel = ball.GetVelocity();
         float hitOffset = (ball.GetPosition().x - GetPosition().x) / (SETTINGS.BLOCK_WIDTH / 2.0f);
         vel.x += hitOffset * 70.0f;
@@ -105,7 +103,21 @@ namespace ArkanoidGame
         }
         ball.SetVelocity(vel);
 
-        OnHit();
-        return true;
+        // Уменьшаем счётчик
+        hitsRemaining--;
+        UpdateHitCounterText();
+
+        if (hitsRemaining <= 0)
+        {
+            active_ = false;  // блок разрушен
+            return true;      // сообщаем, что блок уничтожен (начисляем очки)
+        }
+
+        return false;  // блок не уничтожен, очки не начисляем
+    }
+
+    void ToughBlock::OnHit()
+    {
+        // Не нужно, логика в CheckCollision
     }
 }

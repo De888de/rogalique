@@ -1,60 +1,35 @@
-#include "Block.h"
+#include "IndestructibleBlock.h"
 #include "Ball.h"
 #include "GameSettings.h"
 #include <cmath>
+#include <algorithm>
 
 namespace ArkanoidGame
 {
-    Block::Block(const sf::Vector2f& position)
-        : GameObject(SETTINGS.TEXTURES_PATH + std::string("block.png"),
-            position,
-            SETTINGS.BLOCK_WIDTH,
-            SETTINGS.BLOCK_HEIGHT)
+    IndestructibleBlock::IndestructibleBlock(const sf::Vector2f& position)
+        : Block(position)
     {
+        active_ = true;  // всегда активен
     }
 
-    void Block::Update(float timeDelta)
-    {
-    }
-
-    void Block::Draw(sf::RenderWindow& window)
+    void IndestructibleBlock::Draw(sf::RenderWindow& window)
     {
         if (!active_) return;
 
+        // Рисуем тёмно-коричневый блок
         sf::RectangleShape rect(sf::Vector2f(SETTINGS.BLOCK_WIDTH, SETTINGS.BLOCK_HEIGHT));
         rect.setOrigin(SETTINGS.BLOCK_WIDTH / 2.f, SETTINGS.BLOCK_HEIGHT / 2.f);
         rect.setPosition(GetPosition());
-        rect.setFillColor(sf::Color::White);
-        rect.setOutlineColor(sf::Color::Red);
+        rect.setFillColor(blockColor);
+        rect.setOutlineColor(sf::Color(80, 50, 25));  // тёмная обводка
         rect.setOutlineThickness(2);
         window.draw(rect);
+
+        // Можно добавить текстуру "железа" или узор
+        // Но пока просто цвет
     }
 
-    sf::FloatRect Block::GetCollisionRect() const
-    {
-        sf::Vector2f center = GetPosition();
-        return sf::FloatRect(
-            center.x - SETTINGS.BLOCK_WIDTH / 2.f,
-            center.y - SETTINGS.BLOCK_HEIGHT / 2.f,
-            SETTINGS.BLOCK_WIDTH,
-            SETTINGS.BLOCK_HEIGHT
-        );
-    }
-
-    bool Block::GetCollision(std::shared_ptr<Colladiable> collidable) const
-    {
-        if (!active_) return false;
-        auto other = std::dynamic_pointer_cast<GameObject>(collidable);
-        if (!other) return false;
-        return GetCollisionRect().intersects(other->GetRect());
-    }
-
-    void Block::OnHit()
-    {
-        active_ = false;
-    }
-
-    bool Block::CheckCollision(Ball& ball)
+    bool IndestructibleBlock::CheckCollision(Ball& ball)
     {
         if (!active_) return false;
 
@@ -63,6 +38,7 @@ namespace ArkanoidGame
         if (!ballRect.intersects(blockRect))
             return false;
 
+        // Выталкивание мяча (как в обычном блоке)
         sf::Vector2f ballPos = ball.GetPosition();
         sf::Vector2f correction(0.f, 0.f);
 
@@ -92,6 +68,7 @@ namespace ArkanoidGame
         }
         ball.SetPosition(ballPos + correction);
 
+        // Эффект от удара по горизонтали
         sf::Vector2f vel = ball.GetVelocity();
         float hitOffset = (ball.GetPosition().x - GetPosition().x) / (SETTINGS.BLOCK_WIDTH / 2.0f);
         vel.x += hitOffset * 70.0f;
@@ -105,7 +82,15 @@ namespace ArkanoidGame
         }
         ball.SetVelocity(vel);
 
-        OnHit();
-        return true;
+        // ❗ ВАЖНО: НЕ вызываем OnHit(), блок не разрушается
+        // Возвращаем false, чтобы не начислялись очки
+        return false;
+    }
+
+    void IndestructibleBlock::OnHit()
+    {
+        // Ничего не делаем — блок нельзя разрушить
+        // Можно добавить звук "звяканья" позже
     }
 }
+

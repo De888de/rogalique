@@ -29,7 +29,8 @@ namespace ArkanoidGame
         bool HasFallen() const;
         void ClearFallenFlag();
 
-        
+
+
         void BounceX();
         void BounceY();
     };

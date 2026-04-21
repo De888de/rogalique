@@ -7,6 +7,8 @@ namespace ArkanoidGame
 {
     class Game;
     class Block;
+    class Platform;
+    class Ball;
     Game& GetGame();
 
     enum class GameStateType
@@ -39,9 +41,9 @@ namespace ArkanoidGame
     class GameStatePlayingData
     {
     private:
-        std::unique_ptr<class Platform> platform_;
-        std::unique_ptr<class Ball> ball_;
-        std::vector<std::unique_ptr<class Block>> blocks_;
+        std::unique_ptr<Platform> platform_;
+        std::unique_ptr<Ball> ball_;
+        std::vector<std::unique_ptr<Block>> blocks_;
 
         int score = 0;
         int lives = 3;
@@ -66,6 +68,7 @@ namespace ArkanoidGame
         bool IsGameOver() const { return lives <= 0; }
     };
 
+    // ====================== GameStatePlaying ======================
     class GameStatePlaying : public GameState
     {
     private:
@@ -79,6 +82,7 @@ namespace ArkanoidGame
         void HandleWindowEvent(const sf::Event& event) override;
     };
 
+    // ====================== GameStateGameOver ======================
     class GameStateGameOver : public GameState
     {
     private:
@@ -98,6 +102,7 @@ namespace ArkanoidGame
         void HandleWindowEvent(const sf::Event& event) override;
     };
 
+    // ====================== GameStateWin ======================
     class GameStateWin : public GameState
     {
     private:

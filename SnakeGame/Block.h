@@ -15,15 +15,15 @@ namespace ArkanoidGame
         void Draw(sf::RenderWindow& window) override;
 
         bool GetCollision(std::shared_ptr<Colladiable> collidable) const override;
-        void OnHit() override;
+        virtual void OnHit() override;
 
         bool IsActive() const { return active_; }
-        bool CheckCollision(Ball& ball);
+        virtual bool CheckCollision(Ball& ball);
+        virtual int GetScoreValue() const { return 10; }
 
-        // Прямоугольник коллизии (на основе центра и размера)
         sf::FloatRect GetCollisionRect() const;
 
-    private:
+    protected:
         bool active_ = true;
     };
 }

@@ -3,7 +3,7 @@
 
 namespace ArkanoidGame
 {
-    class Colladiable   
+    class Colladiable
     {
     public:
         virtual ~Colladiable() = default;
@@ -12,4 +12,3 @@ namespace ArkanoidGame
         virtual void OnHit() = 0;
     };
 }
-

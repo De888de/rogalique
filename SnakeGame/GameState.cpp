@@ -3,9 +3,15 @@
 #include "Platform.h"
 #include "Ball.h"
 #include "Block.h"
+#include "ToughBlock.h"
+#include "MagicBlock.h"
+#include "SmoothDestroyableBlock.h"
+#include "IndestructibleBlock.h"
 #include "GameSettings.h"
 #include "Game.h"
 #include <string>
+#include <random>
+#include <chrono>
 
 namespace ArkanoidGame
 {
@@ -63,7 +69,18 @@ namespace ArkanoidGame
         float totalBlocksWidth = cols * blockW + (cols - 1) * padding;
         float startX = (SETTINGS.SCREEN_WIDTH - totalBlocksWidth) / 2.0f;
 
-        std::cout << "===== CENTERING DEBUG =====" << std::endl;
+        // Передаём указатель на список блоков для MagicBlock
+        SetGlobalBlocksPtr(&blocks_);
+
+        // Рандомная позиция для волшебного блока (не в первом ряду)
+        static std::mt19937 gen(static_cast<unsigned>(std::chrono::steady_clock::now().time_since_epoch().count()));
+        std::uniform_int_distribution<> rowDist(1, rows - 1);
+        std::uniform_int_distribution<> colDist(1, cols - 2);  // не по краям, чтобы не пересекаться с железными
+
+        int magicRow = rowDist(gen);
+        int magicCol = colDist(gen);
+
+        std::cout << "===== BLOCK CREATION =====" << std::endl;
         std::cout << "SCREEN_WIDTH: " << SETTINGS.SCREEN_WIDTH << std::endl;
         std::cout << "BLOCK_WIDTH: " << blockW << std::endl;
         std::cout << "BLOCK_COLUMNS: " << cols << std::endl;
@@ -71,6 +88,7 @@ namespace ArkanoidGame
         std::cout << "totalBlocksWidth: " << totalBlocksWidth << std::endl;
         std::cout << "startX (left edge): " << startX << std::endl;
         std::cout << "First block center X: " << startX + blockW / 2 << std::endl;
+        std::cout << "[MagicBlock] Placed at row " << magicRow << ", col " << magicCol << std::endl;
 
         for (int r = 0; r < rows; ++r)
         {
@@ -78,7 +96,32 @@ namespace ArkanoidGame
             {
                 float x = startX + c * (blockW + padding);
                 float y = startY + r * (blockH + padding);
-                auto block = std::make_unique<Block>(sf::Vector2f(x + blockW / 2, y + blockH / 2));
+                sf::Vector2f center(x + blockW / 2, y + blockH / 2);
+
+                std::unique_ptr<Block> block;
+
+                // Железные блоки — по краям (первый и последний столбец)
+                if (c == 0 || c == cols - 1)
+                {
+                    block = std::make_unique<IndestructibleBlock>(center);
+                    std::cout << "[IndestructibleBlock] Created at (" << center.x << ", " << center.y << ")\n";
+                }
+                // Волшебный блок на случайной позиции
+                else if (r == magicRow && c == magicCol)
+                {
+                    block = std::make_unique<MagicBlock>(center);
+                    std::cout << "[MagicBlock] Created at (" << center.x << ", " << center.y << ")\n";
+                }
+                // Прочные блоки — верхний ряд
+                else if (r == 0)
+                {
+                    block = std::make_unique<ToughBlock>(center);
+                }
+                // Обычные блоки — с плавным исчезновением
+                else
+                {
+                    block = std::make_unique<SmoothDestroyableBlock>(center);
+                }
                 blocks_.push_back(std::move(block));
             }
         }
@@ -98,12 +141,17 @@ namespace ArkanoidGame
 
     bool GameStatePlayingData::IsWinCondition() const
     {
+        // Проверяем, остались ли только неуничтожимые блоки
         for (const auto& block : blocks_)
         {
-            if (block->IsActive())
-                return false;
+            // Если есть хоть один разрушаемый блок (не железный) и он активен — игра продолжается
+            auto* indestructible = dynamic_cast<IndestructibleBlock*>(block.get());
+            if (!indestructible && block->IsActive())
+            {
+                return false;  // есть ещё разрушаемые блоки
+            }
         }
-        return true;
+        return true;  // все разрушаемые блоки уничтожены
     }
 
     void GameStatePlayingData::Update(float timeDelta)
@@ -112,6 +160,12 @@ namespace ArkanoidGame
         ball_->Update(timeDelta);
 
         platform_->CheckCollision(*ball_);
+
+        // Обновляем все блоки (для анимации SmoothDestroyableBlock)
+        for (auto& block : blocks_)
+        {
+            block->Update(timeDelta);
+        }
 
         // Цикл обработки столкновений с блоками (максимум 5 итераций)
         const int MAX_ITER = 5;
@@ -123,12 +177,13 @@ namespace ArkanoidGame
             anyCollision = false;
             for (auto& block : blocks_)
             {
+                // CheckCollision возвращает true только если блок уничтожен
                 if (block->CheckCollision(*ball_))
                 {
-                    score += SETTINGS.SCORE_PER_BLOCK;
+                    score += block->GetScoreValue();
                     scoreText.setString("Score: " + std::to_string(score));
                     anyCollision = true;
-                    break;   // выходим из for, но while продолжит
+                    break;
                 }
             }
             iter++;
