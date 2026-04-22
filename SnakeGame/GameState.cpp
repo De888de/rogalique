@@ -12,6 +12,7 @@
 #include <string>
 #include <random>
 #include <chrono>
+#include "GlassBlock.h"
 
 namespace ArkanoidGame
 {
@@ -69,26 +70,51 @@ namespace ArkanoidGame
         float totalBlocksWidth = cols * blockW + (cols - 1) * padding;
         float startX = (SETTINGS.SCREEN_WIDTH - totalBlocksWidth) / 2.0f;
 
-        // Передаём указатель на список блоков для MagicBlock
         SetGlobalBlocksPtr(&blocks_);
 
-        // Рандомная позиция для волшебного блока (не в первом ряду)
+        // Рандомная позиция для волшебного блока
         static std::mt19937 gen(static_cast<unsigned>(std::chrono::steady_clock::now().time_since_epoch().count()));
         std::uniform_int_distribution<> rowDist(1, rows - 1);
-        std::uniform_int_distribution<> colDist(1, cols - 2);  // не по краям, чтобы не пересекаться с железными
+        std::uniform_int_distribution<> colDist(1, cols - 2);
 
         int magicRow = rowDist(gen);
         int magicCol = colDist(gen);
 
+        // Генерируем позиции для стеклянных блоков (не больше 3-х)
+        std::vector<std::pair<int, int>> glassPositions;
+        std::uniform_int_distribution<> glassRowDist(1, rows - 1);
+        std::uniform_int_distribution<> glassColDist(1, cols - 2);
+
+        int glassBlockCount = 3;  // не больше 3-х блоков
+        int attempts = 0;
+        while (glassPositions.size() < glassBlockCount && attempts < 50)
+        {
+            int glassRow = glassRowDist(gen);
+            int glassCol = glassColDist(gen);
+
+            // Проверяем, чтобы не совпадало с волшебным блоком
+            bool isMagicPosition = (glassRow == magicRow && glassCol == magicCol);
+            bool alreadyExists = false;
+
+            for (const auto& pos : glassPositions)
+            {
+                if (pos.first == glassRow && pos.second == glassCol)
+                {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+
+            if (!isMagicPosition && !alreadyExists)
+            {
+                glassPositions.push_back({ glassRow, glassCol });
+            }
+            attempts++;
+        }
+
         std::cout << "===== BLOCK CREATION =====" << std::endl;
-        std::cout << "SCREEN_WIDTH: " << SETTINGS.SCREEN_WIDTH << std::endl;
-        std::cout << "BLOCK_WIDTH: " << blockW << std::endl;
-        std::cout << "BLOCK_COLUMNS: " << cols << std::endl;
-        std::cout << "BLOCK_PADDING: " << padding << std::endl;
-        std::cout << "totalBlocksWidth: " << totalBlocksWidth << std::endl;
-        std::cout << "startX (left edge): " << startX << std::endl;
-        std::cout << "First block center X: " << startX + blockW / 2 << std::endl;
         std::cout << "[MagicBlock] Placed at row " << magicRow << ", col " << magicCol << std::endl;
+        std::cout << "[GlassBlock] Count: " << glassPositions.size() << std::endl;
 
         for (int r = 0; r < rows; ++r)
         {
@@ -100,13 +126,28 @@ namespace ArkanoidGame
 
                 std::unique_ptr<Block> block;
 
-                // Железные блоки — по краям (первый и последний столбец)
-                if (c == 0 || c == cols - 1)
+                // Проверяем, стеклянный ли блок
+                bool isGlass = false;
+                for (const auto& glassPos : glassPositions)
+                {
+                    if (r == glassPos.first && c == glassPos.second)
+                    {
+                        isGlass = true;
+                        break;
+                    }
+                }
+
+                if (isGlass)
+                {
+                    block = std::make_unique<GlassBlock>(center);
+                    std::cout << "[GlassBlock] Created at (" << center.x << ", " << center.y << ")\n";
+                }
+                // Железные блоки по краям
+                else if (c == 0 || c == cols - 1)
                 {
                     block = std::make_unique<IndestructibleBlock>(center);
-                    std::cout << "[IndestructibleBlock] Created at (" << center.x << ", " << center.y << ")\n";
                 }
-                // Волшебный блок на случайной позиции
+                // Волшебный блок
                 else if (r == magicRow && c == magicCol)
                 {
                     block = std::make_unique<MagicBlock>(center);
@@ -117,7 +158,7 @@ namespace ArkanoidGame
                 {
                     block = std::make_unique<ToughBlock>(center);
                 }
-                // Обычные блоки — с плавным исчезновением
+                // Обычные блоки с анимацией
                 else
                 {
                     block = std::make_unique<SmoothDestroyableBlock>(center);
