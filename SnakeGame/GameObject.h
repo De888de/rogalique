@@ -9,6 +9,7 @@ namespace ArkanoidGame
     protected:
         sf::Sprite sprite;
         sf::Texture texture;
+        bool hasTexture = false;
 
     public:
         GameObject(const std::string& texturePath, const sf::Vector2f& position,
@@ -23,6 +24,7 @@ namespace ArkanoidGame
         sf::Vector2f GetPosition() const;
         void SetPosition(const sf::Vector2f& pos);
 
-        sf::Sprite& GetSprite() { return sprite; }
+        sf::Sprite& GetSprite();   // ← только объявление, без тела { return sprite; }
+
     };
 }

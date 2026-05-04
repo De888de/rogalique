@@ -40,11 +40,7 @@ namespace ArkanoidGame
         if (!ballRect.intersects(blockRect))
             return false;
 
-        // ❗ ВАЖНО: НЕТ ВЫТАЛКИВАНИЯ МЯЧА
-        // ❗ НЕТ ИЗМЕНЕНИЯ СКОРОСТИ
-        // Мяч просто пролетает сквозь блок
 
-        // Уничтожаем блок
         OnHit();
 
         // Возвращаем true, чтобы начислить очки
@@ -53,7 +49,9 @@ namespace ArkanoidGame
 
     void GlassBlock::OnHit()
     {
-        active_ = false;
+        std::cout << "[GlassBlock::OnHit] Called, calling Block::OnHit()" << std::endl;
+        Block::OnHit();
         isDestroyed = true;
+        std::cout << "[GlassBlock::OnHit] After Block::OnHit()" << std::endl;
     }
 }

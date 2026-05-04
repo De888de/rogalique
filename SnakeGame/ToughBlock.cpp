@@ -3,16 +3,18 @@
 #include "GameSettings.h"
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 namespace ArkanoidGame
 {
     ToughBlock::ToughBlock(const sf::Vector2f& position)
-        : Block(position)  // ← вызываем конструктор обычного блока
+        : Block(position)
+        , hitsRemaining(3)
     {
-        // Загружаем шрифт
-        if (!font.loadFromFile("D:/xyz/HW_03/xyz-cpp-course/ArkanoidGame/Resources/Fonts/Roboto-Black.ttf"))
+        if (!font.loadFromFile("Resources/Fonts/Roboto-Black.ttf"))
         {
-            font.loadFromFile("Resources/Fonts/Roboto-Black.ttf");
+            // fallback путь
+            font.loadFromFile("D:/xyz/HW_03/xyz-cpp-course/ArkanoidGame/Resources/Fonts/Roboto-Black.ttf");
         }
 
         hitCounterText.setFont(font);
@@ -37,7 +39,6 @@ namespace ArkanoidGame
     {
         if (!active_) return;
 
-        // Рисуем красный блок
         sf::RectangleShape rect(sf::Vector2f(SETTINGS.BLOCK_WIDTH, SETTINGS.BLOCK_HEIGHT));
         rect.setOrigin(SETTINGS.BLOCK_WIDTH / 2.f, SETTINGS.BLOCK_HEIGHT / 2.f);
         rect.setPosition(GetPosition());
@@ -45,8 +46,6 @@ namespace ArkanoidGame
         rect.setOutlineColor(sf::Color::Yellow);
         rect.setOutlineThickness(2);
         window.draw(rect);
-
-        // Рисуем счётчик ударов
         window.draw(hitCounterText);
     }
 
@@ -56,10 +55,11 @@ namespace ArkanoidGame
 
         sf::FloatRect ballRect = ball.GetRect();
         sf::FloatRect blockRect = GetCollisionRect();
+
         if (!ballRect.intersects(blockRect))
             return false;
 
-        // Выталкивание мяча
+        // === Обработка отскока мяча ===
         sf::Vector2f ballPos = ball.GetPosition();
         sf::Vector2f correction(0.f, 0.f);
 
@@ -73,18 +73,12 @@ namespace ArkanoidGame
 
         if (minX < minY)
         {
-            if (leftOverlap < rightOverlap)
-                correction.x = -leftOverlap;
-            else
-                correction.x = rightOverlap;
+            correction.x = (leftOverlap < rightOverlap) ? -leftOverlap : rightOverlap;
             ball.BounceX();
         }
         else
         {
-            if (topOverlap < bottomOverlap)
-                correction.y = -topOverlap;
-            else
-                correction.y = bottomOverlap;
+            correction.y = (topOverlap < bottomOverlap) ? -topOverlap : bottomOverlap;
             ball.BounceY();
         }
         ball.SetPosition(ballPos + correction);
@@ -103,21 +97,31 @@ namespace ArkanoidGame
         }
         ball.SetVelocity(vel);
 
-        // Уменьшаем счётчик
+        // === Уменьшаем прочность ===
         hitsRemaining--;
         UpdateHitCounterText();
 
+        std::cout << "[ToughBlock] Hit! Remaining hits: " << hitsRemaining << std::endl;
+
+        // Уничтожаем только при последнем ударе
         if (hitsRemaining <= 0)
         {
-            active_ = false;  // блок разрушен
-            return true;      // сообщаем, что блок уничтожен (начисляем очки)
+            std::cout << "[ToughBlock] === DESTROYED! Calling OnHit() ===\n";
+            OnHit();                    // ← главный вызов
+            return true;
         }
 
-        return false;  // блок не уничтожен, очки не начисляем
+        return false;
     }
 
     void ToughBlock::OnHit()
     {
-        // Не нужно, логика в CheckCollision
+        std::cout << "[ToughBlock::OnHit]  Calling Block::OnHit()" << std::endl;
+        Block::OnHit();   // Здесь происходит Dispatch и active_ = false
+    }
+
+    int ToughBlock::GetScoreValue() const
+    {
+        return 20;   
     }
 }

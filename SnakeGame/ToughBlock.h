@@ -4,15 +4,18 @@
 
 namespace ArkanoidGame
 {
-    class ToughBlock : public Block  // ← Block уже реализует Colladiable
+    class ToughBlock : public Block
     {
     public:
         ToughBlock(const sf::Vector2f& position);
 
+        void Update(float timeDelta) override {}
         void Draw(sf::RenderWindow& window) override;
-        bool CheckCollision(Ball& ball);  
-        void OnHit() override;            
-        int GetScoreValue() const override { return 10; }
+        bool CheckCollision(Ball& ball) override;
+        void OnHit() override;
+
+
+        int GetScoreValue() const override;
 
     private:
         int hitsRemaining = 3;
@@ -22,4 +25,3 @@ namespace ArkanoidGame
         void UpdateHitCounterText();
     };
 }
-

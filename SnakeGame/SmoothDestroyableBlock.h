@@ -11,6 +11,7 @@ namespace ArkanoidGame
         void Update(float timeDelta) override;
         void Draw(sf::RenderWindow& window) override;
         void OnHit() override;
+        bool CheckCollision(Ball& ball) override;
 
     private:
         bool isDying = false;
@@ -19,4 +20,3 @@ namespace ArkanoidGame
         sf::Color currentColor;
     };
 }
-

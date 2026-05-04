@@ -7,6 +7,7 @@
 
 namespace ArkanoidGame
 {
+    // Статическая переменная для взрыва соседей
     static std::vector<std::unique_ptr<Block>>* g_blocksPtr = nullptr;
 
     void SetGlobalBlocksPtr(std::vector<std::unique_ptr<Block>>* blocks)
@@ -15,12 +16,12 @@ namespace ArkanoidGame
     }
 
     MagicBlock::MagicBlock(const sf::Vector2f& position)
-        : Block(position)  // ← вызываем конструктор обычного блока
+        : Block(position)
+        , hitsRemaining(5)
     {
-        // Загружаем шрифт
-        if (!font.loadFromFile("D:/xyz/HW_03/xyz-cpp-course/ArkanoidGame/Resources/Fonts/Roboto-Black.ttf"))
+        if (!font.loadFromFile("Resources/Fonts/Roboto-Black.ttf"))
         {
-            font.loadFromFile("Resources/Fonts/Roboto-Black.ttf");
+            font.loadFromFile("D:/xyz/HW_03/xyz-cpp-course/ArkanoidGame/Resources/Fonts/Roboto-Black.ttf");
         }
 
         hitCounterText.setFont(font);
@@ -45,7 +46,6 @@ namespace ArkanoidGame
     {
         if (!active_) return;
 
-        // Рисуем зелёный блок
         sf::RectangleShape rect(sf::Vector2f(SETTINGS.BLOCK_WIDTH, SETTINGS.BLOCK_HEIGHT));
         rect.setOrigin(SETTINGS.BLOCK_WIDTH / 2.f, SETTINGS.BLOCK_HEIGHT / 2.f);
         rect.setPosition(GetPosition());
@@ -53,8 +53,6 @@ namespace ArkanoidGame
         rect.setOutlineColor(sf::Color::Yellow);
         rect.setOutlineThickness(3);
         window.draw(rect);
-
-        // Рисуем счётчик ударов
         window.draw(hitCounterText);
     }
 
@@ -67,32 +65,24 @@ namespace ArkanoidGame
         float blockH = SETTINGS.BLOCK_HEIGHT;
         float padding = SETTINGS.BLOCK_PADDING;
 
-        float neighborDistX = blockW + padding;
-        float neighborDistY = blockH + padding;
-
-        std::vector<sf::Vector2f> neighborPositions = {
-            {myPos.x, myPos.y - neighborDistY},  // верх
-            {myPos.x, myPos.y + neighborDistY},  // низ
-            {myPos.x - neighborDistX, myPos.y},  // лево
-            {myPos.x + neighborDistX, myPos.y}   // право
+        std::vector<sf::Vector2f> directions = {
+            {0, -1}, {0, 1}, {-1, 0}, {1, 0}
         };
 
         for (auto& block : *g_blocksPtr)
         {
-            if (!block->IsActive()) continue;
+            if (!block->IsActive() || block.get() == this) continue;
 
             sf::Vector2f blockPos = block->GetPosition();
-
-            for (const auto& neighborPos : neighborPositions)
+            for (const auto& dir : directions)
             {
-                float dx = std::abs(blockPos.x - neighborPos.x);
-                float dy = std::abs(blockPos.y - neighborPos.y);
+                float dx = std::abs(blockPos.x - (myPos.x + dir.x * (blockW + padding)));
+                float dy = std::abs(blockPos.y - (myPos.y + dir.y * (blockH + padding)));
 
-                if (dx < 5.0f && dy < 5.0f)
+                if (dx < 10.0f && dy < 10.0f)
                 {
-                    // Уничтожаем соседний блок
                     block->OnHit();
-                    std::cout << "[MagicBlock] Exploded neighbor at (" << blockPos.x << ", " << blockPos.y << ")\n";
+                    std::cout << "[MagicBlock] Exploded neighbor!" << std::endl;
                     break;
                 }
             }
@@ -108,7 +98,7 @@ namespace ArkanoidGame
         if (!ballRect.intersects(blockRect))
             return false;
 
-        // Выталкивание мяча
+        // Выталкивание + отскок (аналогично другим блокам)
         sf::Vector2f ballPos = ball.GetPosition();
         sf::Vector2f correction(0.f, 0.f);
 
@@ -122,23 +112,17 @@ namespace ArkanoidGame
 
         if (minX < minY)
         {
-            if (leftOverlap < rightOverlap)
-                correction.x = -leftOverlap;
-            else
-                correction.x = rightOverlap;
+            correction.x = (leftOverlap < rightOverlap) ? -leftOverlap : rightOverlap;
             ball.BounceX();
         }
         else
         {
-            if (topOverlap < bottomOverlap)
-                correction.y = -topOverlap;
-            else
-                correction.y = bottomOverlap;
+            correction.y = (topOverlap < bottomOverlap) ? -topOverlap : bottomOverlap;
             ball.BounceY();
         }
         ball.SetPosition(ballPos + correction);
 
-        // Эффект от удара по горизонтали
+        // Эффект от удара
         sf::Vector2f vel = ball.GetVelocity();
         float hitOffset = (ball.GetPosition().x - GetPosition().x) / (SETTINGS.BLOCK_WIDTH / 2.0f);
         vel.x += hitOffset * 70.0f;
@@ -147,27 +131,35 @@ namespace ArkanoidGame
         if (currentSpeed > 0.0f)
         {
             float targetSpeed = SETTINGS.BALL_SPEED;
-            vel.x = (vel.x / currentSpeed) * targetSpeed;
-            vel.y = (vel.y / currentSpeed) * targetSpeed;
+            vel = vel / currentSpeed * targetSpeed;
         }
         ball.SetVelocity(vel);
 
-        // Уменьшаем счётчик
+        // Уменьшаем прочность
         hitsRemaining--;
         UpdateHitCounterText();
 
+        std::cout << "[MagicBlock] Hit! Remaining hits: " << hitsRemaining << std::endl;
+
         if (hitsRemaining <= 0)
         {
+            std::cout << "[MagicBlock] === DESTROYED! Exploding neighbors + OnHit() ===\n";
             ExplodeNeighbors();
-            active_ = false;  // блок разрушен
-            return true;      // сообщаем, что блок уничтожен (начисляем очки)
+            OnHit();
+            return true;
         }
 
-        return false;  // блок не уничтожен, очки не начисляем
+        return false;
     }
 
     void MagicBlock::OnHit()
     {
-        // Не нужно, логика в CheckCollision
+        std::cout << "[MagicBlock::OnHit] → Calling Block::OnHit()" << std::endl;
+        Block::OnHit();   // Здесь диспатч и начисление очков
+    }
+
+    int MagicBlock::GetScoreValue() const
+    {
+        return 50;   // Волшебный блок даёт много очков
     }
 }

@@ -1,29 +1,47 @@
 #include "GameObject.h"
 #include "GameSettings.h"
-#include <SFML/Graphics/Texture.hpp>
+#include <iostream>
 
 namespace ArkanoidGame
 {
     GameObject::GameObject(const std::string& texturePath, const sf::Vector2f& position,
         float width, float height)
+        : hasTexture(false)
     {
-
         if (!texture.loadFromFile(texturePath))
         {
-
+            std::cout << "[Texture] Failed to load: " << texturePath << " → using color fallback" << std::endl;
+            hasTexture = false;
+        }
+        else
+        {
+            hasTexture = true;
+            sprite.setTexture(texture);
+            sprite.setScale(width / texture.getSize().x, height / texture.getSize().y);
         }
 
-        sprite.setTexture(texture);
         sprite.setOrigin(width / 2.0f, height / 2.0f);
         sprite.setPosition(position);
-        sprite.setScale(width / texture.getSize().x, height / texture.getSize().y);
     }
 
     void GameObject::Draw(sf::RenderWindow& window)
     {
-        window.draw(sprite);
+        if (hasTexture)
+        {
+            window.draw(sprite);
+        }
+        else
+        {
+            // Fallback — просто цветной прямоугольник
+            sf::RectangleShape rect(sf::Vector2f(sprite.getOrigin().x * 2, sprite.getOrigin().y * 2));
+            rect.setOrigin(sprite.getOrigin());
+            rect.setPosition(sprite.getPosition());
+            rect.setFillColor(sf::Color(100, 100, 255)); // синий по умолчанию
+            window.draw(rect);
+        }
     }
 
+    // Остальные методы без изменений
     sf::FloatRect GameObject::GetRect() const
     {
         return sprite.getGlobalBounds();
@@ -38,4 +56,6 @@ namespace ArkanoidGame
     {
         sprite.setPosition(pos);
     }
+
+    sf::Sprite& GameObject::GetSprite() { return sprite; }
 }

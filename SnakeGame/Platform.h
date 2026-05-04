@@ -20,6 +20,8 @@ namespace ArkanoidGame
 
         bool CheckCollision(Ball& ball);
 
+        sf::Sprite& GetSprite() { return sprite; }
+
     private:
         void Move(float speed);
     };

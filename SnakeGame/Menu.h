@@ -1,42 +1,36 @@
 #pragma once
-#include "SFML/Graphics.hpp"
-#include "Text.h"
-#include <list>
+#include <SFML/Graphics.hpp>
 
-namespace SnakeGame
-{
-	struct MenuItem
-	{
-		sf::Text text;
-		sf::Text hintText; // Visible when child item is selected
-		Orientation childrenOrientation = Orientation::Vertical;
-		Alignment childrenAlignment = Alignment::Min;
-		float childrenSpacing;
+namespace ArkanoidGame {
 
-		sf::Color selectedColor = sf::Color::Yellow;
-		sf::Color deselectedColor = sf::Color::White;
+    class Menu {
+    public:
+        Menu();
 
-		bool isEnabled = true;
-		std::vector<MenuItem*> children;
+        void Update(float timeDelta);
+        void Draw(sf::RenderWindow& window);
+        void HandleWindowEvent(const sf::Event& event);
 
-		MenuItem* parent = nullptr;
-	};
+        bool HasSave() const;
+        void UpdateHasSave(bool saveExists);
 
-	struct Menu
-	{
-		MenuItem rootItem;
-		MenuItem* selectedItem = nullptr;
-	};
+    private:
+        void InitText();
+        void MoveUp();
+        void MoveDown();
+        void UpdateSelection();
+        void ExecuteCurrent();
 
-	// Links children to parent
-	void InitMenuItem(MenuItem& menu);
-	void SelectMenuItem(Menu& menu, MenuItem* item);
-	bool SelectPreviousMenuItem(Menu& menu);
-	bool SelectNextMenuItem(Menu& menu);
-	bool ExpandSelectedItem(Menu& menu);
-	bool CollapseSelectedItem(Menu& menu);
+        sf::Font font;
+        sf::Text titleText;
+        sf::Text newGameText;
+        sf::Text continueText;
+        sf::Text exitText;
 
-	MenuItem* GetCurrentMenuContext(Menu& menu);
+        bool hasSave = false;
+        int selectedIndex = 0;
+        const int totalOptions = 3;  // NEW GAME, CONTINUE, EXIT
+    };
 
-	void DrawMenu(Menu& menu, sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f origin);
-}
+} // namespace ArkanoidGame
+

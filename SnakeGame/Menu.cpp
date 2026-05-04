@@ -1,121 +1,205 @@
 #include "Menu.h"
-#include <assert.h>
+#include "Application.h"
+#include "Game.h"
+#include "GameSettings.h"
+#include <iostream>
 
-namespace SnakeGame
-{
-	void InitMenuItem(MenuItem& item)
-	{
-		for (auto& child : item.children)
-		{
-			child->parent = &item;
-			InitMenuItem(*child);
-		}
-	}
+namespace ArkanoidGame {
 
-	void SelectMenuItem(Menu& menu, MenuItem* item)
-	{
-		// It is definitely error to select root item
-		assert(item != &menu.rootItem);
+    extern Application* g_Application;
+    extern Game* g_Game;
 
-		if (menu.selectedItem == item)
-		{
-			return;
-		}
+    Menu::Menu()
+    {
+        InitText();
+        if (g_Game)
+        {
+            hasSave = g_Game->HasSavedProgress();
+            std::cout << "[Menu] Created, hasSave=" << hasSave << std::endl;
+        }
+        selectedIndex = 0;
+        UpdateSelection();
+    }
 
-		if (item && !item->isEnabled)
-		{
-			// Don't allow to select disabled item
-			return;
-		}
+    void Menu::InitText()
+    {
+        if (!font.loadFromFile("Resources/Fonts/Roboto-Black.ttf"))
+        {
+            font.loadFromFile("D:/xyz/HW_03/xyz-cpp-course/ArkanoidGame/Resources/Fonts/Roboto-Black.ttf");
+        }
 
-		if (menu.selectedItem)
-		{
-			menu.selectedItem->text.setFillColor(menu.selectedItem->deselectedColor);
-		}
+        // Заголовок
+        titleText.setFont(font);
+        titleText.setCharacterSize(80);
+        titleText.setFillColor(sf::Color::Yellow);
+        titleText.setStyle(sf::Text::Bold);
+        titleText.setString("ARKANOID");
+        sf::FloatRect titleBounds = titleText.getLocalBounds();
+        titleText.setPosition(SETTINGS.SCREEN_WIDTH / 2.f - titleBounds.width / 2.f, 100.f);
 
-		menu.selectedItem = item;
+        // NEW GAME
+        newGameText.setFont(font);
+        newGameText.setCharacterSize(40);
+        newGameText.setFillColor(sf::Color::White);
+        newGameText.setString("NEW GAME");
+        sf::FloatRect newGameBounds = newGameText.getLocalBounds();
+        newGameText.setPosition(SETTINGS.SCREEN_WIDTH / 2.f - newGameBounds.width / 2.f, 250.f);
 
-		if (menu.selectedItem)
-		{
-			menu.selectedItem->text.setFillColor(menu.selectedItem->selectedColor);
-		}
-	}
+        // CONTINUE
+        continueText.setFont(font);
+        continueText.setCharacterSize(40);
+        continueText.setFillColor(sf::Color::White);
+        continueText.setString("CONTINUE");
+        sf::FloatRect continueBounds = continueText.getLocalBounds();
+        continueText.setPosition(SETTINGS.SCREEN_WIDTH / 2.f - continueBounds.width / 2.f, 330.f);
 
-	bool SelectPreviousMenuItem(Menu& menu)
-	{
-		if (menu.selectedItem)
-		{
-			MenuItem* parent = menu.selectedItem->parent;
-			assert(parent); // There always should be parent
+        // EXIT
+        exitText.setFont(font);
+        exitText.setCharacterSize(36);
+        exitText.setFillColor(sf::Color::White);
+        exitText.setString("EXIT");
+        sf::FloatRect exitBounds = exitText.getLocalBounds();
+        exitText.setPosition(SETTINGS.SCREEN_WIDTH / 2.f - exitBounds.width / 2.f, 430.f);
+    }
 
-			auto it = std::find(parent->children.begin(), parent->children.end(), menu.selectedItem);
-			if (it != parent->children.begin())
-			{
-				SelectMenuItem(menu, *(--it));
-				return true;
-			}
-		}
+    void Menu::MoveUp()
+    {
+        if (selectedIndex > 0)
+            selectedIndex--;
+        else
+            selectedIndex = totalOptions - 1;
+        UpdateSelection();
+    }
 
-		return false;
-	}
+    void Menu::MoveDown()
+    {
+        if (selectedIndex < totalOptions - 1)
+            selectedIndex++;
+        else
+            selectedIndex = 0;
+        UpdateSelection();
+    }
 
-	bool SelectNextMenuItem(Menu& menu)
-	{
-		if (menu.selectedItem)
-		{
-			MenuItem* parent = menu.selectedItem->parent;
-			assert(parent); // There always should be parent
-			auto it = std::find(parent->children.begin(), parent->children.end(), menu.selectedItem);
-			if (it != parent->children.end() - 1)
-			{
-				SelectMenuItem(menu, *(++it));
-				return true;
-			}
-		}
-		return false;
-	}
+    void Menu::UpdateSelection()
+    {
+        // Сбрасываем цвета всех пунктов
+        newGameText.setFillColor(sf::Color::White);
+        continueText.setFillColor(sf::Color::White);
+        exitText.setFillColor(sf::Color::White);
 
-	bool ExpandSelectedItem(Menu& menu)
-	{
-		if (menu.selectedItem && menu.selectedItem->children.size() > 0)
-		{
-			SelectMenuItem(menu, menu.selectedItem->children.front());
-			return true;
-		}
+        // Подсвечиваем выбранный пункт
+        switch (selectedIndex)
+        {
+        case 0: // NEW GAME
+            newGameText.setFillColor(sf::Color::Yellow);
+            break;
+        case 1: // CONTINUE
+            continueText.setFillColor(sf::Color::Yellow);
+            break;
+        case 2: // EXIT
+            exitText.setFillColor(sf::Color::Yellow);
+            break;
+        }
+    }
 
-		return false;
-	}
+    void Menu::ExecuteCurrent()
+    {
+        if (!g_Game) return;
 
-	bool CollapseSelectedItem(Menu& menu)
-	{
-		if (menu.selectedItem && menu.selectedItem->parent && menu.selectedItem->parent != &menu.rootItem)
-		{
-			SelectMenuItem(menu, menu.selectedItem->parent);
-			return true;
-		}
-		return false;
-	}
+        switch (selectedIndex)
+        {
+        case 0: // NEW GAME
+            std::cout << "[Menu] Starting NEW GAME..." << std::endl;
+            g_Game->StartGame();
+            if (g_Application)
+                g_Application->StartGame();
+            break;
+        case 1: // CONTINUE
+            if (hasSave)
+            {
+                std::cout << "[Menu] CONTINUE - loading saved game..." << std::endl;
+                g_Game->ContinueGame();
+                if (g_Application)
+                    g_Application->StartGame();
+            }
+            else
+            {
+                // Если нет сохранения, начинаем новую игру
+                std::cout << "[Menu] No save found, starting NEW GAME..." << std::endl;
+                g_Game->StartGame();
+                if (g_Application)
+                    g_Application->StartGame();
+            }
+            break;
+        case 2: // EXIT
+            std::cout << "[Menu] EXIT - closing game..." << std::endl;
+            if (g_Application)
+                g_Application->window.close();
+            break;
+        }
+    }
 
-	MenuItem* GetCurrentMenuContext(Menu& menu)
-	{
-		return menu.selectedItem ? menu.selectedItem->parent : &menu.rootItem;
-	}
+    void Menu::Update(float)
+    {
+        // Обновляем состояние сохранения каждый кадр
+        if (g_Game)
+        {
+            bool currentSave = g_Game->HasSavedProgress();
+            if (currentSave != hasSave)
+            {
+                hasSave = currentSave;
+                std::cout << "[Menu] hasSave changed to: " << hasSave << std::endl;
+            }
+        }
+    }
 
-	void DrawMenu(Menu& menu, sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f origin)
-	{
-		MenuItem* expandedItem = GetCurrentMenuContext(menu);
+    void Menu::Draw(sf::RenderWindow& window)
+    {
+        window.draw(titleText);
+        window.draw(newGameText);
 
-		std::vector<sf::Text*> texts;
-		texts.reserve(expandedItem->children.size());
-		for (auto& child : expandedItem->children)
-		{
-			if (child->isEnabled)
-			{
-				texts.push_back(&child->text);
-			}
-		}
+        // Показываем CONTINUE только если есть сохранение
+        if (hasSave)
+            window.draw(continueText);
 
-		DrawTextList(window, texts, expandedItem->childrenSpacing, expandedItem->childrenOrientation, expandedItem->childrenAlignment, position, origin);
-	}
+        window.draw(exitText);
+    }
 
-}
+    void Menu::HandleWindowEvent(const sf::Event& event)
+    {
+        if (event.type == sf::Event::KeyPressed)
+        {
+            switch (event.key.code)
+            {
+            case sf::Keyboard::Up:
+                MoveUp();
+                break;
+            case sf::Keyboard::Down:
+                MoveDown();
+                break;
+            case sf::Keyboard::Enter:
+            case sf::Keyboard::Space:
+                ExecuteCurrent();
+                break;
+            case sf::Keyboard::Escape:
+                if (g_Application)
+                    g_Application->window.close();
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    bool Menu::HasSave() const
+    {
+        return hasSave;
+    }
+
+    void Menu::UpdateHasSave(bool saveExists)
+    {
+        hasSave = saveExists;
+        std::cout << "[Menu] UpdateHasSave: " << hasSave << std::endl;
+    }
+
+} // namespace ArkanoidGame

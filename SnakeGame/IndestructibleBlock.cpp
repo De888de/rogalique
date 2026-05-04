@@ -25,8 +25,7 @@ namespace ArkanoidGame
         rect.setOutlineThickness(2);
         window.draw(rect);
 
-        // Можно добавить текстуру "железа" или узор
-        // Но пока просто цвет
+       
     }
 
     bool IndestructibleBlock::CheckCollision(Ball& ball)
@@ -68,7 +67,7 @@ namespace ArkanoidGame
         }
         ball.SetPosition(ballPos + correction);
 
-        // Эффект от удара по горизонтали
+        
         sf::Vector2f vel = ball.GetVelocity();
         float hitOffset = (ball.GetPosition().x - GetPosition().x) / (SETTINGS.BLOCK_WIDTH / 2.0f);
         vel.x += hitOffset * 70.0f;
@@ -82,15 +81,14 @@ namespace ArkanoidGame
         }
         ball.SetVelocity(vel);
 
-        // ❗ ВАЖНО: НЕ вызываем OnHit(), блок не разрушается
-        // Возвращаем false, чтобы не начислялись очки
+        
+
         return false;
     }
 
     void IndestructibleBlock::OnHit()
     {
-        // Ничего не делаем — блок нельзя разрушить
-        // Можно добавить звук "звяканья" позже
+     
+
     }
 }
-
