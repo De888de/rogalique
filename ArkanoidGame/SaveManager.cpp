@@ -12,7 +12,7 @@
 #include <sys/stat.h>
 #endif
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     SaveManager::SaveManager()
         : recordsFile("Resources/saves/records.txt")

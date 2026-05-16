@@ -11,7 +11,7 @@
 #include <functional>
 #include <algorithm>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     class BonusSpawner
     {

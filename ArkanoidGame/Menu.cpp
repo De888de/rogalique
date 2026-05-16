@@ -4,7 +4,7 @@
 #include "GameSettings.h"
 #include <iostream>
 
-namespace ArkanoidGame {
+namespace RoqaliqueGame {
 
     extern Application* g_Application;
     extern Game* g_Game;
@@ -33,7 +33,7 @@ namespace ArkanoidGame {
         titleText.setCharacterSize(80);
         titleText.setFillColor(sf::Color::Yellow);
         titleText.setStyle(sf::Text::Bold);
-        titleText.setString("ARKANOID");
+        titleText.setString("Roqalique");
         sf::FloatRect titleBounds = titleText.getLocalBounds();
         titleText.setPosition(SETTINGS.SCREEN_WIDTH / 2.f - titleBounds.width / 2.f, 100.f);
 

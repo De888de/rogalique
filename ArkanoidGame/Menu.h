@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-namespace ArkanoidGame {
+namespace RoqaliqueGame {
 
     class Menu {
     public:

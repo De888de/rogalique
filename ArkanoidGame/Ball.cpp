@@ -3,7 +3,7 @@
 #include "Platform.h"
 #include <cmath>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     Ball::Ball(const sf::Vector2f& position)
         : GameObject(SETTINGS.TEXTURES_PATH + std::string("ball.png"), position,

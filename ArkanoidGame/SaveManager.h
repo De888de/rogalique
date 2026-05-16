@@ -5,7 +5,7 @@
 #include <memory>
 #include "Leaderboard.h"
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     class SaveManager
     {

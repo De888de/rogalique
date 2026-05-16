@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <cctype>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     BlockType LevelLoader::CharToBlockType(char symbol)
     {

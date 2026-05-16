@@ -3,7 +3,7 @@
 #include "Collidable.h"
 #include "Observer.h"
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     class Ball;
 

@@ -1,6 +1,6 @@
 #include "Game.h"
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     Game* g_Game = nullptr;
 

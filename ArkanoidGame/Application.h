@@ -2,12 +2,12 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-namespace ArkanoidGame {
+namespace RoqaliqueGame {
     class Menu;
     class Game;
 }
 
-namespace ArkanoidGame {
+namespace RoqaliqueGame {
 
     class Application {
     public:

@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "Collidable.h"
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     class Ball;   // forward declaration
 

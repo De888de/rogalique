@@ -7,7 +7,7 @@
 #include <memory>
 #include <cmath>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     // Интерфейс стратегии бонуса
     class IBonusStrategy

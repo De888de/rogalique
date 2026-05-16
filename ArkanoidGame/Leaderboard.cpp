@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     Leaderboard::Leaderboard()
     {

@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <functional>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     class PauseMenu
     {

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <iostream>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     // Статическая переменная для взрыва соседей
     static std::vector<std::unique_ptr<Block>>* g_blocksPtr = nullptr;

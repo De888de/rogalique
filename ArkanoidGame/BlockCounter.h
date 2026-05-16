@@ -2,7 +2,7 @@
 #include <functional>
 #include <iostream>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     class BlockCounter
     {

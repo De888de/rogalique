@@ -12,7 +12,7 @@
 #include <memory>
 #include <map>
 
-namespace ArkanoidGame {
+namespace RoqaliqueGame {
 
     enum class BlockType
     {

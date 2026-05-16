@@ -6,7 +6,7 @@
 #include "PauseMenu.h"
 #include "Leaderboard.h"
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     class Game;
     Game& GetGame();

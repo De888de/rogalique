@@ -4,7 +4,7 @@
 
 int main()
 {
-    ArkanoidGame::Application app;
+    RoqaliqueGame::Application app;
     app.Run();
     return 0;
 }

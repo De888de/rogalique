@@ -3,7 +3,7 @@
 #include <vector>
 #include <iostream>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     enum class GameEvent
     {

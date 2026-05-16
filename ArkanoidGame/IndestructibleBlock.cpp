@@ -4,7 +4,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     IndestructibleBlock::IndestructibleBlock(const sf::Vector2f& position)
         : Block(position)

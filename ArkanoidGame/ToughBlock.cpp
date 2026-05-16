@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <iostream>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     ToughBlock::ToughBlock(const sf::Vector2f& position)
         : Block(position)

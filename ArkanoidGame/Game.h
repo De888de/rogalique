@@ -7,7 +7,7 @@
 #include "GameState.h"
 #include "SaveManager.h"
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     class Application;
     class LevelLoader;

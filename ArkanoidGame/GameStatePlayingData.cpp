@@ -11,7 +11,7 @@
 #include "Game.h"
 #include <iostream>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     Game& GetGame();
 

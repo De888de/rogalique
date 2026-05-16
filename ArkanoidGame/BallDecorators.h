@@ -3,7 +3,7 @@
 #include <memory>
 #include <iostream>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     // Базовый декоратор для мяча
     class BallDecorator : public Ball

@@ -7,7 +7,7 @@
 #include <fstream>
 #include <algorithm>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     extern Application* g_Application;
     extern Game* g_Game;

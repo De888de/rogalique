@@ -29,4 +29,5 @@ ProGamer 1250
 Player 1440
 Player 1440
 Player 1440
+Player 1440
 Master 1500

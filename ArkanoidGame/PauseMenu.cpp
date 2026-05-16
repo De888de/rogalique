@@ -1,7 +1,7 @@
 #include "PauseMenu.h"
 #include "GameSettings.h"
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     PauseMenu::PauseMenu()
     {

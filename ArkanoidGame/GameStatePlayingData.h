@@ -7,7 +7,7 @@
 #include "BonusSpawner.h"
 #include "BonusStrategies.h"
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     class Platform;
     class Ball;

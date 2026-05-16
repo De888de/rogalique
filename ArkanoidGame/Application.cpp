@@ -4,7 +4,7 @@
 #include "Game.h"
 #include <iostream>
 
-namespace ArkanoidGame {
+namespace RoqaliqueGame {
 
     extern Game* g_Game;
     Application* g_Application = nullptr;

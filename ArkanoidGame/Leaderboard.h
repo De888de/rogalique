@@ -4,7 +4,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     struct LeaderboardEntry
     {

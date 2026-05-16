@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iostream>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     Platform::Platform(const sf::Vector2f& position)
         : GameObject(SETTINGS.TEXTURES_PATH + std::string("platform.png"),

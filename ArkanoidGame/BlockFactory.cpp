@@ -9,7 +9,7 @@
 #include <chrono>
 #include <iostream>
 
-namespace ArkanoidGame {
+namespace RoqaliqueGame {
 
     void BlockFactory::PlaceSpecialBlocks(int rows, int cols,
         int& outMagicRow, int& outMagicCol,

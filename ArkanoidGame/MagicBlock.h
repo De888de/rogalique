@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     class MagicBlock : public Block
     {

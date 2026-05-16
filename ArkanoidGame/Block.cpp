@@ -3,7 +3,7 @@
 #include "GameSettings.h"
 #include <cmath>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     Block::Block(const sf::Vector2f& position)
         : GameObject(SETTINGS.TEXTURES_PATH + std::string("block.png"),

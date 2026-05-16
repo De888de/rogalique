@@ -2,7 +2,7 @@
 #include "Platform.h"
 #include <memory>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     // Состояния платформы
     class IPlatformState

@@ -2,7 +2,7 @@
 #include "GameSettings.h"
 #include <iostream>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     GameObject::GameObject(const std::string& texturePath, const sf::Vector2f& position,
         float width, float height)

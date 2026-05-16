@@ -3,7 +3,7 @@
 #include "GameSettings.h"
 #include <cmath>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     GlassBlock::GlassBlock(const sf::Vector2f& position)
         : Block(position)

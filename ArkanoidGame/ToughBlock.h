@@ -2,7 +2,7 @@
 #include "Block.h"
 #include <SFML/Graphics/Text.hpp>
 
-namespace ArkanoidGame
+namespace RoqaliqueGame
 {
     class ToughBlock : public Block
     {
