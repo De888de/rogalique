@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ArkanoidGame::Ball" Collapsed="true">
+    <Position X="15" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAEAiAABgEAAAAAAAAAAAIAAUBAAAQAAIAAAOA=</HashCode>
+      <FileName>Ball.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::GameState" Collapsed="true">
+    <Position X="7.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAgAAAAAAAABAAAgAQAEAAAAIAAAAIAA=</HashCode>
+      <FileName>GameState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::GameStatePlaying" Collapsed="true">
+    <Position X="10.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAIBAAAAAAgAAAAAABAAAAAAAAAAAAAAIAAgAIAA=</HashCode>
+      <FileName>GameState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::GameStateGameOver" Collapsed="true">
+    <Position X="6.25" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAYAAAAAAAAAgpAQQAACAAAAAASAAAAAAAAIAAgAAAA=</HashCode>
+      <FileName>GameState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::GameStateWin" Collapsed="true">
+    <Position X="8.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAYAAAAAAAAAgoAAQgACAAAAAASAAAAACAAIAAgAAAA=</HashCode>
+      <FileName>GameState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::Platform" Collapsed="true">
+    <Position X="13.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAoAAEgAAAAAAAAAAAAAAAADACAAAAAAAAAA=</HashCode>
+      <FileName>Platform.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::GameObject" Collapsed="true">
+    <Position X="9.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABQAIAAAACAAEgAAAAAAAAAAABAAAgAAAAAQAAIAAAA=</HashCode>
+      <FileName>GameObject.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::Colladiable" Collapsed="true">
+    <Position X="5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAgAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAA=</HashCode>
+      <FileName>Collidable.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::Block" Collapsed="true">
+    <Position X="13.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AASEAAAAAgAEAgAAEAAAAAAAAAAAAADAgAAAAAAAAAA=</HashCode>
+      <FileName>Block.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::ToughBlock" Collapsed="true">
+    <Position X="15.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAYAAABAAAAAAgAAAAAAAQAAAAAAAADAiAAAIAAAAAA=</HashCode>
+      <FileName>ToughBlock.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::MagicBlock" Collapsed="true">
+    <Position X="11.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAIAAIAAAAgAAAAAAAQAAAAAAAADAiAAAIAAABAA=</HashCode>
+      <FileName>MagicBlock.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::SmoothDestroyableBlock" Collapsed="true">
+    <Position X="11.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAgIgAAAAAAAAAAgAIAAADAgAAAAAAAAAA=</HashCode>
+      <FileName>SmoothDestroyableBlock.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::IndestructibleBlock" Collapsed="true">
+    <Position X="15.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAgAAAAAAAAAAAIAAAADAgAAAAIAAAAA=</HashCode>
+      <FileName>IndestructibleBlock.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::BlockFactory" Collapsed="true">
+    <Position X="13.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>BlockFactory.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::LevelLoader" Collapsed="true">
+    <Position X="16" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAACQAAAAAAAAIABAAEAAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>LevelLoader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::PauseMenu" Collapsed="true">
+    <Position X="4" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAMAAACEjAAAYowAAAAACAAAAAAAgAAAQQRAACCAFAA=</HashCode>
+      <FileName>PauseMenu.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ArkanoidGame::Menu" Collapsed="true">
+    <Position X="5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAcAAQAAEAAAAoggAABACAAAEAAIgAAAQABIAAAAEAA=</HashCode>
+      <FileName>Menu.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="ArkanoidGame::BlockInfo" Collapsed="true">
+    <Position X="16" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>LevelLoader.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="ArkanoidGame::Level" Collapsed="true">
+    <Position X="17.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAQAAAAAAAAAAEAAAAAAAAAAAABAA=</HashCode>
+      <FileName>LevelLoader.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="ArkanoidGame::BlockType" Collapsed="true">
+    <Position X="16" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAKAAgAAAAUAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>LevelLoader.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
