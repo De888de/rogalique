@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{C3A962DD-12D8-4E72-99F3-C940EF572498}</ProjectGuid>
+    <ProjectGuid>{C7AF14B8-3D0A-412E-86C6-08BFC5C69F72}</ProjectGuid>
     <RootNamespace>SnakeGame</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>RoqaliqueGame</ProjectName>
