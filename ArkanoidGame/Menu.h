@@ -1,54 +1,35 @@
 #pragma once
-#include "SFML/Graphics.hpp"
-#include "Text.h"
-#include <list>
-#include <functional>
+#include <SFML/Graphics.hpp>
 
+namespace ArkanoidGame {
 
-namespace ArkanoidGame
-{
-	struct MenuItem
-	{
-		sf::Text text;
-		sf::Text hintText; // Visible when child item is selected
-		Orientation childrenOrientation = Orientation::Vertical;
-		Alignment childrenAlignment = Alignment::Min;
-		float childrenSpacing;
+    class Menu {
+    public:
+        Menu();
 
-		sf::Color selectedColor = sf::Color::Yellow;
-		sf::Color deselectedColor = sf::Color::White;
+        void Update(float timeDelta);
+        void Draw(sf::RenderWindow& window);
+        void HandleWindowEvent(const sf::Event& event);
 
-		bool isEnabled = true;
-		std::vector<MenuItem> childrens;
+        bool HasSave() const;
+        void UpdateHasSave(bool saveExists);
 
-		std::function<void(MenuItem& item)> onPressCallback;
+    private:
+        void InitText();
+        void MoveUp();
+        void MoveDown();
+        void UpdateSelection();
+        void ExecuteCurrent();
 
-		MenuItem* parent = nullptr;
-	};
+        sf::Font font;
+        sf::Text titleText;
+        sf::Text newGameText;
+        sf::Text continueText;
+        sf::Text exitText;
 
-	class Menu
-	{
-	public:
-		void Init(const MenuItem& item);
+        bool hasSave = false;
+        int selectedIndex = 0;
+        const int totalOptions = 3;  // NEW GAME, CONTINUE, EXIT
+    };
 
-		void Update(float deltaTime);
-
-		void Draw(sf::RenderWindow& window, sf::Vector2f position, sf::Vector2f origin);
-
-		void PressOnSelectedItem();	// press on selected menu item
-		void GoBack();	// go back to previous menu
-		
-		void SwitchToPreviousMenuItem();
-		void SwitchToNextMenuItem();
-
-		MenuItem& GetCurrentContext();
-
-	private:
-		void InitMenuItem(MenuItem& item);
-		void SelectMenuItem(MenuItem& item);
-
-	private:
-		MenuItem rootItem;
-		MenuItem* selectedItem = nullptr;
-	};
-}
+} // namespace ArkanoidGame

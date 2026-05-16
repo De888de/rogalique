@@ -1,49 +1,32 @@
 #pragma once
-#include "Ball.h"
 #include "GameObject.h"
 #include "Collidable.h"
-#include "IDelayedAction.h"
-#include "IObserver.h"
+#include "Observer.h"
 
 namespace ArkanoidGame
 {
-	class Block : public GameObject, public Colladiable, public IObservable
-	{
-	protected:
-		void OnHit();
-		int hitCount = 1;
-	public:
-		Block(const sf::Vector2f& position, const sf::Color& color = sf::Color::Green);
-		virtual ~Block();
-		bool GetCollision(std::shared_ptr<Colladiable> collidableObject) const override;
-		void Update(float timeDelta) override;
-		bool IsBroken();
-	};
+    class Ball;
 
-	class SmoothDestroyableBlock : public Block, public IDelayedAction
-	{
-	protected:
-		void OnHit() override;
-		sf::Color color;
-	public:
-		SmoothDestroyableBlock(const sf::Vector2f& position, const sf::Color& color = sf::Color::Green);
-		~SmoothDestroyableBlock() = default;
-		void Update(float timeDelta) override;
+    class Block : public GameObject, public Colladiable
+    {
+    public:
+        Block(const sf::Vector2f& position);
 
-		bool GetCollision(std::shared_ptr<Colladiable> collidableObject) const override;
-		void FinalAction() override;
-		void EachTickAction(float deltaTime) override;
-	};
+        void Update(float timeDelta) override;
+        void Draw(sf::RenderWindow& window) override;
 
-	class UnbreackableBlock : public Block
-	{
-	public:
-		UnbreackableBlock(const sf::Vector2f& position);
-		void OnHit() override;
-		void Update(float) {
-			int i = 0;
-			++i;
-		};
-	};
+        bool GetCollision(std::shared_ptr<Colladiable> collidable) const override;
+        virtual void OnHit() override;
+
+        bool IsActive() const { return active_; }
+        virtual bool CheckCollision(Ball& ball);
+        virtual int GetScoreValue() const { return 10; }
+
+        sf::FloatRect GetCollisionRect() const;
+
+        GameEventDispatcher onDestroyed;
+
+    protected:
+        bool active_ = true;
+    };
 }
-

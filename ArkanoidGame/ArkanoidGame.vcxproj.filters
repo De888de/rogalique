@@ -5,42 +5,12 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="levels">
+      <UniqueIdentifier>{95a18690-66c2-4b22-92a6-7dc76dcc29b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameMain.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStatePlaying.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStateGameOver.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStatePauseMenu.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStateMainMenu.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Menu.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStateRecords.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameState.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Ball.cpp">
@@ -49,28 +19,58 @@
     <ClCompile Include="Platform.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="GameStateData.cpp">
+    <ClCompile Include="GameMain.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Block.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="GameStateGameWin.cpp">
+    <ClCompile Include="ToughBlock.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="ThreeHitBlock.cpp">
+    <ClCompile Include="MagicBlock.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="SmoothDestroyableBlock.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="IndestructibleBlock.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GlassBlock.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="BlockFactory.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Globals.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="LevelLoader.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Bonus.cpp">
+    <ClCompile Include="SaveManager.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Leaderboard.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="PauseMenu.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStatePlayingData.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,55 +78,69 @@
     <ClInclude Include="Game.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="GameSettings.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStatePlaying.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateGameOver.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStatePauseMenu.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateMainMenu.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="Menu.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateRecords.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector.h" />
-    <ClInclude Include="Sprite.h" />
-    <ClInclude Include="Text.h" />
-    <ClInclude Include="Application.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Platform.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameStateData.h" />
-    <ClInclude Include="Block.h" />
-    <ClInclude Include="GameStateGameWin.h" />
+    <ClInclude Include="GameSettings.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
     <ClInclude Include="Collidable.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="randomizer.h">
+    <ClInclude Include="Sprite.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="IDelayedAction.h" />
-    <ClInclude Include="ThreeHitBlock.h" />
-    <ClInclude Include="BlockFactory.h">
+    <ClInclude Include="Block.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="LevelLoader.h">
+    <ClInclude Include="ToughBlock.h" />
+    <ClInclude Include="MagicBlock.h" />
+    <ClInclude Include="SmoothDestroyableBlock.h" />
+    <ClInclude Include="IndestructibleBlock.h" />
+    <ClInclude Include="GlassBlock.h" />
+    <ClInclude Include="BlockFactory.h" />
+    <ClInclude Include="Menu.h" />
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="LevelLoader.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Observer.h" />
+    <ClInclude Include="BlockCounter.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="IObserver.h">
+    <ClInclude Include="Bonus.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="Bonus.h" />
+    <ClInclude Include="BallDecorators.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="BonusStrategies.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformState.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="BonusSpawner.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveManager.h" />
+    <ClInclude Include="Leaderboard.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseMenu.h" />
+    <ClInclude Include="GameStatePlayingData.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ArkanoidDiagram.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ArkanoidGame.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resources\levels\levels.txt">
+      <Filter>levels</Filter>
+    </Text>
   </ItemGroup>
 </Project>

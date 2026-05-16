@@ -1,39 +1,22 @@
 #pragma once
+#include "Block.h"
+#include <vector>
 #include <memory>
-#include "SFML/Graphics.hpp"
 
-namespace ArkanoidGame
-{
-	class Block;
+namespace ArkanoidGame {
 
-	class BlockFactory
-	{
-	protected:
-		int createdBreackableBlocksCount = 0;
-	public:
-		virtual std::shared_ptr<Block> CreateBlock(const sf::Vector2f& position) = 0;
-		virtual ~BlockFactory() = default;
-		int GetcreatedBreackableBlocksCount();
-		void ClearCounter();
-	};
+    class BlockFactory {
+    public:
+        // Основной метод — строит уровень (пока только один, легко добавить Level 2, 3 и т.д.)
+        static void BuildStandardLevel(std::vector<std::unique_ptr<Block>>& blocks);
 
-	class SimpleBlockFactory final : public BlockFactory {
-	public:
-		std::shared_ptr<Block> CreateBlock(const sf::Vector2f& position) override;
-		~SimpleBlockFactory() override = default;
+        
 
-	};
+    private:
+        static void PlaceSpecialBlocks(int rows, int cols,
+            int& outMagicRow, int& outMagicCol,
+            std::vector<std::pair<int, int>>& outGlassPositions);
+    };
 
-	class ThreeHitBlockFactory final : public BlockFactory {
-	public:
-		std::shared_ptr<Block> CreateBlock(const sf::Vector2f& position) override;
-		~ThreeHitBlockFactory() override = default;
+} // namespace ArkanoidGame
 
-	};
-
-	class UnbreackableBlockFactory final : public BlockFactory {
-	public:
-		std::shared_ptr<Block> CreateBlock(const sf::Vector2f& position) override;
-		~UnbreackableBlockFactory() override = default;
-	};
-}

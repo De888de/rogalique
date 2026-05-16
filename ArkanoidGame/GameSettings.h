@@ -1,55 +1,49 @@
 #pragma once
 #include <string>
 
-
 namespace ArkanoidGame
 {
-	class GameWorld {
-	private:
 
-		GameWorld() = default;
-	public:
-		static GameWorld& Instance() {
-			static GameWorld gameWorld;
-			return gameWorld;
-		}
+    class GameWorld {
+    private:
+        GameWorld() = default;
 
+    public:
 
-		// Resources path
-		const std::string RESOURCES_PATH = "Resources/";
-		const std::string TEXTURES_PATH = RESOURCES_PATH + "Textures/";
-		const std::string FONTS_PATH = RESOURCES_PATH + "Fonts/";
-		const std::string SOUNDS_PATH = RESOURCES_PATH + "Sounds/";
-		const std::string LEVELS_CONFIG_PATH = RESOURCES_PATH + "levels.config";
+        static GameWorld& Instance() {
+            static GameWorld gameWorld;
+            return gameWorld;
+        }
 
-		// Game settings constants
-		const float ACCELERATION = 10.f;
-		const int MAX_APPLES = 80;
-		const unsigned int SCREEN_WIDTH = 800;
-		const unsigned int SCREEN_HEIGHT = 600;
-		const float TIME_PER_FRAME = 1.f / 60.f; // 60 fps
+    
+    
+        static constexpr float SCREEN_WIDTH = 800.0f;
+        static constexpr float SCREEN_HEIGHT = 600.0f;
 
-		const unsigned int BALL_SIZE = 20;
-		const unsigned int BALL_SPEED = 400;
+        static constexpr float PLATFORM_WIDTH = 100.0f;
+        static constexpr float PLATFORM_HEIGHT = 20.0f;
+        static constexpr float PLATFORM_SPEED = 600.0f;
 
-		const unsigned int PLATFORM_WIDTH = 60;
-		const unsigned int PLATFORM_HEIGHT = 20;
-		const float PLATFORM_SPEED = 300.f;
+        static constexpr float BALL_SIZE = 16.0f;
+        static constexpr float BALL_SPEED = 450.0f;
 
-		const unsigned int BLOCKS_COUNT_ROWS = 4;
-		const unsigned int BLOCKS_COUNT_IN_ROW = 15;
-		const unsigned int BLOCK_SHIFT = 5;
-		const unsigned int BLOCK_WIDTH = (SCREEN_WIDTH - (BLOCKS_COUNT_IN_ROW + 1) * BLOCK_SHIFT) / BLOCKS_COUNT_IN_ROW;
-		const unsigned int BLOCK_HEIGHT = 20;
+        // ==================== НАСТРОЙКИ БЛОКОВ ====================
+        static constexpr int   BLOCK_ROWS = 5;
+        static constexpr int   BLOCK_COLUMNS = 8;
 
-		const int MAX_RECORDS_TABLE_SIZE = 5;
-		const char* PLAYER_NAME = "Player";
+        static constexpr float BLOCK_WIDTH = 62.0f;
+        static constexpr float BLOCK_HEIGHT = 24.0f;
+        static constexpr float BLOCK_PADDING = 12.0f;
+        static constexpr float BLOCK_START_Y = 85.0f;
 
-		const std::string GAME_NAME = "ArkanoidGame";
-		const float BREAK_DELAY = 1.f;
-		const float BONUS_DURATION = 30.f;
-		const int BONUS_PROPABILITY_PERCENT = 5;
-	};
+        static constexpr int SCORE_PER_BLOCK = 10;
+
+        
+        static inline const char* TEXTURES_PATH = "Resources/textures/";
+        static inline const char* FONTS_PATH = "Resources/Fonts/";
+    };
+
+    
 }
 
-#define SETTINGS GameWorld::Instance()
+#define SETTINGS GameWorld :: Instance()

@@ -1,83 +1,75 @@
 #include "Ball.h"
 #include "GameSettings.h"
-#include "Sprite.h"
-#include <assert.h>
-#include "randomizer.h"
-
-namespace
-{
-	// id textures
-	const std::string TEXTURE_ID = "ball";
-}
+#include "Platform.h"
+#include <cmath>
 
 namespace ArkanoidGame
 {
-	Ball::Ball(const sf::Vector2f& position)
-		: GameObject(SETTINGS.TEXTURES_PATH + TEXTURE_ID + ".png", position, SETTINGS.BALL_SIZE, SETTINGS.BALL_SIZE)
-	{
-		const float angle = 90;
-		const auto pi = std::acos(-1.f);
-		direction.x = std::cos(pi / 180.f * angle);
-		direction.y = std::sin(pi / 180.f * angle);
-	}
+    Ball::Ball(const sf::Vector2f& position)
+        : GameObject(SETTINGS.TEXTURES_PATH + std::string("ball.png"), position,
+            SETTINGS.BALL_SIZE, SETTINGS.BALL_SIZE)
+        , speed(SETTINGS.BALL_SPEED)
+    {
+        velocity = { speed * 0.7f, -speed * 0.7f };
+        hasFallenThisFrame = false;
+    }
 
-	void Ball::Update(float timeDelta)
-	{
-		timeDelta = multiplySpeed * timeDelta;
-		const auto pos = sprite.getPosition() + SETTINGS.BALL_SPEED * timeDelta * direction;
-		sprite.setPosition(pos);
+    void Ball::Update(float timeDelta)
+    {
+        sprite.move(velocity * timeDelta);
 
-		if (pos.x - SETTINGS.BALL_SIZE / 2.f <= 0 || pos.x + SETTINGS.BALL_SIZE / 2.f >= SETTINGS.SCREEN_WIDTH) {
-			direction.x *= -1;
-		}
+        auto pos = sprite.getPosition();
+        auto bounds = sprite.getGlobalBounds();
 
-		if (pos.y - SETTINGS.BALL_SIZE / 2.f <= 0 || pos.y + SETTINGS.BALL_SIZE / 2.f >= SETTINGS.SCREEN_HEIGHT) {
-			direction.y *= -1;
-		}
-		Emit();
-	}
+        if (pos.x <= 0 || pos.x + bounds.width >= SETTINGS.SCREEN_WIDTH)
+            BounceX();
 
-	void Ball::InvertDirectionX()
-	{
-		direction.x *= -1;
-	}
+        if (pos.y <= 0)
+            BounceY();
 
-	void Ball::InvertDirectionY()
-	{
-		direction.y *= -1;
-	}
+        // Шар упал вниз
+        if (pos.y > SETTINGS.SCREEN_HEIGHT + 50.0f && !hasFallenThisFrame)
+        {
+            hasFallenThisFrame = true;
+            // Убираем лишний вывод
+            // std::cout << "[Ball] Has fallen!" << std::endl;
+        }
+    }
 
-	bool Ball::GetCollision(std::shared_ptr<Colladiable> collidable) const {
-		auto gameObject = std::dynamic_pointer_cast<GameObject>(collidable);
-		assert(gameObject);
-		return GetRect().intersects(gameObject->GetRect());
-	}
+    bool Ball::HasFallen() const
+    {
+        return hasFallenThisFrame;
+    }
 
-	void Ball::OnHit()
-	{
-		lastAngle += random<float>(-5, 5);
-		ChangeAngle(lastAngle);
-	}
+    void Ball::ClearFallenFlag()
+    {
+        hasFallenThisFrame = false;
+        Reset();  // Сбрасываем позицию при очистке флага
+    }
 
-	void Ball::ChangeAngle(float angle)
-	{
-		lastAngle = angle;
-		const auto pi = std::acos(-1.f);
-		direction.x = (angle / abs(angle)) * std::cos(pi / 180.f * angle);
-		direction.y = -1 * abs(std::sin(pi / 180.f * angle));
-	}
+    void Ball::Draw(sf::RenderWindow& window)
+    {
+        GameObject::Draw(window);
+    }
 
-	void Ball::restart()
-	{
-		GameObject::restart();
-		const float angle = 90;
-		const auto pi = std::acos(-1.f);
-		direction.x = std::cos(pi / 180.f * angle);
-		direction.y = std::sin(pi / 180.f * angle);
-	}
+    bool Ball::GetCollision(std::shared_ptr<Colladiable> collidableObject) const
+    {
+        auto other = std::dynamic_pointer_cast<GameObject>(collidableObject);
+        if (!other) return false;
+        return GetRect().intersects(other->GetRect());
+    }
 
-	void Ball::ChangeSpeed(float multipleSpeed)
-	{
-		multiplySpeed = multipleSpeed;
-	}
+    void Ball::BounceX() { velocity.x = -velocity.x; }
+    void Ball::BounceY() { velocity.y = -velocity.y; }
+
+    void Ball::SetVelocity(const sf::Vector2f& newVelocity) { velocity = newVelocity; }
+    sf::Vector2f Ball::GetVelocity() const { return velocity; }
+
+    void Ball::Reset()
+    {
+        sprite.setPosition(SETTINGS.SCREEN_WIDTH / 2.f, SETTINGS.SCREEN_HEIGHT / 2.f);
+        velocity = { speed * 0.7f, -speed * 0.7f };
+    }
+
+    sf::Vector2f Ball::GetPosition() const { return sprite.getPosition(); }
 }

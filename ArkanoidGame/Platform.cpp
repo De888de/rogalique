@@ -1,76 +1,89 @@
 #include "Platform.h"
 #include "Ball.h"
 #include "GameSettings.h"
-#include "Sprite.h"
 #include <algorithm>
-
-namespace
-{
-	const std::string TEXTURE_ID = "platform";
-}
+#include <iostream>
 
 namespace ArkanoidGame
 {
-	Platform::Platform(const sf::Vector2f& position)
-		: GameObject(SETTINGS.TEXTURES_PATH + TEXTURE_ID + ".png", position, SETTINGS.PLATFORM_WIDTH, SETTINGS.PLATFORM_HEIGHT)
-	{}
+    Platform::Platform(const sf::Vector2f& position)
+        : GameObject(SETTINGS.TEXTURES_PATH + std::string("platform.png"),
+            position,
+            SETTINGS.PLATFORM_WIDTH,
+            SETTINGS.PLATFORM_HEIGHT)
+    {
+        std::cout << "[Platform] Loading from: " << SETTINGS.TEXTURES_PATH << "platform.png" << std::endl;
 
-	void Platform::Update(float timeDelta)
-	{
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		{
-			Move(-timeDelta * SETTINGS.PLATFORM_SPEED);
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		{
-			Move(timeDelta * SETTINGS.PLATFORM_SPEED);
-		}
-	}
+        if (sprite.getTexture() != nullptr)
+        {
+            std::cout << "[Platform] SUCCESS: platform.png loaded!" << std::endl;
+        }
+        else
+        {
+            std::cout << "[Platform] FAILED to load platform.png" << std::endl;
+        }
+    }
 
-	void Platform::Move(float speed)
-	{
-		auto position = sprite.getPosition();
-		position.x = std::clamp(position.x + speed, SETTINGS.PLATFORM_WIDTH / 2.f, SETTINGS.SCREEN_WIDTH - SETTINGS.PLATFORM_WIDTH / 2.f);
-		sprite.setPosition(position);
-	}
+    void Platform::Update(float timeDelta)
+    {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+            Move(-timeDelta * SETTINGS.PLATFORM_SPEED);
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            Move(timeDelta * SETTINGS.PLATFORM_SPEED);
+    }
 
-	bool Platform::GetCollision(std::shared_ptr<Colladiable> collidable) const
-	{
-		auto ball = std::static_pointer_cast<Ball>(collidable);
-		if (!ball) return false;
+    void Platform::Move(float speed)
+    {
+        auto pos = sprite.getPosition();
+        pos.x = std::clamp(pos.x + speed,
+            SETTINGS.PLATFORM_WIDTH / 2.0f,
+            SETTINGS.SCREEN_WIDTH - SETTINGS.PLATFORM_WIDTH / 2.0f);
+        sprite.setPosition(pos);
+    }
 
-		auto sqr = [](float x) {
-			return x * x;
-		};
-		const auto rect = sprite.getGlobalBounds();
-		const auto ballPos = ball->GetPosition();
-		if (ballPos.x < rect.left) {
-			return sqr(ballPos.x - rect.left) + sqr(ballPos.y - rect.top) < sqr(SETTINGS.BALL_SIZE / 2.0);
-		}
+    void Platform::Draw(sf::RenderWindow& window)
+    {
+        if (sprite.getTexture() != nullptr)
+        {
+            sprite.setColor(sf::Color::White);
+            window.draw(sprite);
+        }
+        else
+        {
+            // Красный fallback
+            sf::RectangleShape rect(sf::Vector2f(SETTINGS.PLATFORM_WIDTH, SETTINGS.PLATFORM_HEIGHT));
+            rect.setOrigin(SETTINGS.PLATFORM_WIDTH / 2.0f, SETTINGS.PLATFORM_HEIGHT / 2.0f);
+            rect.setPosition(GetPosition());
+            rect.setFillColor(sf::Color::Red);
+            rect.setOutlineColor(sf::Color::Yellow);
+            rect.setOutlineThickness(4.0f);
+            window.draw(rect);
+        }
+    }
 
-		if (ballPos.x > rect.left + rect.width) {
-			return sqr(ballPos.x - rect.left - rect.width) + sqr(ballPos.y - rect.top) < sqr(SETTINGS.BALL_SIZE / 2.0);
-		}
+  
+    bool Platform::GetCollision(std::shared_ptr<Colladiable> collidable) const
+    {
+        auto other = std::dynamic_pointer_cast<GameObject>(collidable);
+        if (!other) return false;
+        return GetRect().intersects(other->GetRect());
+    }
 
-		return std::fabs(ballPos.y - rect.top) <= SETTINGS.BALL_SIZE / 2.0;
-	}
+    void Platform::OnHit() {}
 
-	bool Platform::CheckCollision(std::shared_ptr<Colladiable> collidable) {
-		auto ball = std::static_pointer_cast<Ball>(collidable);
-		if (!ball)
-			return false;
+    bool Platform::CheckCollision(Ball& ball)
+    {
+        if (GetRect().intersects(ball.GetRect()))
+        {
+            auto vel = ball.GetVelocity();
+            vel.y = -std::abs(vel.y);
 
-		if (GetCollision(ball)) {
-			auto rect = GetRect();
-			auto ballPosInOlatform = (ball->GetPosition().x - (rect.left + rect.width / 2)) / (rect.width / 2);
-			ball->ChangeAngle(90 - 20 * ballPosInOlatform);
-			return true;
-		}
-		return false;
-	}
+            float hitOffset = (ball.GetPosition().x - GetPosition().x) / (SETTINGS.PLATFORM_WIDTH / 2.0f);
+            vel.x += hitOffset * 180.0f;
 
-	void Platform::ChangeWidth(float multiplyWidth)
-	{
-		sprite.scale(sf::Vector2f(multiplyWidth, 1));
-	}
+            ball.SetVelocity(vel);
+            return true;
+        }
+        return false;
+    }
 }
