@@ -1,11 +1,5 @@
 #include "GameStatePlayingData.h"
-#include "Platform.h"
-#include "Ball.h"
-#include "Block.h"
-#include "ToughBlock.h"
-#include "MagicBlock.h"
-#include "SmoothDestroyableBlock.h"
-#include "IndestructibleBlock.h"
+
 #include "GlassBlock.h"
 #include "GameSettings.h"
 #include "Game.h"
