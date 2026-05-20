@@ -1,3 +1,6 @@
 .vs/
 **/x64/
 **/x86/
+SFML/x64/Debug/*.log
+Engine_test/
+packages/
