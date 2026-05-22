@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Engine.h"
-#include "GameObject.h"
+//#include "GameObject.h"
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -38,6 +38,9 @@ void Engine::AddTask(const std::string& desc, const std::string& category)
     task.completed = false;
     task.category = category;
     m_tasks.push_back(task);
+    AddTask("Создать игрока", "Геймплей");
+    AddTask("Реализовать движение", "Геймплей");
+    AddTask("Добавить врагов", "Контент");
     
     std::cout << "[NEW TASK] " << category << ": " << desc << std::endl;
 }

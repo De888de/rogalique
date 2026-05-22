@@ -1,0 +1,73 @@
+#include "pch.h"
+#include "GameState.h"
+
+namespace RogaliqueGame
+{
+    // ========== GameStatePlaying ==========
+    GameStatePlaying::GameStatePlaying()
+    {
+        m_type = GameStateType::Playing;
+        std::cout << "[GameState] Entered Playing state" << std::endl;
+    }
+
+    void GameStatePlaying::Update(float deltaTime)
+    {
+        // TODO: игровая логика рогалика
+    }
+
+    void GameStatePlaying::Draw(sf::RenderWindow& window)
+    {
+        // TODO: отрисовка
+    }
+
+    void GameStatePlaying::HandleInput()
+    {
+        // TODO: обработка ввода
+    }
+
+    // ========== GameStatePaused ==========
+    GameStatePaused::GameStatePaused()
+    {
+        m_type = GameStateType::Paused;
+        std::cout << "[GameState] Entered Paused state" << std::endl;
+    }
+
+    void GameStatePaused::Update(float deltaTime) {}
+    void GameStatePaused::Draw(sf::RenderWindow& window) {}
+    void GameStatePaused::HandleInput() {}
+
+    // ========== GameStateMainMenu ==========
+    GameStateMainMenu::GameStateMainMenu()
+    {
+        m_type = GameStateType::MainMenu;
+        std::cout << "[GameState] Entered Main Menu" << std::endl;
+    }
+
+    void GameStateMainMenu::Update(float deltaTime) {}
+    void GameStateMainMenu::Draw(sf::RenderWindow& window) {}
+    void GameStateMainMenu::HandleInput() {}
+
+    // ========== GameStateGameOver ==========
+    GameStateGameOver::GameStateGameOver(int score)
+        : m_score(score)
+    {
+        m_type = GameStateType::GameOver;
+        std::cout << "[GameState] Game Over! Score: " << m_score << std::endl;
+    }
+
+    void GameStateGameOver::Update(float deltaTime) {}
+    void GameStateGameOver::Draw(sf::RenderWindow& window) {}
+    void GameStateGameOver::HandleInput() {}
+
+    // ========== GameStateWin ==========
+    GameStateWin::GameStateWin(int score)
+        : m_score(score)
+    {
+        m_type = GameStateType::Win;
+        std::cout << "[GameState] Victory! Score: " << m_score << std::endl;
+    }
+
+    void GameStateWin::Update(float deltaTime) {}
+    void GameStateWin::Draw(sf::RenderWindow& window) {}
+    void GameStateWin::HandleInput() {}
+}

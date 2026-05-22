@@ -1,0 +1,16 @@
+#pragma once
+
+namespace RogaliqueGame
+{
+    class GameStatePlayingData
+    {
+    public:
+        GameStatePlayingData() = default;
+        ~GameStatePlayingData() = default;
+
+        void Update(float deltaTime);
+
+    private:
+        float m_score = 0.0f;
+    };
+}
