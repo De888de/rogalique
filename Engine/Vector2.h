@@ -3,6 +3,10 @@
 
 #include <cmath>
 
+
+namespace engine
+{
+
 struct Vector2 {
     float x, y;
 
@@ -117,6 +121,7 @@ struct Vector2 {
 // Дружественные операторы (скаляр * вектор)
 inline Vector2 operator*(float scalar, const Vector2& vec) {
     return Vector2(vec.x * scalar, vec.y * scalar);
+}
 }
 
 #endif // VECTOR2_H
