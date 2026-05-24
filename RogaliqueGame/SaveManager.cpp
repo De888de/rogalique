@@ -111,17 +111,14 @@ namespace RoqaliqueGame
         return result;
     }
 
-    void SaveManager::AddToLeaderboard(const std::string& name, int score)
     {
         leaderboard.AddScore(name, score);
     }
 
-    void SaveManager::UpdatePlayerInLeaderboard(int score)
     {
         leaderboard.UpdatePlayerScore(score);
     }
 
-    std::string SaveManager::GetLeaderboardText() const
     {
         return leaderboard.Format();
     }

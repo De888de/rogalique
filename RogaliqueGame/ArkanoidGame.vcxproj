@@ -161,11 +161,8 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BlockFactory.cpp" />
-    <ClCompile Include="GameStatePlayingData.cpp" />
     <ClCompile Include="GlassBlock.cpp" />
     <ClCompile Include="IndestructibleBlock.cpp" />
-    <ClCompile Include="Leaderboard.cpp" />
-    <ClCompile Include="LevelLoader.cpp" />
     <ClCompile Include="MagicBlock.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="PauseMenu.cpp" />
@@ -177,7 +174,6 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="GameMain.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Game.cpp" />
   </ItemGroup>
@@ -188,12 +184,9 @@
     <ClInclude Include="BlockFactory.h" />
     <ClInclude Include="Bonus.h" />
     <ClInclude Include="BonusSpawner.h" />
-    <ClInclude Include="GameStatePlayingData.h" />
     <ClInclude Include="GlassBlock.h" />
     <ClInclude Include="BonusStrategies.h" />
     <ClInclude Include="IndestructibleBlock.h" />
-    <ClInclude Include="Leaderboard.h" />
-    <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="MagicBlock.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Observer.h" />
@@ -208,7 +201,6 @@
     <ClInclude Include="Collidable.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSettings.h" />
-    <ClInclude Include="GameState.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Sprite.h" />

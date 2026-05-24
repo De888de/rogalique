@@ -58,7 +58,6 @@
     <ClCompile Include="Globals.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="LevelLoader.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="SaveManager.cpp">
@@ -104,7 +103,6 @@
     <ClInclude Include="BlockFactory.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Application.h" />
-    <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="BlockCounter.h">

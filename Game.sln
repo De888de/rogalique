@@ -4,12 +4,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 18.5.11723.231
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SFMLTemplate", "SFMLTemplate\SFMLTemplate.vcxproj", "{AE2B0BAC-971E-4D90-8222-6E7554C835EE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C7AF14B8-3D0A-412E-86C6-08BFC5C69F72} = {C7AF14B8-3D0A-412E-86C6-08BFC5C69F72}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SFML", "SFML\SFML.vcxproj", "{0D9DFFE7-5BF2-448D-8639-0FE0BBB8230A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArkanoidGame", "ArkanoidGame\ArkanoidGame.vcxproj", "{C3A962DD-12D8-4E72-99F3-C940EF572498}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RoqaliqueGame", "RogaliqueGame\RogaliqueGame.vcxproj", "{C7AF14B8-3D0A-412E-86C6-08BFC5C69F72}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RogaliqueGame", "RogaliqueGame\RogaliqueGame.vcxproj", "{C7AF14B8-3D0A-412E-86C6-08BFC5C69F72}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{CE780675-AA1A-4BD3-8634-7F2F20461236}"
 EndProject
