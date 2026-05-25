@@ -1,35 +1,32 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-namespace RoqaliqueGame {
-
-    class Menu {
+namespace rogalique
+{
+    class Menu
+    {
     public:
         Menu();
-
-        void Update(float timeDelta);
+        void Update(float deltaTime);
         void Draw(sf::RenderWindow& window);
-        void HandleWindowEvent(const sf::Event& event);
+        void HandleInput(const sf::Event& event);
 
-        bool HasSave() const;
-        void UpdateHasSave(bool saveExists);
+        bool IsPlaySelected() const { return m_playSelected; }
+        bool IsExitSelected() const { return m_exitSelected; }
+        void Reset();
 
     private:
-        void InitText();
         void MoveUp();
         void MoveDown();
         void UpdateSelection();
-        void ExecuteCurrent();
 
-        sf::Font font;
-        sf::Text titleText;
-        sf::Text newGameText;
-        sf::Text continueText;
-        sf::Text exitText;
+        sf::Font m_font;
+        sf::Text m_titleText;
+        sf::Text m_playText;
+        sf::Text m_exitText;
 
-        bool hasSave = false;
-        int selectedIndex = 0;
-        const int totalOptions = 3;  // NEW GAME, CONTINUE, EXIT
+        int m_selectedIndex = 0;
+        bool m_playSelected = false;
+        bool m_exitSelected = false;
     };
-
-} // namespace ArkanoidGame
+}

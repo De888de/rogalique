@@ -13,19 +13,19 @@
     <ClCompile Include="Game.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="GameMain.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Menu.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Application.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="PauseMenu.cpp">
+    <ClCompile Include="Player.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="RogaliqueGameObject.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -36,11 +36,9 @@
     <ClInclude Include="GameSettings.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="Menu.h" />
     <ClInclude Include="Application.h" />
-    <ClInclude Include="PauseMenu.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="RogaliqueGameObject.h" />
+    <ClInclude Include="Menu.h" />
   </ItemGroup>
 </Project>
