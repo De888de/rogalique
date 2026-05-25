@@ -16,15 +16,6 @@ namespace rogalique
         window.setFramerateLimit(60);
         g_Application = this;
         
-        auto& world = GameWorld::GetInstance();
-        
-        // Создаём игрока через GameWorld
-        m_player = world.CreateGameObject<Player>();
-        
-        auto* transform = m_player->GetComponent<TransformComponent>();
-        if (transform)
-            transform->SetPosition(sf::Vector2f(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f));
-        
         m_menu = std::make_unique<Menu>();
         
         std::cout << "[App] Application ready" << std::endl;
@@ -33,7 +24,8 @@ namespace rogalique
     Application::~Application()
     {
         g_Application = nullptr;
-        GameWorld::GetInstance().Clear();
+        if (m_player)
+            GameWorld::GetInstance().Clear();
     }
 
     void Application::Run()
@@ -65,29 +57,43 @@ namespace rogalique
                 
                 if (m_menu->IsPlaySelected())
                 {
-                    m_inMenu = false;
-                    std::cout << "[App] Starting game..." << std::endl;
+                    StartGame();
                 }
                 if (m_menu->IsExitSelected())
                     window.close();
             }
             else
             {
-                auto& world = GameWorld::GetInstance();
-                world.Update(deltaTime);
-                world.LateUpdate();
-                
-                window.clear(sf::Color(20, 20, 40));
-                world.Render(window);
-                window.display();
+                if (m_player)
+                {
+                    auto& world = GameWorld::GetInstance();
+                    world.Update(deltaTime);
+                    world.LateUpdate();
+                    
+                    window.clear(sf::Color(20, 20, 40));
+                    world.Render(window);
+                    window.display();
+                }
             }
         }
     }
 
     void Application::StartGame()
     {
-        std::cout << "[App] StartGame() called" << std::endl;
+        std::cout << "[App] Starting new game..." << std::endl;
+        
+        // Очищаем предыдущий мир, если есть
+        GameWorld::GetInstance().Clear();
+        
+        // Создаём игрока
+        m_player = GameWorld::GetInstance().CreateGameObject<Player>();
+        
+        auto* transform = m_player->GetComponent<TransformComponent>();
+        if (transform)
+            transform->SetPosition(sf::Vector2f(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f));
+        
         m_inMenu = false;
+        std::cout << "[App] Game started!" << std::endl;
     }
 
     void Application::ReturnToMenu()
@@ -95,6 +101,7 @@ namespace rogalique
         std::cout << "[App] ReturnToMenu() called" << std::endl;
         m_inMenu = true;
         m_menu->Reset();
+        m_player = nullptr;  // указатель уже очищен в GameWorld::Clear()
     }
 
     void Application::ShowLogoSplash()
