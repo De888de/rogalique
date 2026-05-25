@@ -49,6 +49,12 @@
     <ClCompile Include="ResourceSystem.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="CameraComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Chest.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -68,5 +74,7 @@
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="ResourceSystem.h" />
+    <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="Chest.h" />
   </ItemGroup>
 </Project>

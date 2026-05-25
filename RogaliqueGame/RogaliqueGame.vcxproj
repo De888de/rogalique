@@ -85,6 +85,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="Chest.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="GameMain.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -100,6 +102,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="Chest.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameSettings.h" />

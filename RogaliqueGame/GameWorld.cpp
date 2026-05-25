@@ -1,6 +1,8 @@
 #include "GameWorld.h"
+#include "Chest.h"
 #include <algorithm>
 #include <iostream>
+#include <random>
 
 namespace rogalique
 {
@@ -66,5 +68,22 @@ namespace rogalique
             delete obj;
         m_gameObjects.clear();
         m_markedForDestroy.clear();
+    }
+    
+    void GameWorld::SpawnChests(int count, float worldWidth, float worldHeight)
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        
+        std::uniform_real_distribution<float> distX(50, worldWidth - 50);
+        std::uniform_real_distribution<float> distY(50, worldHeight - 50);
+        
+        for (int i = 0; i < count; ++i)
+        {
+            auto* chest = CreateGameObject<Chest>();
+            chest->SetPosition(sf::Vector2f(distX(gen), distY(gen)));
+            std::cout << "[GameWorld] Spawned chest " << i+1 << " at (" 
+                      << chest->GetPosition().x << ", " << chest->GetPosition().y << ")" << std::endl;
+        }
     }
 }

@@ -7,6 +7,7 @@ namespace rogalique
     {
     public:
         Player();
+        void Update(float deltaTime) override;
         
         int GetHealth() const { return m_health; }
         void TakeDamage(int damage);

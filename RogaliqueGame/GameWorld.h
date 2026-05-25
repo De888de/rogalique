@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
-#include <memory>
-#include <algorithm>
+#include <SFML/Graphics.hpp>
 #include "RogaliqueGameObject.h"
 
 namespace rogalique
@@ -33,8 +32,10 @@ namespace rogalique
         
         void DestroyGameObject(RogaliqueGameObject* obj);
         void DestroyGameObjectImmediate(RogaliqueGameObject* obj);
-        
         void Clear();
+        
+        void SpawnChests(int count, float worldWidth, float worldHeight);
+        const std::vector<RogaliqueGameObject*>& GetAllGameObjects() const { return m_gameObjects; }
         
     private:
         GameWorld() = default;

@@ -13,8 +13,8 @@ namespace rogalique
         RogaliqueGameObject();
         virtual ~RogaliqueGameObject();
         
-        void Update(float deltaTime);
-        void Render(sf::RenderWindow& window);
+        virtual void Update(float deltaTime);
+        virtual void Render(sf::RenderWindow& window);
         
         template<typename T, typename... Args>
         T* AddComponent(Args&&... args)
