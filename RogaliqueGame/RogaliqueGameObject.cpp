@@ -1,19 +1,20 @@
 #include "RogaliqueGameObject.h"
+#include "Component.h"
 
 namespace rogalique
 {
-    RogaliqueGameObject::RogaliqueGameObject()
-        : m_position(0, 0)
-        , m_isActive(true)
-    {}
-
-    void RogaliqueGameObject::Draw(sf::RenderWindow& window)
+    RogaliqueGameObject::RogaliqueGameObject() : m_position(0, 0) {}
+    RogaliqueGameObject::~RogaliqueGameObject() = default;
+    
+    void RogaliqueGameObject::Update(float deltaTime)
     {
-        // Пустая реализация — наследники переопределят
+        for (auto& comp : m_components)
+            comp->Update(deltaTime);
     }
-
-    sf::FloatRect RogaliqueGameObject::GetBounds() const
+    
+    void RogaliqueGameObject::Render(sf::RenderWindow& window)
     {
-        return sf::FloatRect(m_position.x, m_position.y, 0, 0);
+        for (auto& comp : m_components)
+            comp->Render(window);
     }
 }

@@ -2,16 +2,15 @@
 #include <vector>
 #include <memory>
 #include <SFML/Graphics.hpp>
+#include "Component.h"
 
 namespace rogalique
 {
-    class Component;
-    
-    class RogaliqueGameObject
+    class GameObject
     {
     public:
-        RogaliqueGameObject();
-        virtual ~RogaliqueGameObject();
+        GameObject();
+        virtual ~GameObject();
         
         void Update(float deltaTime);
         void Render(sf::RenderWindow& window);
