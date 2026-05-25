@@ -5,6 +5,7 @@
 namespace rogalique
 {
     class Player;
+    class Menu;
     
     class Application
     {
@@ -24,6 +25,8 @@ namespace rogalique
         void ShowLogoSplash();
         
         std::unique_ptr<Player> m_player;
+        std::unique_ptr<Menu> m_menu;
+        bool m_inMenu = true;
     };
     
     extern Application* g_Application;

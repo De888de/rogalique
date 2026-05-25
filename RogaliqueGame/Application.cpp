@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Player.h"
+#include "Menu.h"
 #include "TransformComponent.h"
 #include "SpriteComponent.h"
 #include <iostream>
@@ -20,6 +21,8 @@ namespace rogalique
         auto* transform = m_player->GetComponent<TransformComponent>();
         if (transform)
             transform->SetPosition(sf::Vector2f(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f));
+        
+        m_menu = std::make_unique<Menu>();
         
         std::cout << "[App] Application ready" << std::endl;
     }
@@ -44,12 +47,31 @@ namespace rogalique
             {
                 if (event.type == sf::Event::Closed)
                     window.close();
-                if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
-                    window.close();
+                    
+                if (m_inMenu)
+                    m_menu->HandleInput(event);
             }
             
-            Update(deltaTime);
-            Draw();
+            if (m_inMenu)
+            {
+                m_menu->Update(deltaTime);
+                window.clear(sf::Color(20, 20, 40));
+                m_menu->Draw(window);
+                window.display();
+                
+                if (m_menu->IsPlaySelected())
+                {
+                    m_inMenu = false;
+                    std::cout << "[App] Starting game..." << std::endl;
+                }
+                if (m_menu->IsExitSelected())
+                    window.close();
+            }
+            else
+            {
+                Update(deltaTime);
+                Draw();
+            }
         }
     }
 
@@ -72,11 +94,14 @@ namespace rogalique
     void Application::StartGame()
     {
         std::cout << "[App] StartGame() called" << std::endl;
+        m_inMenu = false;
     }
 
     void Application::ReturnToMenu()
     {
         std::cout << "[App] ReturnToMenu() called" << std::endl;
+        m_inMenu = true;
+        m_menu->Reset();
     }
 
     void Application::ShowLogoSplash()
