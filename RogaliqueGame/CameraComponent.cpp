@@ -19,26 +19,49 @@ namespace rogalique
         if (!transform) return;
         
         sf::Vector2f targetPos = transform->GetPosition();
+        sf::Vector2f viewSize = m_view->getSize();
         
-        sf::Vector2f newCenter = targetPos;
+        float leftBound = viewSize.x / 2.0f;
+        float rightBound = m_worldWidth - viewSize.x / 2.0f;
+        float topBound = viewSize.y / 2.0f;
+        float bottomBound = m_worldHeight - viewSize.y / 2.0f;
         
-        if (m_worldWidth > 0 && m_worldHeight > 0)
+        if (rightBound < leftBound) rightBound = leftBound;
+        if (bottomBound < topBound) bottomBound = topBound;
+        
+        sf::Vector2f desiredCenter = targetPos;
+        
+        // Ограничиваем
+        if (desiredCenter.x < leftBound) desiredCenter.x = leftBound;
+        if (desiredCenter.x > rightBound) desiredCenter.x = rightBound;
+        if (desiredCenter.y < topBound) desiredCenter.y = topBound;
+        if (desiredCenter.y > bottomBound) desiredCenter.y = bottomBound;
+        
+        m_view->setCenter(desiredCenter);
+        
+        // Подробная отладка
+        static int frame = 0;
+        if (frame++ % 30 == 0)
         {
-            sf::Vector2f viewSize = m_view->getSize();
-            float left = viewSize.x / 2.0f;
-            float right = m_worldWidth - viewSize.x / 2.0f;
-            float top = viewSize.y / 2.0f;
-            float bottom = m_worldHeight - viewSize.y / 2.0f;
+            std::cout << "\n=== CAMERA DEBUG ===" << std::endl;
+            std::cout << "Player pos: (" << targetPos.x << ", " << targetPos.y << ")" << std::endl;
+            std::cout << "Bounds: L=" << leftBound << " R=" << rightBound 
+                      << " T=" << topBound << " B=" << bottomBound << std::endl;
+            std::cout << "Center before clamp: (" << targetPos.x << ", " << targetPos.y << ")" << std::endl;
+            std::cout << "Center after clamp: (" << desiredCenter.x << ", " << desiredCenter.y << ")" << std::endl;
             
-            newCenter.x = std::clamp(newCenter.x, left, right);
-            newCenter.y = std::clamp(newCenter.y, top, bottom);
+            if (targetPos.x <= leftBound + 10)
+                std::cout << ">>> PLAYER AT LEFT BOUNDARY! <<<" << std::endl;
+            if (targetPos.x >= rightBound - 10)
+                std::cout << ">>> PLAYER AT RIGHT BOUNDARY! <<<" << std::endl;
+            if (targetPos.y <= topBound + 10)
+                std::cout << ">>> PLAYER AT TOP BOUNDARY! <<<" << std::endl;
+            if (targetPos.y >= bottomBound - 10)
+                std::cout << ">>> PLAYER AT BOTTOM BOUNDARY! <<<" << std::endl;
         }
-        
-        m_view->setCenter(newCenter);
-        m_offset = newCenter - targetPos;
     }
     
-    void CameraComponent::Render(sf::RenderWindow& window) {}
+    void CameraComponent::Render(sf::RenderWindow&) {}
     
     void CameraComponent::SetTarget(RogaliqueGameObject* target)
     {

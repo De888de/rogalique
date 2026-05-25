@@ -14,24 +14,16 @@ namespace rogalique
 
     void MovementComponent::Update(float deltaTime)
     {
-        static int frame = 0;
-        frame++;
-        // Выводим каждые 60 кадров
-        if (frame % 60 == 1)
-            std::cout << "[Movement] Update called, frame=" << frame << std::endl;
-        
         sf::Vector2f move(0, 0);
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) move.y -= 1;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) move.y += 1;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) move.x -= 1;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) move.x += 1;
-        
+
         if (move.x != 0 || move.y != 0)
         {
-            std::cout << "[Movement] Key pressed! W=" << sf::Keyboard::isKeyPressed(sf::Keyboard::W)
-                      << " S=" << sf::Keyboard::isKeyPressed(sf::Keyboard::S)
-                      << " A=" << sf::Keyboard::isKeyPressed(sf::Keyboard::A)
-                      << " D=" << sf::Keyboard::isKeyPressed(sf::Keyboard::D) << std::endl;
+            float len = std::sqrt(move.x * move.x + move.y * move.y);
+            move /= len;
         }
 
         auto* transform = m_owner->GetComponent<TransformComponent>();
@@ -40,22 +32,8 @@ namespace rogalique
             sf::Vector2f pos = transform->GetPosition();
             pos += move * m_speed * deltaTime;
             
-            const float limit = 20.0f;
-            if (pos.x < limit) pos.x = limit;
-            if (pos.x > 1024 - limit) pos.x = 1024 - limit;
-            if (pos.y < limit) pos.y = limit;
-            if (pos.y > 768 - limit) pos.y = 768 - limit;
-            
+            // НЕ ОГРАНИЧИВАЕМ здесь — пусть доходит до краёв мира
             transform->SetPosition(pos);
-        }
-        else
-        {
-            static bool warned = false;
-            if (!warned)
-            {
-                std::cout << "[Movement] ERROR: No TransformComponent found!" << std::endl;
-                warned = true;
-            }
         }
     }
 
