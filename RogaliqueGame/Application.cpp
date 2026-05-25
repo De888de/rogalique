@@ -1,10 +1,10 @@
 #include "Application.h"
 #include "Player.h"
 #include "Menu.h"
+#include "GameWorld.h"
 #include "TransformComponent.h"
 #include "SpriteComponent.h"
 #include <iostream>
-#include <vector>
 
 namespace rogalique
 {
@@ -16,7 +16,10 @@ namespace rogalique
         window.setFramerateLimit(60);
         g_Application = this;
         
-        m_player = std::make_unique<Player>();
+        auto& world = GameWorld::GetInstance();
+        
+        // Создаём игрока через GameWorld
+        m_player = world.CreateGameObject<Player>();
         
         auto* transform = m_player->GetComponent<TransformComponent>();
         if (transform)
@@ -30,6 +33,7 @@ namespace rogalique
     Application::~Application()
     {
         g_Application = nullptr;
+        GameWorld::GetInstance().Clear();
     }
 
     void Application::Run()
@@ -69,26 +73,15 @@ namespace rogalique
             }
             else
             {
-                Update(deltaTime);
-                Draw();
+                auto& world = GameWorld::GetInstance();
+                world.Update(deltaTime);
+                world.LateUpdate();
+                
+                window.clear(sf::Color(20, 20, 40));
+                world.Render(window);
+                window.display();
             }
         }
-    }
-
-    void Application::Update(float deltaTime)
-    {
-        if (m_player)
-            m_player->Update(deltaTime);
-    }
-
-    void Application::Draw()
-    {
-        window.clear(sf::Color(20, 20, 40));
-        
-        if (m_player)
-            m_player->Render(window);
-        
-        window.display();
     }
 
     void Application::StartGame()

@@ -20,11 +20,9 @@ namespace rogalique
         sf::RenderWindow window;
         
     private:
-        void Update(float deltaTime);
-        void Draw();
         void ShowLogoSplash();
         
-        std::unique_ptr<Player> m_player;
+        Player* m_player = nullptr;
         std::unique_ptr<Menu> m_menu;
         bool m_inMenu = true;
     };

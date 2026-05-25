@@ -43,6 +43,9 @@
     <ClCompile Include="SpriteComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="GameWorld.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -60,5 +63,6 @@
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="TransformComponent.h" />
+    <ClInclude Include="GameWorld.h" />
   </ItemGroup>
 </Project>
