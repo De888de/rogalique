@@ -28,6 +28,21 @@
     <ClCompile Include="Menu.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -40,5 +55,10 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="RogaliqueGameObject.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="HealthComponent.h" />
+    <ClInclude Include="MovementComponent.h" />
+    <ClInclude Include="SpriteComponent.h" />
+    <ClInclude Include="TransformComponent.h" />
   </ItemGroup>
 </Project>

@@ -1,9 +1,9 @@
 #include "Application.h"
 #include "Player.h"
+#include "TransformComponent.h"
+#include "SpriteComponent.h"
 #include <iostream>
 #include <vector>
-#include <cmath>
-#include <algorithm>
 
 namespace rogalique
 {
@@ -16,7 +16,10 @@ namespace rogalique
         g_Application = this;
         
         m_player = std::make_unique<Player>();
-        m_player->SetPosition(sf::Vector2f(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f));
+        
+        auto* transform = m_player->GetComponent<TransformComponent>();
+        if (transform)
+            transform->SetPosition(sf::Vector2f(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f));
         
         std::cout << "[App] Application ready" << std::endl;
     }
@@ -52,27 +55,8 @@ namespace rogalique
 
     void Application::Update(float deltaTime)
     {
-        if (!m_player) return;
-        
-        sf::Vector2f move(0, 0);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) move.y -= 1;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) move.y += 1;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) move.x -= 1;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) move.x += 1;
-        
-        if (move.x != 0 || move.y != 0)
-        {
-            float len = std::sqrt(move.x * move.x + move.y * move.y);
-            move /= len;
-        }
-        
-        sf::Vector2f pos = m_player->GetPosition();
-        pos += move * 200.0f * deltaTime;
-        
-        pos.x = std::clamp(pos.x, 20.0f, SCREEN_WIDTH - 20.0f);
-        pos.y = std::clamp(pos.y, 20.0f, SCREEN_HEIGHT - 20.0f);
-        
-        m_player->SetPosition(pos);
+        if (m_player)
+            m_player->Update(deltaTime);
     }
 
     void Application::Draw()
@@ -80,13 +64,7 @@ namespace rogalique
         window.clear(sf::Color(20, 20, 40));
         
         if (m_player)
-        {
-            sf::RectangleShape rect(sf::Vector2f(32, 32));
-            rect.setFillColor(sf::Color::Green);
-            rect.setOrigin(16, 16);
-            rect.setPosition(m_player->GetPosition());
-            window.draw(rect);
-        }
+            m_player->Render(window);
         
         window.display();
     }
@@ -94,8 +72,6 @@ namespace rogalique
     void Application::StartGame()
     {
         std::cout << "[App] StartGame() called" << std::endl;
-        if (m_player)
-            m_player->SetPosition(sf::Vector2f(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f));
     }
 
     void Application::ReturnToMenu()
