@@ -1,5 +1,6 @@
 #include "Chest.h"
 #include <iostream>
+#include "SoundManager.h"
 
 namespace rogalique
 {
@@ -30,7 +31,11 @@ namespace rogalique
         if (!m_isCollected)
         {
             m_isCollected = true;
+            SoundManager::GetInstance().PlaySound("chest");
             std::cout << "[Chest] Collected! +10 gold" << std::endl;
         }
     }
+
+  
 }
+

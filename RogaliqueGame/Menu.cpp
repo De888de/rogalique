@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include <iostream>
+#include "SoundManager.h"
 
 namespace rogalique
 {
@@ -102,3 +103,4 @@ namespace rogalique
         UpdateSelection();
     }
 }
+

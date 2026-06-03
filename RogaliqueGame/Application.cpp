@@ -5,6 +5,7 @@
 #include "CameraComponent.h"
 #include "TransformComponent.h"
 #include "SpriteComponent.h"
+#include "SoundManager.h"
 #include <iostream>
 #include <vector>
 
@@ -20,6 +21,13 @@ namespace rogalique
         
         m_menu = std::make_unique<Menu>();
         
+        // Загружаем звуки ДО логотипа
+        auto& sm = SoundManager::GetInstance();
+        sm.LoadSound("logo", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/logo.WAV");
+        sm.LoadSound("click", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/clik.WAV");
+        sm.LoadSound("chest", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/chest.WAV");
+        sm.PlayMusic("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1)(1).WAV");
+        
         std::cout << "[App] Application ready" << std::endl;
     }
 
@@ -28,6 +36,7 @@ namespace rogalique
         g_Application = nullptr;
         if (m_player)
             GameWorld::GetInstance().Clear();
+        SoundManager::GetInstance().StopMusic();
     }
 
     void Application::Run()
@@ -56,7 +65,6 @@ namespace rogalique
             
             if (m_inMenu)
             {
-                std::cout << "[App] In menu" << std::endl;
                 m_menu->Update(deltaTime);
                 window.clear(sf::Color(20, 20, 40));
                 m_menu->Draw(window);
@@ -64,7 +72,6 @@ namespace rogalique
                 
                 if (m_menu->IsPlaySelected())
                 {
-                    std::cout << "[App] Play selected, starting game..." << std::endl;
                     StartGame();
                 }
                 if (m_menu->IsExitSelected())
@@ -156,6 +163,9 @@ namespace rogalique
 
     void Application::ShowLogoSplash()
     {
+        // Проигрываем звук логотипа
+        SoundManager::GetInstance().PlaySound("logo");
+        
         sf::Texture logoTexture;
         std::vector<std::string> logoPaths = {
             "D:/xyz/roqalique/RogaliqueGame/Resources/xyz-logo.png",

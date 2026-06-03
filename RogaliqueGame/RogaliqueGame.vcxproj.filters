@@ -58,6 +58,9 @@
     <ClCompile Include="TransformComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -80,5 +83,6 @@
     <ClInclude Include="Chest.h" />
     <ClInclude Include="TransformMatrix.h" />
     <ClInclude Include="TransformComponent.h" />
+    <ClInclude Include="SoundManager.h" />
   </ItemGroup>
 </Project>
