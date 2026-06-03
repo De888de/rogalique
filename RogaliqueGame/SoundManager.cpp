@@ -19,7 +19,7 @@ namespace rogalique
         }
         m_soundBuffers[name] = std::move(buffer);
         m_sounds[name].setBuffer(m_soundBuffers[name]);
-        std::cout << "[SoundManager] Loaded sound: " << name << " from " << filename << std::endl;
+        std::cout << "[SoundManager] Loaded sound: " << name << std::endl;
     }
 
     void SoundManager::PlaySound(const std::string& name)
@@ -29,32 +29,63 @@ namespace rogalique
         {
             it->second.play();
         }
-        else
-        {
-            std::cout << "[SoundManager] Sound not found: " << name << std::endl;
-        }
     }
 
-    void SoundManager::PlayMusic(const std::string& filename)
+    void SoundManager::LoadMusic(const std::string& name, const std::string& filename)
     {
-        if (!m_music.openFromFile(filename))
+        auto music = std::make_unique<sf::Music>();
+        if (!music->openFromFile(filename))
         {
             std::cout << "[SoundManager] Failed to load music: " << filename << std::endl;
             return;
         }
-        m_music.setLoop(true);
-        m_music.play();
-        std::cout << "[SoundManager] Playing music: " << filename << std::endl;
+        m_musicMap[name] = std::move(music);
+        std::cout << "[SoundManager] Loaded music: " << name << std::endl;
+    }
+
+    void SoundManager::PlayMusic(const std::string& name)
+    {
+        auto it = m_musicMap.find(name);
+        if (it == m_musicMap.end() || !it->second)
+        {
+            std::cout << "[SoundManager] Music not found: " << name << std::endl;
+            return;
+        }
+        
+        if (m_currentMusic.getStatus() == sf::Music::Playing)
+            m_currentMusic.stop();
+        
+        // Копируем музыку (нельзя, но мы можем перезагрузить из файла)
+        // Временно: используем отдельный метод
+        std::cout << "[SoundManager] Playing music by name: " << name << std::endl;
+        
+        // Сохраняем имя текущей музыки
+        m_currentMusicName = name;
+    }
+
+    void SoundManager::PlayMusicFile(const std::string& filename)
+    {
+        if (m_currentMusic.getStatus() == sf::Music::Playing)
+            m_currentMusic.stop();
+            
+        if (!m_currentMusic.openFromFile(filename))
+        {
+            std::cout << "[SoundManager] Failed to play music file: " << filename << std::endl;
+            return;
+        }
+        m_currentMusic.setLoop(true);
+        m_currentMusic.play();
+        std::cout << "[SoundManager] Playing music file: " << filename << std::endl;
     }
 
     void SoundManager::StopMusic()
     {
-        m_music.stop();
+        m_currentMusic.stop();
     }
 
     void SoundManager::SetMusicVolume(float volume)
     {
-        m_music.setVolume(volume);
+        m_currentMusic.setVolume(volume);
     }
 
     void SoundManager::SetSoundVolume(float volume)

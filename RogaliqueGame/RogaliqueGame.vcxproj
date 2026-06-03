@@ -98,6 +98,7 @@
     <ClCompile Include="ResourceSystem.cpp" />
     <ClCompile Include="RogaliqueGameObject.cpp" />
     <ClCompile Include="SoundManager.cpp" />
+    <ClCompile Include="SoundSettingsWindow.cpp" />
     <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="TransformMatrix.cpp" />
@@ -117,6 +118,7 @@
     <ClInclude Include="ResourceSystem.h" />
     <ClInclude Include="RogaliqueGameObject.h" />
     <ClInclude Include="SoundManager.h" />
+    <ClInclude Include="SoundSettingsWindow.h" />
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TransformMatrix.h" />

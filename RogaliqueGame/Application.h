@@ -7,6 +7,7 @@ namespace rogalique
     class Player;
     class Menu;
     class CameraComponent;
+    class SoundSettingsWindow;
     
     class Application
     {
@@ -28,8 +29,10 @@ namespace rogalique
         Player* m_player = nullptr;
         std::unique_ptr<Menu> m_menu;
         std::unique_ptr<CameraComponent> m_camera;
+        std::unique_ptr<SoundSettingsWindow> m_soundSettings;
         sf::View m_gameView;
         bool m_inMenu = true;
+        bool m_inSoundSettings = false;
         bool m_useCamera = false;
     };
     
@@ -37,8 +40,6 @@ namespace rogalique
     
     constexpr int SCREEN_WIDTH = 1024;
     constexpr int SCREEN_HEIGHT = 768;
-    
-    // Измени эти значения для теста камеры
-    constexpr float WORLD_WIDTH = SCREEN_WIDTH * 2.0f;   // 1.0 = без камеры, 1.5 = с камерой
-    constexpr float WORLD_HEIGHT = SCREEN_HEIGHT * 2.0f; // 1.0 = без камеры, 1.5 = с камерой
+    constexpr float WORLD_WIDTH = SCREEN_WIDTH * 2.0f;
+    constexpr float WORLD_HEIGHT = SCREEN_HEIGHT * 2.0f;
 }

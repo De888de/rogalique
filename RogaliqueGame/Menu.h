@@ -13,6 +13,7 @@ namespace rogalique
         
         bool IsPlaySelected() const { return m_playSelected; }
         bool IsExitSelected() const { return m_exitSelected; }
+        bool IsSoundSelected() const { return m_soundSelected; }
         void Reset();
         
     private:
@@ -23,11 +24,13 @@ namespace rogalique
         sf::Font m_font;
         sf::Text m_titleText;
         sf::Text m_playText;
+        sf::Text m_soundText;
         sf::Text m_exitText;
-        sf::Text m_quoteText;  // Королевский девиз
+        sf::Text m_quoteText;
         
         int m_selectedIndex = 0;
         bool m_playSelected = false;
+        bool m_soundSelected = false;
         bool m_exitSelected = false;
     };
 }

@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Player.h"
 #include "Menu.h"
+#include "SoundSettingsWindow.h"
 #include "GameWorld.h"
 #include "CameraComponent.h"
 #include "TransformComponent.h"
@@ -20,13 +21,20 @@ namespace rogalique
         g_Application = this;
         
         m_menu = std::make_unique<Menu>();
+        m_soundSettings = std::make_unique<SoundSettingsWindow>();
         
-        // Загружаем звуки ДО логотипа
+        // Загружаем звуки и музыку
         auto& sm = SoundManager::GetInstance();
         sm.LoadSound("logo", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/logo.WAV");
         sm.LoadSound("click", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/clik.WAV");
         sm.LoadSound("chest", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/chest.WAV");
-        sm.PlayMusic("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1)(1).WAV");
+        
+        // Загружаем атмосферы
+        sm.LoadMusic("atmosphere_eerie", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_eerie.WAV");
+        sm.LoadMusic("atmosphere_dark", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV");
+        
+        // Фоновая музыка меню
+        sm.PlayMusicFile("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1).WAV");
         
         std::cout << "[App] Application ready" << std::endl;
     }
@@ -36,7 +44,11 @@ namespace rogalique
         g_Application = nullptr;
         if (m_player)
             GameWorld::GetInstance().Clear();
+        
+        // Останавливаем музыку при выходе
         SoundManager::GetInstance().StopMusic();
+        
+        std::cout << "[App] Application destroyed" << std::endl;
     }
 
     void Application::Run()
@@ -58,12 +70,42 @@ namespace rogalique
             {
                 if (event.type == sf::Event::Closed)
                     window.close();
-                    
-                if (m_inMenu)
+                
+                if (m_inSoundSettings)
+                {
+                    m_soundSettings->HandleInput(event);
+                }
+                else if (m_inMenu)
+                {
                     m_menu->HandleInput(event);
+                }
+                else
+                {
+                    // Обработка Escape во время игры
+                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+                    {
+                        SoundManager::GetInstance().PlaySound("click");
+                        ReturnToMenu();
+                    }
+                }
             }
             
-            if (m_inMenu)
+            // Обработка окон
+            if (m_inSoundSettings)
+            {
+                m_soundSettings->Update(deltaTime);
+                window.clear(sf::Color(20, 20, 40));
+                m_soundSettings->Draw(window);
+                window.display();
+                
+                if (!m_soundSettings->IsActive())
+                {
+                    m_inSoundSettings = false;
+                    m_inMenu = true;
+                    m_menu->Reset();
+                }
+            }
+            else if (m_inMenu)
             {
                 m_menu->Update(deltaTime);
                 window.clear(sf::Color(20, 20, 40));
@@ -74,8 +116,17 @@ namespace rogalique
                 {
                     StartGame();
                 }
-                if (m_menu->IsExitSelected())
+                else if (m_menu->IsSoundSelected())
+                {
+                    std::cout << "[App] Opening sound settings" << std::endl;
+                    m_inMenu = false;
+                    m_inSoundSettings = true;
+                    m_soundSettings->Reset();
+                }
+                else if (m_menu->IsExitSelected())
+                {
                     window.close();
+                }
             }
             else
             {
@@ -159,11 +210,13 @@ namespace rogalique
         m_player = nullptr;
         GameWorld::GetInstance().Clear();
         window.setView(window.getDefaultView());
+        
+        // Возвращаем фоновую музыку меню
+        SoundManager::GetInstance().PlayMusicFile("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1).WAV");
     }
 
     void Application::ShowLogoSplash()
     {
-        // Проигрываем звук логотипа
         SoundManager::GetInstance().PlaySound("logo");
         
         sf::Texture logoTexture;
