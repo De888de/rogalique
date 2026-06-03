@@ -1,19 +1,32 @@
+#include "pch.h"
 #include "TransformComponent.h"
-#include <iostream>
 
 namespace rogalique
 {
     TransformComponent::TransformComponent(RogaliqueGameObject* owner)
-        : Component(owner), m_position(0, 0) {}
-    
-    void TransformComponent::Update(float) {}
-    void TransformComponent::Render(sf::RenderWindow&) {}
-    
+        : Component(owner), m_position(0, 0)
+    {
+    }
+
+    void TransformComponent::Update(float deltaTime)
+    {
+        // Пока ничего не обновляем
+        (void)deltaTime;
+    }
+
+    void TransformComponent::Render(sf::RenderWindow& window)
+    {
+        // TransformComponent сам ничего не рисует
+        (void)window;
+    }
+
     void TransformComponent::SetPosition(const sf::Vector2f& pos)
     {
-        static int callCount = 0;
-        if (callCount++ % 60 == 0)
-            std::cout << "[Transform] SetPosition: (" << pos.x << "," << pos.y << ")" << std::endl;
         m_position = pos;
+    }
+
+    sf::Vector2f TransformComponent::GetPosition() const
+    {
+        return m_position;
     }
 }

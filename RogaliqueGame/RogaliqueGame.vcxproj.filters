@@ -37,9 +37,6 @@
     <ClCompile Include="MovementComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="TransformComponent.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="SpriteComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -53,6 +50,12 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Chest.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformMatrix.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,10 +74,11 @@
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="SpriteComponent.h" />
-    <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="ResourceSystem.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Chest.h" />
+    <ClInclude Include="TransformMatrix.h" />
+    <ClInclude Include="TransformComponent.h" />
   </ItemGroup>
 </Project>
