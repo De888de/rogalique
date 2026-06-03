@@ -13,6 +13,7 @@ namespace rogalique
         int GetHealth() const { return m_health; }
         void TakeDamage(int damage);
         void Heal(int amount);
+        bool IsAlive() const { return m_health > 0; }
         
     private:
         int m_health;

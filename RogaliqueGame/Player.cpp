@@ -1,3 +1,4 @@
+#include "CollisionComponent.h"
 #include "Player.h"
 #include "Chest.h"
 #include "GameWorld.h"
@@ -16,6 +17,7 @@ namespace rogalique
         AddComponent<SpriteComponent>("player.png", 32, 32);
         AddComponent<MovementComponent>(200.0f);
         AddComponent<HealthComponent>(100);
+        AddComponent<CollisionComponent>(16.0f);
     }
     
     void Player::Update(float deltaTime)

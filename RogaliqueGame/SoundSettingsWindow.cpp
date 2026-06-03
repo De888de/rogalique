@@ -91,18 +91,41 @@ namespace rogalique
     {
         int newIndex = m_selectedMusicIndex + direction;
         
-        if (newIndex < 0) newIndex = 1;
-        if (newIndex > 1) newIndex = 0;
+        // Доступные индексы: 0,1,2 (Horror Awakens под индексом 3 заблокирован)
+        if (newIndex < 0) newIndex = 2;
+        if (newIndex > 2) newIndex = 0;
         
         if (newIndex == m_selectedMusicIndex) return;
         
         m_selectedMusicIndex = newIndex;
-        m_musicOptionText.setString(m_musicOptions[m_selectedMusicIndex] + " (available)");
         
-        // Меняем музыку через PlayMusicFile с правильным путём
-        std::string musicFile = (m_selectedMusicIndex == 0) 
-            ? "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_eerie.WAV"
-            : "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV";
+        // Обновляем текст
+        std::string status = (m_selectedMusicIndex == 3) ? " (locked)" : " (available)";
+        m_musicOptionText.setString(m_musicOptions[m_selectedMusicIndex] + status);
+        
+        // Если выбрана заблокированная — не играем
+        if (m_selectedMusicIndex == 3)
+        {
+            std::cout << "[SoundSettings] Horror Awakens is LOCKED!" << std::endl;
+            return;
+        }
+        
+        // Меняем музыку
+        std::string musicFile;
+        switch (m_selectedMusicIndex)
+        {
+        case 0:
+            musicFile = "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_eerie.WAV";
+            break;
+        case 1:
+            musicFile = "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV";
+            break;
+        case 2:
+            musicFile = "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/trepidation.WAV";
+            break;
+        default:
+            return;
+        }
         
         std::cout << "[SoundSettings] Playing: " << musicFile << std::endl;
         SoundManager::GetInstance().PlayMusicFile(musicFile);
@@ -150,5 +173,6 @@ namespace rogalique
         m_selectedIndex = 0;
         UpdateSelection();
         m_isActive = true;
+        std::cout << "[SoundSettings] Reset" << std::endl;
     }
 }

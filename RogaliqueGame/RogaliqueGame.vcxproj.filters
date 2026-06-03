@@ -64,6 +64,15 @@
     <ClCompile Include="SoundSettingsWindow.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="SeekerComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -88,5 +97,8 @@
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="SoundSettingsWindow.h" />
+    <ClInclude Include="CollisionComponent.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="SeekerComponent.h" />
   </ItemGroup>
 </Project>

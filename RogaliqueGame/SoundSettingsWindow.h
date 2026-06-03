@@ -46,6 +46,7 @@ namespace rogalique
         std::vector<std::string> m_musicOptions = {
             "Eerie Whispers",
             "Dark Ritual",
+            "Trepidation",
             "Horror Awakens"
         };
     };

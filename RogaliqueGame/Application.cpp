@@ -7,6 +7,7 @@
 #include "TransformComponent.h"
 #include "SpriteComponent.h"
 #include "SoundManager.h"
+#include "Enemy.h"
 #include <iostream>
 #include <vector>
 
@@ -23,17 +24,13 @@ namespace rogalique
         m_menu = std::make_unique<Menu>();
         m_soundSettings = std::make_unique<SoundSettingsWindow>();
         
-        // Загружаем звуки и музыку
         auto& sm = SoundManager::GetInstance();
         sm.LoadSound("logo", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/logo.WAV");
         sm.LoadSound("click", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/clik.WAV");
         sm.LoadSound("chest", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/chest.WAV");
-        
-        // Загружаем атмосферы
         sm.LoadMusic("atmosphere_eerie", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_eerie.WAV");
         sm.LoadMusic("atmosphere_dark", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV");
-        
-        // Фоновая музыка меню
+        sm.LoadMusic("atmosphere_trepidation", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/trepidation.WAV");
         sm.PlayMusicFile("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1).WAV");
         
         std::cout << "[App] Application ready" << std::endl;
@@ -44,11 +41,7 @@ namespace rogalique
         g_Application = nullptr;
         if (m_player)
             GameWorld::GetInstance().Clear();
-        
-        // Останавливаем музыку при выходе
         SoundManager::GetInstance().StopMusic();
-        
-        std::cout << "[App] Application destroyed" << std::endl;
     }
 
     void Application::Run()
@@ -56,8 +49,6 @@ namespace rogalique
         std::cout << "[App] Run() started" << std::endl;
         
         ShowLogoSplash();
-        
-        std::cout << "[App] Logo splash finished" << std::endl;
         
         sf::Clock clock;
         
@@ -72,25 +63,16 @@ namespace rogalique
                     window.close();
                 
                 if (m_inSoundSettings)
-                {
                     m_soundSettings->HandleInput(event);
-                }
                 else if (m_inMenu)
-                {
                     m_menu->HandleInput(event);
-                }
-                else
+                else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
                 {
-                    // Обработка Escape во время игры
-                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
-                    {
-                        SoundManager::GetInstance().PlaySound("click");
-                        ReturnToMenu();
-                    }
+                    SoundManager::GetInstance().PlaySound("click");
+                    ReturnToMenu();
                 }
             }
             
-            // Обработка окон
             if (m_inSoundSettings)
             {
                 m_soundSettings->Update(deltaTime);
@@ -113,20 +95,15 @@ namespace rogalique
                 window.display();
                 
                 if (m_menu->IsPlaySelected())
-                {
                     StartGame();
-                }
                 else if (m_menu->IsSoundSelected())
                 {
-                    std::cout << "[App] Opening sound settings" << std::endl;
                     m_inMenu = false;
                     m_inSoundSettings = true;
                     m_soundSettings->Reset();
                 }
                 else if (m_menu->IsExitSelected())
-                {
                     window.close();
-                }
             }
             else
             {
@@ -145,6 +122,7 @@ namespace rogalique
         
         auto& world = GameWorld::GetInstance();
         world.Update(deltaTime);
+        world.CheckCollisions();
         world.LateUpdate();
     }
 
@@ -172,6 +150,20 @@ namespace rogalique
         m_player = GameWorld::GetInstance().CreateGameObject<Player>();
         GameWorld::GetInstance().SpawnChests(10, WORLD_WIDTH, WORLD_HEIGHT);
         
+        // Создаём врагов
+        for (int i = 0; i < 5; ++i)
+        {
+            Enemy* enemy = GameWorld::GetInstance().CreateGameObject<Enemy>();
+            auto* transform = enemy->GetComponent<TransformComponent>();
+            if (transform)
+            {
+                float x = 100 + rand() % (int)(WORLD_WIDTH - 200);
+                float y = 100 + rand() % (int)(WORLD_HEIGHT - 200);
+                transform->SetPosition(sf::Vector2f(x, y));
+                std::cout << "[App] Spawned enemy at (" << x << ", " << y << ")" << std::endl;
+            }
+        }
+        
         auto* transform = m_player->GetComponent<TransformComponent>();
         if (transform)
             transform->SetPosition(sf::Vector2f(WORLD_WIDTH / 2.0f, WORLD_HEIGHT / 2.0f));
@@ -179,11 +171,8 @@ namespace rogalique
         if (WORLD_WIDTH > SCREEN_WIDTH || WORLD_HEIGHT > SCREEN_HEIGHT)
         {
             m_useCamera = true;
-            std::cout << "[App] Camera enabled" << std::endl;
-            
             m_gameView.reset(sf::FloatRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
             m_gameView.setViewport(sf::FloatRect(0, 0, 1, 1));
-            
             m_camera = std::make_unique<CameraComponent>(nullptr);
             m_camera->SetTarget(m_player);
             m_camera->SetBounds(WORLD_WIDTH, WORLD_HEIGHT);
@@ -193,7 +182,6 @@ namespace rogalique
         {
             m_useCamera = false;
             m_camera.reset();
-            std::cout << "[App] Camera disabled" << std::endl;
         }
         
         m_inMenu = false;
@@ -210,8 +198,6 @@ namespace rogalique
         m_player = nullptr;
         GameWorld::GetInstance().Clear();
         window.setView(window.getDefaultView());
-        
-        // Возвращаем фоновую музыку меню
         SoundManager::GetInstance().PlayMusicFile("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1).WAV");
     }
 
@@ -250,7 +236,6 @@ namespace rogalique
             window.clear(sf::Color::Black);
             window.draw(logoSprite);
             window.display();
-            
             sf::sleep(sf::seconds(2.0f));
         }
         else

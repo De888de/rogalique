@@ -4,7 +4,9 @@
 namespace rogalique
 {
     HealthComponent::HealthComponent(RogaliqueGameObject* owner, int maxHealth)
-        : Component(owner), m_health(maxHealth), m_maxHealth(maxHealth) {}
+        : Component(owner), m_health(maxHealth), m_maxHealth(maxHealth)
+    {
+    }
     
     void HealthComponent::Update(float) {}
     void HealthComponent::Render(sf::RenderWindow&) {}

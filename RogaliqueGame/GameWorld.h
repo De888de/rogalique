@@ -35,6 +35,8 @@ namespace rogalique
         void Clear();
         
         void SpawnChests(int count, float worldWidth, float worldHeight);
+        void CheckCollisions();
+        
         const std::vector<RogaliqueGameObject*>& GetAllGameObjects() const { return m_gameObjects; }
         
     private:

@@ -1,5 +1,6 @@
 #include "GameWorld.h"
 #include "Chest.h"
+#include "CollisionComponent.h"
 #include <algorithm>
 #include <iostream>
 #include <random>
@@ -80,10 +81,31 @@ namespace rogalique
         
         for (int i = 0; i < count; ++i)
         {
-            auto* chest = CreateGameObject<Chest>();
+            Chest* chest = CreateGameObject<Chest>();
             chest->SetPosition(sf::Vector2f(distX(gen), distY(gen)));
-            std::cout << "[GameWorld] Spawned chest " << i+1 << " at (" 
-                      << chest->GetPosition().x << ", " << chest->GetPosition().y << ")" << std::endl;
+        }
+    }
+    
+    void GameWorld::CheckCollisions()
+    {
+        std::vector<CollisionComponent*> colliders;
+        for (size_t i = 0; i < m_gameObjects.size(); ++i)
+        {
+            CollisionComponent* col = m_gameObjects[i]->GetComponent<CollisionComponent>();
+            if (col)
+                colliders.push_back(col);
+        }
+        
+        for (size_t i = 0; i < colliders.size(); ++i)
+        {
+            for (size_t j = i + 1; j < colliders.size(); ++j)
+            {
+                if (colliders[i]->CheckCollision(colliders[j]))
+                {
+                    colliders[i]->OnCollisionEnter(colliders[j]);
+                    colliders[j]->OnCollisionEnter(colliders[i]);
+                }
+            }
         }
     }
 }
