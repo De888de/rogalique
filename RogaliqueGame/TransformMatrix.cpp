@@ -5,7 +5,6 @@ namespace rogalique
 {
     TransformMatrix::TransformMatrix()
     {
-        // Единичная матрица
         m = { {
             {{1, 0, 0}},
             {{0, 1, 0}},
@@ -15,6 +14,23 @@ namespace rogalique
 
     TransformMatrix::TransformMatrix(const std::array<std::array<float, 3>, 3>& values)
         : m(values) {}
+
+    TransformMatrix TransformMatrix::operator*(const TransformMatrix& other) const
+    {
+        TransformMatrix result;
+        for (int row = 0; row < 3; row++)
+        {
+            for (int col = 0; col < 3; col++)
+            {
+                result.m[row][col] = 0;
+                for (int k = 0; k < 3; k++)
+                {
+                    result.m[row][col] += m[row][k] * other.m[k][col];
+                }
+            }
+        }
+        return result;
+    }
 
     TransformMatrix& TransformMatrix::operator=(const TransformMatrix& other)
     {
@@ -44,8 +60,10 @@ namespace rogalique
         float angleRad = angleDeg * 3.14159f / 180.0f;
         float cosA = std::cos(angleRad);
         float sinA = std::sin(angleRad);
-        m[0][0] = cosA; m[0][1] = -sinA;
-        m[1][0] = sinA; m[1][1] = cosA;
+        m[0][0] = cosA;
+        m[0][1] = -sinA;
+        m[1][0] = sinA;
+        m[1][1] = cosA;
     }
 
     void TransformMatrix::SetScale(float sx, float sy)
@@ -58,10 +76,9 @@ namespace rogalique
     {
         for (int row = 0; row < 3; row++)
         {
-            std::cout << "| ";
             for (int col = 0; col < 3; col++)
             {
-                std::cout << m[row][col] << " | ";
+                std::cout << m[row][col] << " ";
             }
             std::cout << "\n";
         }

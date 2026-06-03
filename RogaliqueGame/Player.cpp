@@ -22,6 +22,12 @@ namespace rogalique
     {
         RogaliqueGameObject::Update(deltaTime);
         
+        // Получаем позицию из TransformComponent
+        auto* transform = GetComponent<TransformComponent>();
+        if (!transform) return;
+        
+        sf::Vector2f playerPos = transform->GetPosition();
+        
         // Проверка сбора сундуков
         auto& world = GameWorld::GetInstance();
         for (auto* obj : world.GetAllGameObjects())
@@ -29,8 +35,8 @@ namespace rogalique
             auto* chest = dynamic_cast<Chest*>(obj);
             if (chest && !chest->IsCollected())
             {
-                float dx = m_position.x - chest->GetPosition().x;
-                float dy = m_position.y - chest->GetPosition().y;
+                float dx = playerPos.x - chest->GetPosition().x;
+                float dy = playerPos.y - chest->GetPosition().y;
                 float dist = std::sqrt(dx*dx + dy*dy);
                 if (dist < 32.0f)
                 {
@@ -38,8 +44,5 @@ namespace rogalique
                 }
             }
         }
-        
-        // НЕ ОГРАНИЧИВАЕМ игрока здесь — он должен доходить до краёв мира!
-        // Ограничения будут на уровне GameWorld или камеры
     }
 }

@@ -29,7 +29,11 @@ namespace rogalique
     
     void SpriteComponent::Update(float deltaTime)
     {
-        // Берём позицию из TransformComponent
+        (void)deltaTime;
+    }
+    
+    void SpriteComponent::Render(sf::RenderWindow& window)
+    {
         auto* transform = m_owner->GetComponent<TransformComponent>();
         if (transform)
         {
@@ -39,10 +43,7 @@ namespace rogalique
             else
                 m_fallbackShape.setPosition(pos);
         }
-    }
-    
-    void SpriteComponent::Render(sf::RenderWindow& window)
-    {
+        
         if (m_hasTexture)
             window.draw(m_sprite);
         else

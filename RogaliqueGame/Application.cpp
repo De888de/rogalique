@@ -32,7 +32,11 @@ namespace rogalique
 
     void Application::Run()
     {
+        std::cout << "[App] Run() started" << std::endl;
+        
         ShowLogoSplash();
+        
+        std::cout << "[App] Logo splash finished" << std::endl;
         
         sf::Clock clock;
         
@@ -52,6 +56,7 @@ namespace rogalique
             
             if (m_inMenu)
             {
+                std::cout << "[App] In menu" << std::endl;
                 m_menu->Update(deltaTime);
                 window.clear(sf::Color(20, 20, 40));
                 m_menu->Draw(window);
@@ -59,6 +64,7 @@ namespace rogalique
                 
                 if (m_menu->IsPlaySelected())
                 {
+                    std::cout << "[App] Play selected, starting game..." << std::endl;
                     StartGame();
                 }
                 if (m_menu->IsExitSelected())
@@ -70,6 +76,8 @@ namespace rogalique
                 Draw();
             }
         }
+        
+        std::cout << "[App] Run() finished" << std::endl;
     }
 
     void Application::Update(float deltaTime)
@@ -101,10 +109,8 @@ namespace rogalique
     {
         std::cout << "[App] Starting new game..." << std::endl;
         
-        // Очищаем предыдущий мир
         GameWorld::GetInstance().Clear();
         
-        // Создаём игрока
         m_player = GameWorld::GetInstance().CreateGameObject<Player>();
         GameWorld::GetInstance().SpawnChests(10, WORLD_WIDTH, WORLD_HEIGHT);
         
@@ -112,17 +118,14 @@ namespace rogalique
         if (transform)
             transform->SetPosition(sf::Vector2f(WORLD_WIDTH / 2.0f, WORLD_HEIGHT / 2.0f));
         
-        // Решаем, нужна ли камера
         if (WORLD_WIDTH > SCREEN_WIDTH || WORLD_HEIGHT > SCREEN_HEIGHT)
         {
             m_useCamera = true;
-            std::cout << "[App] Camera enabled: world larger than screen" << std::endl;
+            std::cout << "[App] Camera enabled" << std::endl;
             
-            // Настраиваем камеру
             m_gameView.reset(sf::FloatRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
             m_gameView.setViewport(sf::FloatRect(0, 0, 1, 1));
             
-            // Создаём компонент камеры
             m_camera = std::make_unique<CameraComponent>(nullptr);
             m_camera->SetTarget(m_player);
             m_camera->SetBounds(WORLD_WIDTH, WORLD_HEIGHT);
@@ -132,12 +135,11 @@ namespace rogalique
         {
             m_useCamera = false;
             m_camera.reset();
-            std::cout << "[App] Camera disabled: world fits screen" << std::endl;
+            std::cout << "[App] Camera disabled" << std::endl;
         }
         
         m_inMenu = false;
-        std::cout << "[App] Game started! World size: " << WORLD_WIDTH << "x" << WORLD_HEIGHT 
-                  << ", Camera: " << (m_useCamera ? "ON" : "OFF") << std::endl;
+        std::cout << "[App] Game started!" << std::endl;
     }
 
     void Application::ReturnToMenu()
@@ -149,7 +151,6 @@ namespace rogalique
         m_useCamera = false;
         m_player = nullptr;
         GameWorld::GetInstance().Clear();
-        
         window.setView(window.getDefaultView());
     }
 
