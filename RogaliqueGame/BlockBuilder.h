@@ -1,13 +1,11 @@
 #pragma once
-#include "GameWorld.h"
+#include <string>
 
 namespace rogalique
 {
     class BlockBuilder
     {
     public:
-        static RogaliqueGameObject* CreateBlock(float x, float y, float width, float height, bool isMagic = false);
-        static void BuildPerimeter(float worldWidth, float worldHeight, float thickness);
-        static void BuildRow(float y, float startX, float endX, float blockSize, bool isMagic = false);
+        static void LoadLevel(const std::string& filename, float worldWidth, float worldHeight, float blockSize);
     };
 }

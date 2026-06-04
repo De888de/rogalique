@@ -125,4 +125,9 @@
     <ClInclude Include="BrickBlock.h" />
     <ClInclude Include="BlockComponent.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resources\level1.txt">
+      <Filter>levels</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

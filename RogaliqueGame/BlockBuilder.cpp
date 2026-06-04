@@ -1,61 +1,61 @@
 #include "BlockBuilder.h"
+#include "GameWorld.h"
 #include "TransformComponent.h"
 #include "SpriteComponent.h"
 #include "CollisionComponent.h"
 #include "BlockComponent.h"
+#include <fstream>
+#include <vector>
+#include <iostream>
 
 namespace rogalique
 {
-    RogaliqueGameObject* BlockBuilder::CreateBlock(float x, float y, float width, float height, bool isMagic)
+    void BlockBuilder::LoadLevel(const std::string& filename, float worldWidth, float worldHeight, float blockSize)
     {
-        auto* block = GameWorld::GetInstance().CreateGameObject<RogaliqueGameObject>();
+        std::ifstream file(filename);
+        if (!file.is_open())
+        {
+            std::cout << "[BlockBuilder] Failed to load level: " << filename << std::endl;
+            return;
+        }
         
-        // Transform
-        auto* transform = block->AddComponent<TransformComponent>();
-        transform->SetPosition(sf::Vector2f(x, y));
+        std::vector<std::string> map;
+        std::string line;
+        while (std::getline(file, line))
+        {
+            map.push_back(line);
+        }
         
-        // Visual
-        auto* sprite = block->AddComponent<SpriteComponent>("", width, height);
-        if (isMagic)
-            sprite->SetFallbackColor(sf::Color(200, 50, 200)); // фиолетовый
-        else
-            sprite->SetFallbackColor(sf::Color(180, 80, 40));  // кирпичный
+        float startX = (worldWidth - map[0].size() * blockSize) / 2.0f;
+        float startY = (worldHeight - map.size() * blockSize) / 2.0f;
         
-        // Collision
-        auto* collision = block->AddComponent<CollisionComponent>(std::max(width, height) / 2.0f);
-        collision->SetTrigger(false);
+        auto& world = GameWorld::GetInstance();
         
-        // Marker
-        auto* marker = block->AddComponent<BlockComponent>();
-        marker->SetMagic(isMagic);
+        for (size_t row = 0; row < map.size(); ++row)
+        {
+            for (size_t col = 0; col < map[row].size(); ++col)
+            {
+                if (map[row][col] == '#')
+                {
+                    float x = startX + col * blockSize + blockSize / 2.0f;
+                    float y = startY + row * blockSize + blockSize / 2.0f;
+                    
+                    auto* block = world.CreateGameObject<RogaliqueGameObject>();
+                    
+                    auto* transform = block->AddComponent<TransformComponent>();
+                    transform->SetPosition(sf::Vector2f(x, y));
+                    
+                    auto* sprite = block->AddComponent<SpriteComponent>("", blockSize, blockSize);
+                    sprite->SetFallbackColor(sf::Color(180, 80, 40));
+                    
+                    auto* collision = block->AddComponent<CollisionComponent>(blockSize / 2.0f);
+                    collision->SetTrigger(false);
+                    
+                    block->AddComponent<BlockComponent>();
+                }
+            }
+        }
         
-        return block;
-    }
-    
-    void BlockBuilder::BuildPerimeter(float worldWidth, float worldHeight, float thickness)
-    {
-        float halfThick = thickness / 2.0f;
-        
-        // Верхняя стена
-        for (float x = halfThick; x < worldWidth - halfThick; x += thickness)
-            CreateBlock(x, halfThick, thickness, thickness, false);
-        
-        // Нижняя стена
-        for (float x = halfThick; x < worldWidth - halfThick; x += thickness)
-            CreateBlock(x, worldHeight - halfThick, thickness, thickness, false);
-        
-        // Левая стена
-        for (float y = halfThick; y < worldHeight - halfThick; y += thickness)
-            CreateBlock(halfThick, y, thickness, thickness, false);
-        
-        // Правая стена
-        for (float y = halfThick; y < worldHeight - halfThick; y += thickness)
-            CreateBlock(worldWidth - halfThick, y, thickness, thickness, false);
-    }
-    
-    void BlockBuilder::BuildRow(float y, float startX, float endX, float blockSize, bool isMagic)
-    {
-        for (float x = startX; x < endX; x += blockSize)
-            CreateBlock(x, y, blockSize, blockSize, isMagic);
+        std::cout << "[BlockBuilder] Loaded level: " << filename << std::endl;
     }
 }

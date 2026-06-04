@@ -165,7 +165,7 @@ namespace rogalique
             }
         }
         
-        BlockBuilder::BuildPerimeter(WORLD_WIDTH, WORLD_HEIGHT, 40);
+        BlockBuilder::LoadLevel("D:/xyz/roqalique/RogaliqueGame/Resources/level1.txt", WORLD_WIDTH, WORLD_HEIGHT, 40);
 
         auto* transform = m_player->GetComponent<TransformComponent>();
         if (transform)
