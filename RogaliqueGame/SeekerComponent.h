@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "RogaliqueGameObject.h"
-#include <cmath>
+#include <SFML/Graphics.hpp>
 
 namespace rogalique
 {
@@ -16,7 +16,13 @@ namespace rogalique
         RogaliqueGameObject* GetTarget() const { return m_target; }
 
     private:
+        void TryMove(const sf::Vector2f& newPos, float deltaTime);
+        void ChooseNewDirection();
+        
         RogaliqueGameObject* m_target = nullptr;
         float m_speed;
+        sf::Vector2f m_currentDirection;
+        float m_stuckTimer = 0.0f;
+        int m_stuckCounter = 0;
     };
 }
