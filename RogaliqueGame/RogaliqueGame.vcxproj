@@ -85,6 +85,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Block.cpp" />
+    <ClCompile Include="BlockBuilder.cpp" />
+    <ClCompile Include="BlockComponent.cpp" />
+    <ClCompile Include="BrickBlock.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="Chest.cpp" />
     <ClCompile Include="CollisionComponent.cpp" />
@@ -105,9 +109,15 @@
     <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="TransformMatrix.cpp" />
+    <ClCompile Include="Wall.cpp" />
+    <ClCompile Include="WallComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Block.h" />
+    <ClInclude Include="BlockBuilder.h" />
+    <ClInclude Include="BlockComponent.h" />
+    <ClInclude Include="BrickBlock.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Chest.h" />
     <ClInclude Include="CollisionComponent.h" />
@@ -128,6 +138,8 @@
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TransformMatrix.h" />
+    <ClInclude Include="Wall.h" />
+    <ClInclude Include="WallComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">

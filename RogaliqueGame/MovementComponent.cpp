@@ -1,6 +1,7 @@
 #include "MovementComponent.h"
 #include "TransformComponent.h"
-#include "RogaliqueGameObject.h"
+#include "CollisionComponent.h"
+#include "GameWorld.h"
 #include <cmath>
 #include <iostream>
 
@@ -27,15 +28,41 @@ namespace rogalique
         }
 
         auto* transform = m_owner->GetComponent<TransformComponent>();
-        if (transform)
+        if (!transform) return;
+        
+        sf::Vector2f oldPos = transform->GetPosition();
+        sf::Vector2f newPos = oldPos + move * m_speed * deltaTime;
+        
+        // Временно устанавливаем новую позицию
+        transform->SetPosition(newPos);
+        
+        // Проверяем коллизию
+        auto* myCollision = m_owner->GetComponent<CollisionComponent>();
+        if (myCollision)
         {
-            sf::Vector2f pos = transform->GetPosition();
-            pos += move * m_speed * deltaTime;
+            auto& world = GameWorld::GetInstance();
+            bool hasCollision = false;
             
-            // НЕ ОГРАНИЧИВАЕМ здесь — пусть доходит до краёв мира
-            transform->SetPosition(pos);
+            for (auto* obj : world.GetAllGameObjects())
+            {
+                if (obj == m_owner) continue;
+                
+                auto* otherCollision = obj->GetComponent<CollisionComponent>();
+                if (otherCollision && myCollision->CheckCollision(otherCollision))
+                {
+                    hasCollision = true;
+                    break;
+                }
+            }
+            
+            if (hasCollision)
+            {
+                std::cout << "[Movement] Collision detected! Reverting position" << std::endl;
+                transform->SetPosition(oldPos);
+            }
         }
     }
 
     void MovementComponent::Render(sf::RenderWindow&) {}
 }
+#include <iostream>

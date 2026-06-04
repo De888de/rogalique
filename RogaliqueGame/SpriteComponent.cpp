@@ -34,7 +34,7 @@ namespace rogalique
     
     void SpriteComponent::Render(sf::RenderWindow& window)
     {
-        auto* transform = m_owner->GetComponent<TransformComponent>();
+        TransformComponent* transform = m_owner->GetComponent<TransformComponent>();
         if (transform)
         {
             sf::Vector2f pos = transform->GetPosition();

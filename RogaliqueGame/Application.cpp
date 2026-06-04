@@ -8,6 +8,7 @@
 #include "SpriteComponent.h"
 #include "SoundManager.h"
 #include "Enemy.h"
+#include "BlockBuilder.h"
 #include <iostream>
 #include <vector>
 
@@ -164,6 +165,8 @@ namespace rogalique
             }
         }
         
+        BlockBuilder::BuildPerimeter(WORLD_WIDTH, WORLD_HEIGHT, 40);
+
         auto* transform = m_player->GetComponent<TransformComponent>();
         if (transform)
             transform->SetPosition(sf::Vector2f(WORLD_WIDTH / 2.0f, WORLD_HEIGHT / 2.0f));

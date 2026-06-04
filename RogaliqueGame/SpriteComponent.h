@@ -12,6 +12,7 @@ namespace rogalique
         void Render(sf::RenderWindow& window) override;
         
         void SetPosition(const sf::Vector2f& pos);
+        void SetFallbackColor(const sf::Color& color) { m_fallbackShape.setFillColor(color); }
         
     private:
         sf::Texture m_texture;

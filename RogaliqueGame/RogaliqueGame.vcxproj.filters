@@ -73,6 +73,24 @@
     <ClCompile Include="SeekerComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Wall.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="WallComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Block.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockBuilder.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="BrickBlock.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -100,5 +118,11 @@
     <ClInclude Include="CollisionComponent.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="SeekerComponent.h" />
+    <ClInclude Include="Wall.h" />
+    <ClInclude Include="WallComponent.h" />
+    <ClInclude Include="Block.h" />
+    <ClInclude Include="BlockBuilder.h" />
+    <ClInclude Include="BrickBlock.h" />
+    <ClInclude Include="BlockComponent.h" />
   </ItemGroup>
 </Project>
