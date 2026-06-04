@@ -91,6 +91,9 @@
     <ClCompile Include="BlockComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="UIComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -124,6 +127,7 @@
     <ClInclude Include="BlockBuilder.h" />
     <ClInclude Include="BrickBlock.h" />
     <ClInclude Include="BlockComponent.h" />
+    <ClInclude Include="UIComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\level1.txt">

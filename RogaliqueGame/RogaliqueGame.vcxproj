@@ -109,6 +109,7 @@
     <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="TransformMatrix.cpp" />
+    <ClCompile Include="UIComponent.cpp" />
     <ClCompile Include="Wall.cpp" />
     <ClCompile Include="WallComponent.cpp" />
   </ItemGroup>
@@ -138,6 +139,7 @@
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TransformMatrix.h" />
+    <ClInclude Include="UIComponent.h" />
     <ClInclude Include="Wall.h" />
     <ClInclude Include="WallComponent.h" />
   </ItemGroup>

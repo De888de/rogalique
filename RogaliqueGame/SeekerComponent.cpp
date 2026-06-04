@@ -22,6 +22,10 @@ namespace rogalique
                 break;
             }
         }
+        if (!m_target)
+        {
+            std::cout << "[SeekerComponent] WARNING: No target found!" << std::endl;
+        }
         m_currentDirection = sf::Vector2f(1, 0);
     }
 
@@ -44,7 +48,6 @@ namespace rogalique
                 auto* otherCollision = obj->GetComponent<CollisionComponent>();
                 if (otherCollision && myCollision->CheckCollision(otherCollision))
                 {
-                    // Столкновение! Откатываем и меняем направление
                     transform->SetPosition(oldPos);
                     ChooseNewDirection();
                     return;
@@ -52,7 +55,6 @@ namespace rogalique
             }
         }
         
-        // Успешно переместились
         m_stuckCounter = 0;
         m_stuckTimer = 0.0f;
     }
@@ -61,7 +63,6 @@ namespace rogalique
     {
         m_stuckCounter++;
         
-        // Случайный поворот влево или вправо
         static std::random_device rd;
         static std::mt19937 gen(rd());
         static std::uniform_int_distribution<> dis(0, 1);
@@ -74,7 +75,6 @@ namespace rogalique
         
         m_currentDirection = sf::Vector2f(newX, newY);
         
-        // Нормализация
         float len = std::sqrt(m_currentDirection.x * m_currentDirection.x + m_currentDirection.y * m_currentDirection.y);
         if (len > 0.01f)
             m_currentDirection /= len;
@@ -84,6 +84,13 @@ namespace rogalique
 
     void SeekerComponent::Update(float deltaTime)
     {
+        static int frameCount = 0;
+        frameCount++;
+        if (frameCount % 60 == 1)
+        {
+            std::cout << "[SeekerComponent] Update called, target: " << (m_target ? "acquired" : "null") << std::endl;
+        }
+        
         if (!m_target) return;
 
         auto* ownerTransform = m_owner->GetComponent<TransformComponent>();
@@ -94,13 +101,11 @@ namespace rogalique
         sf::Vector2f ownerPos = ownerTransform->GetPosition();
         sf::Vector2f targetPos = targetTransform->GetPosition();
 
-        // Идеальное направление к игроку
         sf::Vector2f idealDirection = targetPos - ownerPos;
         float len = std::sqrt(idealDirection.x * idealDirection.x + idealDirection.y * idealDirection.y);
         if (len > 0.01f)
             idealDirection /= len;
         
-        // Плавно поворачиваем к игроку (если не застряли)
         if (m_stuckCounter < 3)
         {
             m_currentDirection = m_currentDirection + (idealDirection - m_currentDirection) * 0.1f;

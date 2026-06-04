@@ -4,6 +4,7 @@
 #include "SpriteComponent.h"
 #include "CollisionComponent.h"
 #include "BlockComponent.h"
+#include "Enemy.h"
 #include <fstream>
 #include <vector>
 #include <iostream>
@@ -35,13 +36,14 @@ namespace rogalique
         {
             for (size_t col = 0; col < map[row].size(); ++col)
             {
-                if (map[row][col] == '#')
+                char c = map[row][col];
+                float x = startX + col * blockSize + blockSize / 2.0f;
+                float y = startY + row * blockSize + blockSize / 2.0f;
+                
+                if (c == '#')
                 {
-                    float x = startX + col * blockSize + blockSize / 2.0f;
-                    float y = startY + row * blockSize + blockSize / 2.0f;
-                    
+                    // Стена
                     auto* block = world.CreateGameObject<RogaliqueGameObject>();
-                    
                     auto* transform = block->AddComponent<TransformComponent>();
                     transform->SetPosition(sf::Vector2f(x, y));
                     
@@ -53,6 +55,16 @@ namespace rogalique
                     
                     block->AddComponent<BlockComponent>();
                 }
+                else if (c == 'E')
+                {
+                    // Враг
+                    auto* enemy = world.CreateGameObject<Enemy>();
+                    auto* transform = enemy->GetComponent<TransformComponent>();
+                    if (transform)
+                        transform->SetPosition(sf::Vector2f(x, y));
+                    std::cout << "[BlockBuilder] Spawned enemy at (" << x << ", " << y << ")" << std::endl;
+                }
+                // '.' — ничего не делаем
             }
         }
         

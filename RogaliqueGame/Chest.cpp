@@ -1,6 +1,8 @@
 #include "Chest.h"
-#include <iostream>
 #include "SoundManager.h"
+#include "Application.h"
+#include "GameWorld.h"
+#include <iostream>
 
 namespace rogalique
 {
@@ -13,7 +15,6 @@ namespace rogalique
     
     void Chest::Update(float deltaTime)
     {
-        // Пока ничего не делаем
         (void)deltaTime;
     }
     
@@ -31,11 +32,19 @@ namespace rogalique
         if (!m_isCollected)
         {
             m_isCollected = true;
+            
+            // Обновляем счёт в Application
+            if (g_Application)
+            {
+                g_Application->AddGold(10);
+                g_Application->AddChest();
+            }
+            
             SoundManager::GetInstance().PlaySound("chest");
             std::cout << "[Chest] Collected! +10 gold" << std::endl;
+            
+            // Удаляем сундук из мира
+            GameWorld::GetInstance().DestroyGameObject(this);
         }
     }
-
-  
 }
-

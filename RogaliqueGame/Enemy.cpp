@@ -15,8 +15,8 @@ namespace rogalique
         AddComponent<SpriteComponent>("enemy.png", 32, 32);
         AddComponent<HealthComponent>(m_maxHealth);
         AddComponent<SeekerComponent>(80.0f);
-        AddComponent<CollisionComponent>(16.0f);  // добавляем коллизию
-        std::cout << "[Enemy] Created with collision" << std::endl;
+        AddComponent<CollisionComponent>(16.0f);
+        std::cout << "[Enemy] Created with SeekerComponent" << std::endl;
     }
 
     void Enemy::Update(float deltaTime)

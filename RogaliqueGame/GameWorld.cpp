@@ -1,9 +1,11 @@
 #include "GameWorld.h"
 #include "Chest.h"
 #include "CollisionComponent.h"
+#include "TransformComponent.h"
 #include <algorithm>
 #include <iostream>
 #include <random>
+#include <cmath>
 
 namespace rogalique
 {
@@ -75,15 +77,57 @@ namespace rogalique
     {
         std::random_device rd;
         std::mt19937 gen(rd());
-        
         std::uniform_real_distribution<float> distX(50, worldWidth - 50);
         std::uniform_real_distribution<float> distY(50, worldHeight - 50);
         
-        for (int i = 0; i < count; ++i)
+        int spawned = 0;
+        int attempts = 0;
+        const int maxAttempts = 500;
+        
+        while (spawned < count && attempts < maxAttempts)
         {
-            Chest* chest = CreateGameObject<Chest>();
-            chest->SetPosition(sf::Vector2f(distX(gen), distY(gen)));
+            float x = distX(gen);
+            float y = distY(gen);
+            sf::Vector2f pos(x, y);
+            
+            if (IsPositionFree(pos, 16.0f))
+            {
+                auto* chest = CreateGameObject<Chest>();
+                chest->SetPosition(pos);
+                spawned++;
+                std::cout << "[GameWorld] Spawned chest " << spawned << " at (" << x << ", " << y << ")" << std::endl;
+            }
+            attempts++;
         }
+        
+        if (spawned < count)
+        {
+            std::cout << "[GameWorld] Warning: Only spawned " << spawned << " chests out of " << count << std::endl;
+        }
+    }
+    
+    bool GameWorld::IsPositionFree(const sf::Vector2f& pos, float radius) const
+    {
+        for (auto* obj : m_gameObjects)
+        {
+            auto* collision = obj->GetComponent<CollisionComponent>();
+            if (collision)
+            {
+                auto* transform = obj->GetComponent<TransformComponent>();
+                if (transform)
+                {
+                    sf::Vector2f objPos = transform->GetPosition();
+                    float dx = pos.x - objPos.x;
+                    float dy = pos.y - objPos.y;
+                    float dist = std::sqrt(dx * dx + dy * dy);
+                    if (dist < radius + collision->GetRadius())
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
     
     void GameWorld::CheckCollisions()

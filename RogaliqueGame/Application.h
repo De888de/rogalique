@@ -18,6 +18,8 @@ namespace rogalique
         void Run();
         void StartGame();
         void ReturnToMenu();
+        void AddGold(int amount);
+        void AddChest();
         
         sf::RenderWindow window;
         
@@ -25,6 +27,7 @@ namespace rogalique
         void ShowLogoSplash();
         void Update(float deltaTime);
         void Draw();
+        void UpdateUI();
         
         Player* m_player = nullptr;
         std::unique_ptr<Menu> m_menu;
@@ -34,6 +37,12 @@ namespace rogalique
         bool m_inMenu = true;
         bool m_inSoundSettings = false;
         bool m_useCamera = false;
+        
+        int m_gold = 0;
+        int m_chestsCollected = 0;
+        sf::Font m_uiFont;
+        sf::Text m_goldText;
+        sf::Text m_chestText;
     };
     
     extern Application* g_Application;

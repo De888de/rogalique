@@ -9,6 +9,7 @@
 #include "SoundManager.h"
 #include "Enemy.h"
 #include "BlockBuilder.h"
+#include "SeekerComponent.h"
 #include <iostream>
 #include <vector>
 
@@ -33,6 +34,22 @@ namespace rogalique
         sm.LoadMusic("atmosphere_dark", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV");
         sm.LoadMusic("atmosphere_trepidation", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/trepidation.WAV");
         sm.PlayMusicFile("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1).WAV");
+        
+        if (!m_uiFont.loadFromFile("D:/xyz/roqalique/RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))
+        {
+            std::cout << "[App] Warning: Could not load UI font" << std::endl;
+        }
+        m_goldText.setFont(m_uiFont);
+        m_goldText.setCharacterSize(24);
+        m_goldText.setFillColor(sf::Color::Yellow);
+        m_goldText.setPosition(20, 20);
+        
+        m_chestText.setFont(m_uiFont);
+        m_chestText.setCharacterSize(24);
+        m_chestText.setFillColor(sf::Color::Yellow);
+        m_chestText.setPosition(20, 50);
+        
+        UpdateUI();
         
         std::cout << "[App] Application ready" << std::endl;
     }
@@ -139,6 +156,14 @@ namespace rogalique
         auto& world = GameWorld::GetInstance();
         world.Render(window);
         
+        sf::View previousView = window.getView();
+        window.setView(window.getDefaultView());
+        
+        window.draw(m_goldText);
+        window.draw(m_chestText);
+        
+        window.setView(previousView);
+        
         window.display();
     }
 
@@ -148,25 +173,19 @@ namespace rogalique
         
         GameWorld::GetInstance().Clear();
         
+        m_gold = 0;
+        m_chestsCollected = 0;
+        UpdateUI();
+        
+        // Сначала игрок
         m_player = GameWorld::GetInstance().CreateGameObject<Player>();
+        
+        // Потом стены и враги
+        BlockBuilder::LoadLevel("D:/xyz/roqalique/RogaliqueGame/Resources/level1.txt", WORLD_WIDTH, WORLD_HEIGHT, 40);
+        
+        // Потом сундуки
         GameWorld::GetInstance().SpawnChests(10, WORLD_WIDTH, WORLD_HEIGHT);
         
-        // Создаём врагов
-        for (int i = 0; i < 5; ++i)
-        {
-            Enemy* enemy = GameWorld::GetInstance().CreateGameObject<Enemy>();
-            auto* transform = enemy->GetComponent<TransformComponent>();
-            if (transform)
-            {
-                float x = 100 + rand() % (int)(WORLD_WIDTH - 200);
-                float y = 100 + rand() % (int)(WORLD_HEIGHT - 200);
-                transform->SetPosition(sf::Vector2f(x, y));
-                std::cout << "[App] Spawned enemy at (" << x << ", " << y << ")" << std::endl;
-            }
-        }
-        
-        BlockBuilder::LoadLevel("D:/xyz/roqalique/RogaliqueGame/Resources/level1.txt", WORLD_WIDTH, WORLD_HEIGHT, 40);
-
         auto* transform = m_player->GetComponent<TransformComponent>();
         if (transform)
             transform->SetPosition(sf::Vector2f(WORLD_WIDTH / 2.0f, WORLD_HEIGHT / 2.0f));
@@ -245,5 +264,25 @@ namespace rogalique
         {
             std::cout << "[App] Warning: Could not load logo" << std::endl;
         }
+    }
+    
+    void Application::AddGold(int amount)
+    {
+        m_gold += amount;
+        UpdateUI();
+        std::cout << "[App] Gold: " << m_gold << std::endl;
+    }
+    
+    void Application::AddChest()
+    {
+        m_chestsCollected++;
+        UpdateUI();
+        std::cout << "[App] Chests collected: " << m_chestsCollected << std::endl;
+    }
+    
+    void Application::UpdateUI()
+    {
+        m_goldText.setString("Gold: " + std::to_string(m_gold));
+        m_chestText.setString("Chests: " + std::to_string(m_chestsCollected));
     }
 }
