@@ -94,6 +94,9 @@
     <ClCompile Include="UIComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\Engine\Physics\RigidbodyComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
