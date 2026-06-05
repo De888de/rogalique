@@ -1,3 +1,4 @@
+#include <cmath>
 #include "MovementComponent.h"
 #include "TransformComponent.h"
 #include "CollisionComponent.h"
@@ -65,4 +66,4 @@ namespace rogalique
 
     void MovementComponent::Render(sf::RenderWindow&) {}
 }
-#include <iostream>
+

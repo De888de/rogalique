@@ -1,3 +1,4 @@
+#include <cmath>
 #include "SeekerComponent.h"
 #include "TransformComponent.h"
 #include "CollisionComponent.h"

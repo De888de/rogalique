@@ -1,5 +1,5 @@
-#include "pch.h"
 #include "TransformComponent.h"
+#include "RogaliqueGameObject.h"
 
 namespace rogalique
 {
@@ -10,23 +10,40 @@ namespace rogalique
 
     void TransformComponent::Update(float deltaTime)
     {
-        // Пока ничего не обновляем
         (void)deltaTime;
     }
 
     void TransformComponent::Render(sf::RenderWindow& window)
     {
-        // TransformComponent сам ничего не рисует
         (void)window;
     }
 
     void TransformComponent::SetPosition(const sf::Vector2f& pos)
     {
         m_position = pos;
+        m_isDirty = true;
     }
 
     sf::Vector2f TransformComponent::GetPosition() const
     {
         return m_position;
+    }
+
+    void TransformComponent::SetRotation(float angle)
+    {
+        m_rotation = angle;
+        m_isDirty = true;
+    }
+
+    void TransformComponent::SetScale(float x, float y)
+    {
+        m_scale = {x, y};
+        m_isDirty = true;
+    }
+
+    void TransformComponent::UpdateWorldTransform()
+    {
+        // TODO: обновление матрицы трансформации
+        m_isDirty = false;
     }
 }

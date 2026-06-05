@@ -1,3 +1,4 @@
+#include <cmath>
 #include "CollisionComponent.h"
 #include "Player.h"
 #include "Chest.h"
