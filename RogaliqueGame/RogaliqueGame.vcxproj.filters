@@ -94,7 +94,10 @@
     <ClCompile Include="UIComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\Engine\Physics\RigidbodyComponent.cpp">
+    <ClCompile Include="PhysicsTestObject.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidbodyComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -131,6 +134,8 @@
     <ClInclude Include="BrickBlock.h" />
     <ClInclude Include="BlockComponent.h" />
     <ClInclude Include="UIComponent.h" />
+    <ClInclude Include="PhysicsTestObject.h" />
+    <ClInclude Include="RigidbodyComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\level1.txt">

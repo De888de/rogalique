@@ -3,94 +3,71 @@
 
 namespace rogalique {
 
-    TransformMatrix::TransformMatrix() {
-        SetIdentity();
-    }
+TransformMatrix::TransformMatrix() {
+    Reset();
+}
 
-    void TransformMatrix::SetIdentity() {
-        m = { {
-            {{1.0f, 0.0f, 0.0f}},
-            {{0.0f, 1.0f, 0.0f}},
-            {{0.0f, 0.0f, 1.0f}}
-        } };
-    }
+TransformMatrix::~TransformMatrix() {}
 
-    TransformMatrix TransformMatrix::operator*(const TransformMatrix& other) const {
-        TransformMatrix result;
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                result.m[row][col] = 0;
-                for (int k = 0; k < 3; k++) {
-                    result.m[row][col] += m[row][k] * other.m[k][col];
-                }
-            }
-        }
-        return result;
-    }
+void TransformMatrix::UpdateMatrix() {
+    m_transform = sf::Transform::Identity;
+    m_transform.translate(m_position);
+    m_transform.rotate(m_rotation);
+    m_transform.scale(m_scale.x, m_scale.y);
+}
 
-    TransformMatrix& TransformMatrix::operator=(const TransformMatrix& other) {
-        if (this != &other) {
-            m = other.m;
-        }
-        return *this;
-    }
+void TransformMatrix::SetPosition(const sf::Vector2f& pos) {
+    m_position = pos;
+    UpdateMatrix();
+}
 
-    void TransformMatrix::SetTranslation(float tx, float ty) {
-        m[0][2] = tx;
-        m[1][2] = ty;
-    }
+void TransformMatrix::SetPosition(float x, float y) {
+    SetPosition(sf::Vector2f(x, y));
+}
 
-    void TransformMatrix::SetRotation(float angleDeg) {
-        float angleRad = angleDeg * 3.14159f / 180.0f;
-        float c = std::cos(angleRad);
-        float s = std::sin(angleRad);
+sf::Vector2f TransformMatrix::GetPosition() const {
+    return m_position;
+}
 
-        m[0][0] = c;   m[0][1] = -s;
-        m[1][0] = s;   m[1][1] = c;
-    }
+void TransformMatrix::SetScale(const sf::Vector2f& scale) {
+    m_scale = scale;
+    UpdateMatrix();
+}
 
-    void TransformMatrix::SetScale(float sx, float sy) {
-        m[0][0] = sx;
-        m[1][1] = sy;
-    }
+void TransformMatrix::SetScale(float x, float y) {
+    SetScale(sf::Vector2f(x, y));
+}
 
-    void TransformMatrix::SetTransform(const engine::Vector2& position, float rotationDeg, const engine::Vector2& scale) {
-        SetIdentity();
+sf::Vector2f TransformMatrix::GetScale() const {
+    return m_scale;
+}
 
-        // Порядок: Scale * Rotation * Translation
-        TransformMatrix scaleMat;
-        scaleMat.SetScale(scale.x, scale.y);
+void TransformMatrix::SetRotation(float angleDeg) {
+    m_rotation = angleDeg;
+    UpdateMatrix();
+}
 
-        TransformMatrix rotMat;
-        rotMat.SetRotation(rotationDeg);
+float TransformMatrix::GetRotation() const {
+    return m_rotation;
+}
 
-        TransformMatrix transMat;
-        transMat.SetTranslation(position.x, position.y);
+sf::Vector2f TransformMatrix::TransformPoint(const sf::Vector2f& point) const {
+    return m_transform.transformPoint(point);
+}
 
-        *this = transMat * rotMat * scaleMat;
-    }
+sf::Transform TransformMatrix::GetSFTransform() const {
+    return m_transform;
+}
 
-    void TransformMatrix::Transform(float& x, float& y) const {
-        float newX = m[0][0] * x + m[0][1] * y + m[0][2];
-        float newY = m[1][0] * x + m[1][1] * y + m[1][2];
-        x = newX;
-        y = newY;
-    }
+void TransformMatrix::Reset() {
+    m_position = {0, 0};
+    m_scale = {1, 1};
+    m_rotation = 0;
+    UpdateMatrix();
+}
 
-    engine::Vector2 TransformMatrix::TransformPoint(const engine::Vector2& point) const {
-        float x = point.x;
-        float y = point.y;
-        Transform(x, y);
-        return engine::Vector2(x, y);
-    }
-
-    void TransformMatrix::Print() const {
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                std::cout << m[row][col] << " ";
-            }
-            std::cout << "\n";
-        }
-    }
+void TransformMatrix::Combine(const TransformMatrix& other) {
+    m_transform.combine(other.m_transform);
+}
 
 } // namespace rogalique
