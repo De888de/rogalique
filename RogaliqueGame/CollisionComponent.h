@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "IsometricPhysicsItem.h"
 #include "RogaliqueGameObject.h"
 #include <SFML/Graphics.hpp>
 #include <vector>

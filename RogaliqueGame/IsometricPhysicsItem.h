@@ -2,6 +2,12 @@
 #include "RogaliqueGameObject.h"
 #include <SFML/Graphics/CircleShape.hpp>
 
+// Forward declarations
+namespace rogalique {
+    class TransformComponent;
+    class CollisionComponent;
+}
+
 namespace rogalique {
 
 class IsometricPhysicsItem : public RogaliqueGameObject {
@@ -10,31 +16,31 @@ public:
     void Spawn(float worldX, float worldZ);
     void Update(float deltaTime) override;
     void Render(sf::RenderWindow& window) override;
-    
     void ApplyImpulse(float velX, float velZ, float velY);
     
+    float GetRadius() const { return m_radius; }
+    
 private:
-    // Мировые координаты (X, Z — карта, Y — высота)
-    sf::Vector2f m_worldPos;    // X, Z на карте
-    float m_height = 0.0f;       // высота над землёй
+    sf::Vector2f m_worldPos;
+    float m_height = 0.0f;
+    sf::Vector2f m_velGround;
+    float m_velY = 0.0f;
     
-    // Скорости
-    sf::Vector2f m_velGround;    // скорость по земле (X, Z)
-    float m_velY = 0.0f;         // вертикальная скорость
+    float m_gravity = 800.0f;
+    float m_bounciness = 0.6f;
+    float m_damping = 0.98f;
+    float m_radius = 12.0f;
     
-    // Параметры физики
-    float m_gravity = 800.0f;    // сила гравитации
-    float m_bounciness = 0.6f;   // упругость отскока
-    float m_damping = 0.98f;      // сопротивление воздуха
-    float m_radius = 12.0f;       // радиус предмета
-    
-    // Для отрисовки
     sf::CircleShape m_shape;
-    sf::CircleShape m_shadow;     // тень на земле
+    sf::CircleShape m_shadow;
     bool m_active = true;
     
-    // Вспомогательные функции
+    TransformComponent* m_transform = nullptr;
+    CollisionComponent* m_collision = nullptr;
+    
     sf::Vector2f WorldToScreen(const sf::Vector2f& world, float height) const;
+    sf::Vector2f ScreenToWorld(float screenX, float screenY) const;
+    void HandleCollisions();
 };
 
 } // namespace rogalique
