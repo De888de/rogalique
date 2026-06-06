@@ -98,6 +98,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
+    <ClCompile Include="IsometricPhysicsItem.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
     <ClCompile Include="PhysicsTestObject.cpp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="HealthComponent.h" />
+    <ClInclude Include="IsometricPhysicsItem.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="PhysicsTestObject.h" />

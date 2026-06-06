@@ -12,6 +12,7 @@
 #include "BlockBuilder.h"
 #include "SeekerComponent.h"
 #include "PhysicsTestObject.h"
+#include "IsometricPhysicsItem.h"
 #include <iostream>
 #include <vector>
 
@@ -137,6 +138,26 @@ namespace rogalique
 
     void Application::Update(float deltaTime)
     {
+        // Спавн изометрического предмета по клавише I
+        static bool iPressed = false;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)) {
+            if (!iPressed) {
+                iPressed = true;
+                auto* item = GameWorld::GetInstance().CreateGameObject<IsometricPhysicsItem>();
+                if (item) {
+                    sf::Vector2f playerPos(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f);
+                    if (m_player) {
+                        auto* transform = m_player->GetComponent<TransformComponent>();
+                        if (transform) playerPos = transform->GetPosition();
+                    }
+                    item->Spawn(playerPos.x, playerPos.y);
+                    std::cout << "[Physics] Isometric item spawned!" << std::endl;
+                }
+            }
+        }
+        else {
+            iPressed = false;
+        }
         // ===== ОБРАБОТКА КЛАВИШ ДЛЯ ТЕСТА ФИЗИКИ =====
         static bool pPressed = false;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
