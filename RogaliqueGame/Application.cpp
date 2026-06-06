@@ -150,7 +150,7 @@ namespace rogalique
                         auto* transform = m_player->GetComponent<TransformComponent>();
                         if (transform) playerPos = transform->GetPosition();
                     }
-                    item->Spawn(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+                    item->Spawn(playerPos.x, playerPos.y);
                     std::cout << "[Physics] Isometric item spawned!" << std::endl;
                 }
             }
