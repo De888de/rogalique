@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Player.h"
+
 #include "Menu.h"
 #include "SoundSettingsWindow.h"
 #include "GameWorld.h"
@@ -10,6 +11,7 @@
 #include "Enemy.h"
 #include "BlockBuilder.h"
 #include "SeekerComponent.h"
+#include "PhysicsTestObject.h"
 #include <iostream>
 #include <vector>
 
@@ -135,6 +137,28 @@ namespace rogalique
 
     void Application::Update(float deltaTime)
     {
+        // ===== ОБРАБОТКА КЛАВИШ ДЛЯ ТЕСТА ФИЗИКИ =====
+        static bool pPressed = false;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+            if (!pPressed) {
+                pPressed = true;
+                auto* testObj = GameWorld::GetInstance().CreateGameObject<PhysicsTestObject>();
+                if (testObj) {
+                    // Спавним перед игроком
+                    sf::Vector2f playerPos(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f);
+                    if (m_player) {
+                        auto* transform = m_player->GetComponent<TransformComponent>();
+                        if (transform) playerPos = transform->GetPosition();
+                    }
+                    testObj->Spawn(playerPos.x + 50, playerPos.y - 50);
+                    std::cout << "[Physics] Test object spawned!" << std::endl;
+                }
+            }
+        }
+        else {
+            pPressed = false;
+        }
+
         if (m_camera && m_useCamera)
             m_camera->Update(deltaTime);
         
