@@ -1,20 +1,17 @@
 #include "Application.h"
-#include "Player.h"
-
+#include "Player.h"              // ← обязательно полный заголовок
 #include "Menu.h"
 #include "SoundSettingsWindow.h"
 #include "GameWorld.h"
 #include "CameraComponent.h"
 #include "TransformComponent.h"
-#include "SpriteComponent.h"
 #include "SoundManager.h"
-#include "Enemy.h"
 #include "BlockBuilder.h"
-#include "SeekerComponent.h"
 #include "PhysicsTestObject.h"
 #include "IsometricPhysicsItem.h"
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 namespace rogalique
 {
@@ -136,28 +133,28 @@ namespace rogalique
         std::cout << "[App] Run() finished" << std::endl;
     }
 
-    void Application::Update(float deltaTime)
-    {
-        // Спавн изометрического предмета по клавише I
-        static bool iPressed = false;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)) {
-            if (!iPressed) {
-                iPressed = true;
-                auto* item = GameWorld::GetInstance().CreateGameObject<IsometricPhysicsItem>();
-                if (item) {
-                    sf::Vector2f playerPos(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f);
-                    if (m_player) {
-                        auto* transform = m_player->GetComponent<TransformComponent>();
-                        if (transform) playerPos = transform->GetPosition();
-                    }
-                    item->Spawn(playerPos.x, playerPos.y);
-                    std::cout << "[Physics] Isometric item spawned!" << std::endl;
-                }
-            }
-        }
-        else {
-            iPressed = false;
-        }
+ void Application::Update(float deltaTime)
+{
+    
+     // Спавн изометрического предмета по клавише I
+     static bool iPressed = false;
+     if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
+     {
+         if (!iPressed)
+         {
+             iPressed = true;
+             auto* item = GameWorld::GetInstance().CreateGameObject<IsometricPhysicsItem>();
+             if (item)
+             {
+                 item->SpawnInFrontOfPlayer(65.0f);   // удобно тестировать
+             }
+         }
+     }
+     else
+     {
+         iPressed = false;
+     }
+        
         // ===== ОБРАБОТКА КЛАВИШ ДЛЯ ТЕСТА ФИЗИКИ =====
         static bool pPressed = false;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
