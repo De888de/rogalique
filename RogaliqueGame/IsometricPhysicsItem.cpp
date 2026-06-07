@@ -52,7 +52,7 @@ namespace rogalique {
 
         // Случайное начальное движение
         m_velGround = sf::Vector2f((rand() % 400) - 200, (rand() % 400) - 200);
-        m_velY = (rand() % 500) + 250;        // сильный начальный подскок
+        m_velY = (rand() % 250) + 25;        // сильный начальный подскок
 
         sf::Vector2f screenPos = WorldToScreen(m_worldPos, m_height);
         if (m_transform) m_transform->SetPosition(screenPos);
@@ -93,9 +93,8 @@ namespace rogalique {
         m_velGround.y += velZ;
         m_velY += velY;
     }
-
     void IsometricPhysicsItem::HandleCollisions() {
-        if (!m_collision) return;
+        if (!m_collision || !m_active) return;
 
         auto& world = GameWorld::GetInstance();
         auto& objects = world.GetAllGameObjects();
@@ -114,42 +113,45 @@ namespace rogalique {
 
                 delta /= len;
 
-                float bounceStrength = 125.0f;
-                float upwardBoost = 48.0f;
+                float bounceStrength = 95.0f;
+                float upwardBoost = 35.0f;
 
-                // ====================== ИГРОК ======================
+                // ====================== ИГРОК (СБОР ПРЕДМЕТА) ======================
                 if (obj == g_Application->GetPlayer()) {
-                    std::cout << "[Iso] Soft push from PLAYER" << std::endl;
-                    bounceStrength = 215.0f;     // чуть сильнее, чтобы чувствовалось
-                    upwardBoost = 85.0f;
+                    std::cout << "[Iso] Collected by PLAYER! +5 gold" << std::endl;
+
+                    if (g_Application) {
+                        g_Application->AddGold(5);
+                    }
+
+                    m_active = false;
+                    return;
                 }
                 // ====================== ШАР В ШАР ======================
                 else if (dynamic_cast<IsometricPhysicsItem*>(obj)) {
                     std::cout << "[Iso] Ball vs Ball" << std::endl;
-                    bounceStrength = 148.0f;
-                    upwardBoost = 68.0f;
+                    bounceStrength = 110.0f;
+                    upwardBoost = 42.0f;
 
                     auto* other = dynamic_cast<IsometricPhysicsItem*>(obj);
                     if (other) {
-                        other->ApplyImpulse(-delta.x * 105.0f, -delta.y * 105.0f, 55.0f);
+                        other->ApplyImpulse(-delta.x * 75.0f, -delta.y * 75.0f, 38.0f);
                     }
                 }
-                // ====================== СТЕНЫ / БЛОКИ ======================
+                // ====================== СТЕНЫ ======================
                 else {
-                    std::cout << "[Iso] Soft bounce from wall/block" << std::endl;
-                    bounceStrength = 125.0f;
-                    upwardBoost = 48.0f;
+                    std::cout << "[Iso] Weak bounce from wall/block" << std::endl;
+                    bounceStrength = 95.0f;
+                    upwardBoost = 35.0f;
                 }
 
-                // Применяем отскок
                 m_velGround.x = delta.x * bounceStrength;
                 m_velGround.y = delta.y * bounceStrength;
-                m_velY += upwardBoost;   // добавляем, а не заменяем
+                m_velY += upwardBoost;
 
-                // Мягкое выталкивание
-                float overlap = (m_radius + 23.0f) - len;
+                float overlap = (m_radius + 22.0f) - len;
                 if (overlap > 0.0f) {
-                    m_worldPos += sf::Vector2f(delta.x * overlap * 1.15f, delta.y * overlap * 1.15f);
+                    m_worldPos += sf::Vector2f(delta.x * overlap * 0.9f, delta.y * overlap * 0.9f);
                 }
             }
         }
