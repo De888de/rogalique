@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <vector>
 
 namespace rogalique
 {
@@ -9,6 +10,7 @@ namespace rogalique
     class Menu;
     class CameraComponent;
     class SoundSettingsWindow;
+    class WeaponItem;
 
     class Application
     {
@@ -21,6 +23,7 @@ namespace rogalique
         void ReturnToMenu();
         void AddGold(int amount);
         void AddChest();
+        void SpawnWeapon(float x, float z);
 
         sf::RenderWindow window;
         Player* GetPlayer() const { return m_player; }
@@ -30,12 +33,16 @@ namespace rogalique
         void Update(float deltaTime);
         void Draw();
         void UpdateUI();
+        void UpdateWeapons(float dt);
+        void RenderWeapons(sf::RenderWindow& window);
 
         Player* m_player = nullptr;
         std::unique_ptr<Menu> m_menu;
         std::unique_ptr<CameraComponent> m_camera;
         std::unique_ptr<SoundSettingsWindow> m_soundSettings;
+        std::vector<WeaponItem*> m_weaponItems;
         sf::View m_gameView;
+        
         bool m_inMenu = true;
         bool m_inSoundSettings = false;
         bool m_useCamera = false;

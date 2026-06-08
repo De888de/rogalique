@@ -140,6 +140,7 @@
     <ClInclude Include="PhysicsTestObject.h" />
     <ClInclude Include="RigidbodyComponent.h" />
     <ClInclude Include="IsometricPhysicsItem.h" />
+    <ClInclude Include="WeaponItem.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\level1.txt">

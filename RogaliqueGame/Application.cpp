@@ -1,5 +1,5 @@
 #include "Application.h"
-#include "Player.h"              // ← обязательно полный заголовок
+#include "Player.h"
 #include "Menu.h"
 #include "SoundSettingsWindow.h"
 #include "GameWorld.h"
@@ -9,6 +9,7 @@
 #include "BlockBuilder.h"
 #include "PhysicsTestObject.h"
 #include "IsometricPhysicsItem.h"
+#include "WeaponItem.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -51,6 +52,9 @@ namespace rogalique
         
         UpdateUI();
         
+        // Спавн оружия
+        SpawnWeapon(500, 400);
+        
         std::cout << "[App] Application ready" << std::endl;
     }
 
@@ -60,6 +64,11 @@ namespace rogalique
         if (m_player)
             GameWorld::GetInstance().Clear();
         SoundManager::GetInstance().StopMusic();
+        
+        for (auto* weapon : m_weaponItems) {
+            delete weapon;
+        }
+        m_weaponItems.clear();
     }
 
     void Application::Run()
@@ -133,36 +142,34 @@ namespace rogalique
         std::cout << "[App] Run() finished" << std::endl;
     }
 
- void Application::Update(float deltaTime)
-{
-    
-     // Спавн изометрического предмета по клавише I
-     static bool iPressed = false;
-     if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
-     {
-         if (!iPressed)
-         {
-             iPressed = true;
-             auto* item = GameWorld::GetInstance().CreateGameObject<IsometricPhysicsItem>();
-             if (item)
-             {
-                 item->SpawnInFrontOfPlayer(65.0f);   // удобно тестировать
-             }
-         }
-     }
-     else
-     {
-         iPressed = false;
-     }
+    void Application::Update(float deltaTime)
+    {
+        UpdateWeapons(deltaTime);
         
-        // ===== ОБРАБОТКА КЛАВИШ ДЛЯ ТЕСТА ФИЗИКИ =====
+        static bool iPressed = false;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
+        {
+            if (!iPressed)
+            {
+                iPressed = true;
+                auto* item = GameWorld::GetInstance().CreateGameObject<IsometricPhysicsItem>();
+                if (item)
+                {
+                    item->SpawnInFrontOfPlayer(65.0f);
+                }
+            }
+        }
+        else
+        {
+            iPressed = false;
+        }
+        
         static bool pPressed = false;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
             if (!pPressed) {
                 pPressed = true;
                 auto* testObj = GameWorld::GetInstance().CreateGameObject<PhysicsTestObject>();
                 if (testObj) {
-                    // Спавним перед игроком
                     sf::Vector2f playerPos(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f);
                     if (m_player) {
                         auto* transform = m_player->GetComponent<TransformComponent>();
@@ -198,6 +205,8 @@ namespace rogalique
         auto& world = GameWorld::GetInstance();
         world.Render(window);
         
+        RenderWeapons(window);
+        
         sf::View previousView = window.getView();
         window.setView(window.getDefaultView());
         
@@ -219,13 +228,10 @@ namespace rogalique
         m_chestsCollected = 0;
         UpdateUI();
         
-        // Сначала игрок
         m_player = GameWorld::GetInstance().CreateGameObject<Player>();
         
-        // Потом стены и враги
         BlockBuilder::LoadLevel("D:/xyz/roqalique/RogaliqueGame/Resources/level1.txt", WORLD_WIDTH, WORLD_HEIGHT, 40);
         
-        // Потом сундуки
         GameWorld::GetInstance().SpawnChests(10, WORLD_WIDTH, WORLD_HEIGHT);
         
         auto* transform = m_player->GetComponent<TransformComponent>();
@@ -326,5 +332,30 @@ namespace rogalique
     {
         m_goldText.setString("Gold: " + std::to_string(m_gold));
         m_chestText.setString("Chests: " + std::to_string(m_chestsCollected));
+    }
+    
+    void Application::SpawnWeapon(float x, float z) {
+        WeaponItem* weapon = new WeaponItem(x, z);
+        m_weaponItems.push_back(weapon);
+        std::cout << "[Application] Weapon spawned at (" << x << ", " << z << ")" << std::endl;
+    }
+    
+    void Application::UpdateWeapons(float dt) {
+        for (int i = 0; i < (int)m_weaponItems.size(); i++) {
+            m_weaponItems[i]->Update(dt);
+            
+            if (m_player && m_weaponItems[i]->CheckPickup(m_player->GetPosition())) {
+                delete m_weaponItems[i];
+                m_weaponItems.erase(m_weaponItems.begin() + i);
+                i--;
+                std::cout << "[Application] Weapon picked up!" << std::endl;
+            }
+        }
+    }
+    
+    void Application::RenderWeapons(sf::RenderWindow& window) {
+        for (auto* weapon : m_weaponItems) {
+            weapon->Render(window);
+        }
     }
 }

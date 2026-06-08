@@ -148,6 +148,7 @@
     <ClInclude Include="UIComponent.h" />
     <ClInclude Include="Wall.h" />
     <ClInclude Include="WallComponent.h" />
+    <ClInclude Include="WeaponItem.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">
