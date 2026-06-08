@@ -340,21 +340,27 @@ namespace rogalique
         std::cout << "[Application] Weapon spawned at (" << x << ", " << z << ")" << std::endl;
     }
     
-    void Application::UpdateWeapons(float dt) {
-        for (int i = 0; i < (int)m_weaponItems.size(); i++) {
+    void Application::UpdateWeapons(float dt)
+    {
+        for (int i = 0; i < (int)m_weaponItems.size(); i++)
+        {
             m_weaponItems[i]->Update(dt);
-            
-            if (m_player && m_weaponItems[i]->CheckPickup(m_player->GetPosition())) {
+
+            if (m_player && m_weaponItems[i]->CheckPickup(m_player->GetPosition()))
+            {
+                m_player->EquipWeapon();
+
                 delete m_weaponItems[i];
                 m_weaponItems.erase(m_weaponItems.begin() + i);
                 i--;
-                std::cout << "[Application] Weapon picked up!" << std::endl;
             }
         }
     }
-    
-    void Application::RenderWeapons(sf::RenderWindow& window) {
-        for (auto* weapon : m_weaponItems) {
+
+    void Application::RenderWeapons(sf::RenderWindow& window)
+    {
+        for (auto* weapon : m_weaponItems)
+        {
             weapon->Render(window);
         }
     }

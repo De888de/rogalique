@@ -103,6 +103,9 @@
     <ClCompile Include="IsometricPhysicsItem.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="WeaponItem.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">

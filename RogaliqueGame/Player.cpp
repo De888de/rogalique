@@ -19,6 +19,38 @@ namespace rogalique
         AddComponent<MovementComponent>(200.0f);
         AddComponent<HealthComponent>(100);
         AddComponent<CollisionComponent>(16.0f);
+
+        // Инициализация оружия
+        m_equippedWeapon.setSize(sf::Vector2f(30, 20));
+        m_equippedWeapon.setFillColor(sf::Color(148, 0, 211));
+        m_equippedWeapon.setOrigin(5, 10); // чуть смещено вправо от игрока
+    }
+
+    void Player::EquipWeapon()
+    {
+        if (!m_hasWeapon) {
+            m_hasWeapon = true;
+            std::cout << "[Player] Weapon equipped!" << std::endl;
+        }
+    }
+
+    void Player::Render(sf::RenderWindow& window)
+    {
+        // Сначала рендерим базовые компоненты
+        RogaliqueGameObject::Render(window);
+
+        // Рендерим оружие в руке
+        if (m_hasWeapon)
+        {
+            auto* transform = GetComponent<TransformComponent>();
+            if (transform)
+            {
+                sf::Vector2f pos = transform->GetPosition();
+                // Оружие немного справа и чуть выше от центра игрока
+                m_equippedWeapon.setPosition(pos.x + 18, pos.y - 5);
+                window.draw(m_equippedWeapon);
+            }
+        }
     }
     
     void Player::Update(float deltaTime)
@@ -48,4 +80,15 @@ namespace rogalique
             }
         }
     }
+    sf::Vector2f Player::GetPosition() const
+    {
+        auto* transform = GetComponent<TransformComponent>();
+        if (transform)
+            return transform->GetPosition();
+        return sf::Vector2f(0, 0);
+    }
+
+   
+
+    
 }
