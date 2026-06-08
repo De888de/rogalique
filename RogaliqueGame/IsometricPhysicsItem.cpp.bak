@@ -137,8 +137,8 @@ namespace rogalique {
                 // ====================== СТЕНЫ / БЛОКИ ======================
                 else {
                     std::cout << "[Iso] Soft bounce from wall/block" << std::endl;
-                    bounceStrength = 1,5.0f;
-                    upwardBoost = 0,8.0f;
+                    bounceStrength = 125.0f;
+                    upwardBoost = 48.0f;
                 }
 
                 // Применяем отскок
@@ -156,20 +156,6 @@ namespace rogalique {
     }
 
     void IsometricPhysicsItem::Update(float deltaTime) {
-    m_lifeTime -= deltaTime;
-    
-    // Эффект свечения
-    float intensity = m_lifeTime / 3.0f;
-    if (m_lifeTime < 1.0f) {
-        float blink = 0.5f + 0.5f * sin(m_lifeTime * 20.0f);
-        intensity = blink;
-    }
-    m_shape.setFillColor(sf::Color(255, 100 * intensity, 50 * intensity));
-    if (m_lifeTime <= 0) {
-        m_active = false;
-        std::cout << "[Iso] Ball expired!" << std::endl;
-        return;
-    }
         if (!m_active) return;
 
         m_velY -= m_gravity * deltaTime;

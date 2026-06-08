@@ -32,10 +32,11 @@ namespace rogalique {
         sf::Vector2f m_velGround{ 0.f, 0.f };
         float m_velY = 0.0f;
 
-        float m_gravity = 800.0f;
-        float m_bounciness = 0.6f;
-        float m_damping = 0.98f;
+        float m_gravity = 1500.0f;
+        float m_bounciness = 0.2f;
+        float m_damping = 0.94f;
         float m_radius = 14.0f;
+    float m_lifeTime = 3.0f;
 
         sf::CircleShape m_shape;
         sf::CircleShape m_shadow;
