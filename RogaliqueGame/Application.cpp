@@ -10,6 +10,7 @@
 #include "PhysicsTestObject.h"
 #include "IsometricPhysicsItem.h"
 #include "WeaponItem.h"
+#include "Bullet.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -52,7 +53,6 @@ namespace rogalique
         
         UpdateUI();
         
-        // Спавн оружия
         SpawnWeapon(500, 400);
         
         std::cout << "[App] Application ready" << std::endl;
@@ -69,6 +69,11 @@ namespace rogalique
             delete weapon;
         }
         m_weaponItems.clear();
+        
+        for (auto* bullet : m_bullets) {
+            delete bullet;
+        }
+        m_bullets.clear();
     }
 
     void Application::Run()
@@ -183,6 +188,29 @@ namespace rogalique
         else {
             pPressed = false;
         }
+        
+        // Стрельба по F
+        static bool fPressed = false;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
+            if (!fPressed && m_player) {
+                fPressed = true;
+                Bullet* bullet = new Bullet(m_player->GetPosition(), sf::Vector2f(1, 0));
+                m_bullets.push_back(bullet);
+                std::cout << "[App] Pew!" << std::endl;
+            }
+        } else {
+            fPressed = false;
+        }
+        
+        // Обновление пуль
+        for (int i = 0; i < (int)m_bullets.size(); i++) {
+            m_bullets[i]->Update(deltaTime);
+            if (!m_bullets[i]->IsActive()) {
+                delete m_bullets[i];
+                m_bullets.erase(m_bullets.begin() + i);
+                i--;
+            }
+        }
 
         if (m_camera && m_useCamera)
             m_camera->Update(deltaTime);
@@ -206,6 +234,11 @@ namespace rogalique
         world.Render(window);
         
         RenderWeapons(window);
+        
+        // Отрисовка пуль
+        for (int i = 0; i < (int)m_bullets.size(); i++) {
+            m_bullets[i]->Render(window);
+        }
         
         sf::View previousView = window.getView();
         window.setView(window.getDefaultView());
@@ -340,27 +373,21 @@ namespace rogalique
         std::cout << "[Application] Weapon spawned at (" << x << ", " << z << ")" << std::endl;
     }
     
-    void Application::UpdateWeapons(float dt)
-    {
-        for (int i = 0; i < (int)m_weaponItems.size(); i++)
-        {
+    void Application::UpdateWeapons(float dt) {
+        for (int i = 0; i < (int)m_weaponItems.size(); i++) {
             m_weaponItems[i]->Update(dt);
-
-            if (m_player && m_weaponItems[i]->CheckPickup(m_player->GetPosition()))
-            {
-                m_player->EquipWeapon();
-
+            
+            if (m_player && m_weaponItems[i]->CheckPickup(m_player->GetPosition())) {
                 delete m_weaponItems[i];
                 m_weaponItems.erase(m_weaponItems.begin() + i);
                 i--;
+                std::cout << "[Application] Weapon picked up!" << std::endl;
             }
         }
     }
-
-    void Application::RenderWeapons(sf::RenderWindow& window)
-    {
-        for (auto* weapon : m_weaponItems)
-        {
+    
+    void Application::RenderWeapons(sf::RenderWindow& window) {
+        for (auto* weapon : m_weaponItems) {
             weapon->Render(window);
         }
     }

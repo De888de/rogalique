@@ -5,12 +5,12 @@
 
 namespace rogalique
 {
-    // Forward declarations
     class Player;
     class Menu;
     class CameraComponent;
     class SoundSettingsWindow;
     class WeaponItem;
+    class Bullet;
 
     class Application
     {
@@ -41,6 +41,7 @@ namespace rogalique
         std::unique_ptr<CameraComponent> m_camera;
         std::unique_ptr<SoundSettingsWindow> m_soundSettings;
         std::vector<WeaponItem*> m_weaponItems;
+        std::vector<Bullet*> m_bullets;
         sf::View m_gameView;
         
         bool m_inMenu = true;
