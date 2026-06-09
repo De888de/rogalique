@@ -226,10 +226,9 @@ namespace rogalique
         
         RenderWeapons(window);
         
-        // Отрисовка пуль
-        for (int i = 0; i < (int)m_bullets.size(); i++) {
-            m_bullets[i]->Render(window);
-        }
+       
+
+        
         
         sf::View previousView = window.getView();
         window.setView(window.getDefaultView());
@@ -237,6 +236,7 @@ namespace rogalique
         window.draw(m_goldText);
         window.draw(m_chestText);
         window.draw(m_ammoText);
+        m_healthUI.Render(window);
         
         window.setView(previousView);
         
@@ -254,6 +254,7 @@ namespace rogalique
         UpdateUI();
         
         m_player = GameWorld::GetInstance().CreateGameObject<Player>();
+        GameWorld::GetInstance().SetPlayer(m_player);
         
         BlockBuilder::LoadLevel("D:/xyz/roqalique/RogaliqueGame/Resources/level1.txt", WORLD_WIDTH, WORLD_HEIGHT, 40);
         
@@ -358,6 +359,7 @@ namespace rogalique
         std::cout << "[UI] UpdateUI called" << std::endl; 
         m_goldText.setString("Gold: " + std::to_string(m_gold));
         m_chestText.setString("Chests: " + std::to_string(m_chestsCollected));
+        m_healthUI.Reset();
         if (m_player && m_player->GetWeapon()) {
             int ammo = m_player->GetWeapon()->GetCurrentAmmo();
             int maxAmmo = m_player->GetWeapon()->GetMaxAmmo();

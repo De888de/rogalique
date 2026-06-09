@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include "Player.h"
+#include "HealthUI.h"
 
 namespace rogalique
 {
@@ -25,7 +26,8 @@ namespace rogalique
         void AddGold(int amount);
         void AddChest();
         void SpawnWeapon(float x, float z);
-        void UpdateUI();  // ← ПУБЛИЧНЫЙ метод
+        void UpdateUI();
+        void UpdateHealthUI(int current, int max) { m_healthUI.UpdateHealth(current, max); }
 
         sf::RenderWindow window;
         Player* GetPlayer() const { return m_player; }
@@ -42,9 +44,8 @@ namespace rogalique
         std::unique_ptr<CameraComponent> m_camera;
         std::unique_ptr<SoundSettingsWindow> m_soundSettings;
         std::vector<WeaponItem*> m_weaponItems;
-        std::vector<Bullet*> m_bullets;
         sf::View m_gameView;
-
+        
         bool m_inMenu = true;
         bool m_inSoundSettings = false;
         bool m_useCamera = false;
@@ -54,7 +55,9 @@ namespace rogalique
         sf::Font m_uiFont;
         sf::Text m_goldText;
         sf::Text m_chestText;
-        sf::Text m_ammoText;  // ← ДОБАВЛЕНО
+        sf::Text m_ammoText;
+        
+        HealthUI m_healthUI;
     };
 
     extern Application* g_Application;

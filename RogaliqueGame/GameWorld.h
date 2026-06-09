@@ -5,6 +5,8 @@
 
 namespace rogalique
 {
+    class Player;
+    
     class GameWorld
     {
     public:
@@ -30,7 +32,6 @@ namespace rogalique
             return obj;
         }
         
-        // Добавляем существующий объект в мир
         void AddGameObject(RogaliqueGameObject* obj) 
         { 
             m_gameObjects.push_back(obj); 
@@ -46,11 +47,16 @@ namespace rogalique
         
         const std::vector<RogaliqueGameObject*>& GetAllGameObjects() const { return m_gameObjects; }
         
+        // Управление игроком
+        void SetPlayer(Player* player) { m_player = player; }
+        Player* GetPlayer() const { return m_player; }
+        
     private:
         GameWorld() = default;
         ~GameWorld() = default;
         
         std::vector<RogaliqueGameObject*> m_gameObjects;
         std::vector<RogaliqueGameObject*> m_markedForDestroy;
+        Player* m_player = nullptr;
     };
 }

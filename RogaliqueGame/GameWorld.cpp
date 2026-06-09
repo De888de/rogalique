@@ -7,10 +7,10 @@
 #include "Chest.h"
 #include "CollisionComponent.h"
 #include "TransformComponent.h"
+#include "Application.h"
 #include <algorithm>
 #include <iostream>
 #include <random>
-
 
 namespace rogalique
 {
@@ -29,17 +29,11 @@ namespace rogalique
         }
 
         // Логика подбора оружия
-        Player* player = nullptr;
-        for (auto* obj : m_gameObjects) {
-            player = dynamic_cast<Player*>(obj);
-            if (player) break;
-        }
-        
-        if (player) {
+        if (m_player) {
             for (auto it = m_gameObjects.begin(); it != m_gameObjects.end(); ) {
                 WeaponItem* weapon = dynamic_cast<WeaponItem*>(*it);
-                if (weapon && weapon->CheckPickup(player->GetPosition())) {
-                    player->EquipWeapon();
+                if (weapon && weapon->CheckPickup(m_player->GetPosition())) {
+                    m_player->EquipWeapon();
                     delete *it;
                     it = m_gameObjects.erase(it);
                     continue;
@@ -96,6 +90,7 @@ namespace rogalique
             delete obj;
         m_gameObjects.clear();
         m_markedForDestroy.clear();
+        m_player = nullptr;
     }
     
     void GameWorld::SpawnChests(int count, float worldWidth, float worldHeight)
@@ -157,10 +152,9 @@ namespace rogalique
     
     void GameWorld::CheckCollisions()
     {
-        // 1. Коллизии через CollisionComponent (существующий код)
         std::vector<CollisionComponent*> colliders;
-        std::cout << "[Collision] Checking collisions, objects count: " << m_gameObjects.size() << std::endl;
 
+        // 1. Коллизии через CollisionComponent
         for (size_t i = 0; i < m_gameObjects.size(); ++i)
         {
             CollisionComponent* col = m_gameObjects[i]->GetComponent<CollisionComponent>();
@@ -181,22 +175,15 @@ namespace rogalique
         }
 
         // 2. Пули vs Враги
-        std::cout << "[Collision] Checking bullets vs enemies, total objects: " << m_gameObjects.size() << std::endl;
-
         for (size_t i = 0; i < m_gameObjects.size(); ++i)
         {
             Bullet* bullet = dynamic_cast<Bullet*>(m_gameObjects[i]);
-            if (!bullet) {
-                continue;
-            }
-            std::cout << "[Collision] Found bullet at index " << i << std::endl;
+            if (!bullet) continue;
 
             for (size_t j = 0; j < m_gameObjects.size(); ++j)
             {
                 Enemy* enemy = dynamic_cast<Enemy*>(m_gameObjects[j]);
                 if (!enemy) continue;
-
-                std::cout << "[Collision] Checking bullet vs enemy" << std::endl;
 
                 auto* bulletTransform = bullet->GetComponent<TransformComponent>();
                 auto* enemyTransform = enemy->GetComponent<TransformComponent>();
@@ -210,8 +197,6 @@ namespace rogalique
                 float dy = bulletPos.y - enemyPos.y;
                 float dist = std::sqrt(dx * dx + dy * dy);
 
-                std::cout << "[Collision] Distance: " << dist << std::endl;
-
                 if (dist < 25.0f)
                 {
                     int damage = enemy->GetMaxHealth() * 0.25f;
@@ -221,6 +206,49 @@ namespace rogalique
                     std::cout << "[Collision] BULLET HIT! Damage: " << damage << std::endl;
                     DestroyGameObject(bullet);
                     break;
+                }
+            }
+        }
+        
+        // 3. Игрок vs Враги - урон при касании (прямая проверка расстояния)
+        if (m_player)
+        {
+            auto* playerTransform = m_player->GetComponent<TransformComponent>();
+            if (playerTransform)
+            {
+                sf::Vector2f playerPos = playerTransform->GetPosition();
+
+                for (auto* enemyObj : m_gameObjects)
+                {
+                    Enemy* enemy = dynamic_cast<Enemy*>(enemyObj);
+                    if (!enemy) continue;
+
+                    auto* enemyTransform = enemy->GetComponent<TransformComponent>();
+                    if (!enemyTransform) continue;
+
+                    sf::Vector2f enemyPos = enemyTransform->GetPosition();
+
+                    float dx = playerPos.x - enemyPos.x;
+                    float dy = playerPos.y - enemyPos.y;
+                    float dist = std::sqrt(dx * dx + dy * dy);
+
+                    // Если расстояние меньше 35 пикселей
+                    if (dist < 35.0f)
+                    {
+                        std::cout << "[Collision] COLLISION! Player-enemy distance: " << dist << std::endl;
+
+                        // Наносим урон без проверок (для теста)
+                        if (!m_player->IsInvulnerable())
+                        {
+                            m_player->TakeDamage(1);
+                            std::cout << "[Collision] Player health: " << m_player->GetHealth() << std::endl;
+
+                            if (g_Application) {
+                                g_Application->UpdateHealthUI(m_player->GetHealth(), m_player->GetMaxHealth());
+                            }
+                        }
+                        break;
+                    }
                 }
             }
         }

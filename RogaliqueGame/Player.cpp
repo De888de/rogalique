@@ -46,9 +46,15 @@ namespace rogalique
         }
     }
 
+   
+
     void Player::Update(float deltaTime)
     {
         RogaliqueGameObject::Update(deltaTime);
+
+        if (m_invulnerableTimer > 0.0f) {
+            m_invulnerableTimer -= deltaTime;
+        }
         
         if (m_weapon) {
             m_weapon->Update(deltaTime);
@@ -65,6 +71,8 @@ namespace rogalique
                 m_shootCooldown = m_fireRate;
             }
         }
+
+
         
         static bool rPressed = false;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
@@ -167,5 +175,27 @@ namespace rogalique
         if (transform)
             return transform->GetPosition();
         return sf::Vector2f(0, 0);
+    }
+    void Player::TakeDamage(int damage)
+    {
+        if (IsInvulnerable()) return;
+        if (m_health <= 0) return;
+
+        m_health -= damage;
+        m_invulnerableTimer = m_invulnerableDuration;
+
+        std::cout << "[Player] Hit! -" << damage << " HP, Health: " << m_health << "/" << m_maxHealth << std::endl;
+
+        if (m_health <= 0) {
+            std::cout << "[Player] DIED! Game Over!" << std::endl;
+            // TODO: Game Over экран
+        }
+    }
+
+    void Player::Heal(int amount)
+    {
+        m_health += amount;
+        if (m_health > m_maxHealth) m_health = m_maxHealth;
+        std::cout << "[Player] Healed +" << amount << " HP, Health: " << m_health << "/" << m_maxHealth << std::endl;
     }
 }
