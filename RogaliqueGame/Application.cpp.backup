@@ -70,7 +70,10 @@ namespace rogalique
         }
         m_weaponItems.clear();
         
-       
+        for (auto* bullet : m_bullets) {
+            delete bullet;
+        }
+        m_bullets.clear();
     }
 
     void Application::Run()
@@ -189,6 +192,12 @@ namespace rogalique
         // Стрельба по F
         static bool fPressed = false;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
+            if (!fPressed && m_player) {
+                fPressed = true;
+                Bullet* bullet = new Bullet(m_player->GetPosition(), sf::Vector2f(1, 0));
+                m_bullets.push_back(bullet);
+                std::cout << "[App] Pew!" << std::endl;
+            }
         }
         else {
             fPressed = false;
