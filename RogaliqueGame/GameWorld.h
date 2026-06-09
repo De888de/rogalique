@@ -30,6 +30,12 @@ namespace rogalique
             return obj;
         }
         
+        // Добавляем существующий объект в мир
+        void AddGameObject(RogaliqueGameObject* obj) 
+        { 
+            m_gameObjects.push_back(obj); 
+        }
+        
         void DestroyGameObject(RogaliqueGameObject* obj);
         void DestroyGameObjectImmediate(RogaliqueGameObject* obj);
         void Clear();

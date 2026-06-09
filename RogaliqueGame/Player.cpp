@@ -8,6 +8,8 @@
 #include "MovementComponent.h"
 #include "HealthComponent.h"
 #include "Application.h"           // ← Обязательно для g_Application
+#include "Bullet.h"
+#include "Bullet.h"
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
@@ -91,6 +93,13 @@ namespace rogalique
         float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
         if (len > 0.0f)
             dir /= len;
+
+        // Создаём пулю
+        Bullet* bullet = new Bullet(playerPos, dir, 600.0f);
+
+        // Добавляем в GameWorld
+        auto& world = GameWorld::GetInstance();
+        world.AddGameObject(bullet);
 
         std::cout << "[Shoot] Direction: (" << dir.x << ", " << dir.y << ")" << std::endl;
     }

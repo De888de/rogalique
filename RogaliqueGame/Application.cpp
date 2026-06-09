@@ -203,12 +203,17 @@ namespace rogalique
         }
         
         // Обновление пуль
-        for (int i = 0; i < (int)m_bullets.size(); i++) {
-            m_bullets[i]->Update(deltaTime);
-            if (!m_bullets[i]->IsActive()) {
-                delete m_bullets[i];
-                m_bullets.erase(m_bullets.begin() + i);
-                i--;
+        for (auto it = m_bullets.begin(); it != m_bullets.end(); )
+        {
+            (*it)->Update(deltaTime);
+            if (!(*it)->IsActive())
+            {
+                delete* it;
+                it = m_bullets.erase(it);
+            }
+            else
+            {
+                ++it;
             }
         }
 
