@@ -3,40 +3,36 @@
 
 namespace rogalique {
 
-class Bullet {
-private:
-    sf::CircleShape m_shape;
-    sf::Vector2f m_pos;
-    sf::Vector2f m_vel;
-    bool m_active;
-    float m_life;
-    
-public:
-    Bullet(sf::Vector2f pos, sf::Vector2f dir) {
-        m_pos = pos;
-        m_vel = dir * 500.0f;
-        m_active = true;
-        m_life = 2.0f;
+    class Bullet {
+    public:
+        // Конструктор с 2 аргументами (позиция, направление)
+        Bullet(sf::Vector2f position, sf::Vector2f direction)
+            : m_active(false), m_position(position), m_velocity(direction) {
+            std::cout << "[Bullet] Created (2 args) - but shooting is disabled" << std::endl;
+        }
         
-        m_shape.setRadius(4);
-        m_shape.setFillColor(sf::Color::Yellow);
-        m_shape.setOrigin(4, 4);
-        m_shape.setPosition(m_pos);
-    }
-    
-    void Update(float dt) {
-        if (!m_active) return;
-        m_pos += m_vel * dt;
-        m_life -= dt;
-        m_shape.setPosition(m_pos);
-        if (m_life <= 0) m_active = false;
-    }
-    
-    void Render(sf::RenderWindow& w) {
-        if (m_active) w.draw(m_shape);
-    }
-    
-    bool IsActive() { return m_active; }
-};
+        // Конструктор с 3 аргументами (позиция, направление, скорость)
+        Bullet(sf::Vector2f position, sf::Vector2f direction, float speed)
+            : m_active(false), m_position(position), m_velocity(direction * speed) {
+            std::cout << "[Bullet] Created (3 args) - but shooting is disabled" << std::endl;
+        }
 
+        void Update(float deltaTime) {
+            // Заглушка - пули не двигаются
+        }
+
+        void Render(sf::RenderWindow& window) {
+            // Заглушка - ничего не рисуем
+        }
+
+        bool IsActive() const { 
+            return false; // Пули никогда не активны
+        }
+        
+    private:
+        sf::Vector2f m_position;
+        sf::Vector2f m_velocity;
+        bool m_active;
+    };
+    
 }

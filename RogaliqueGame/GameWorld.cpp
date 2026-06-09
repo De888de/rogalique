@@ -1,3 +1,5 @@
+#include "Player.h"
+#include "WeaponItem.h"
 #include <cmath>
 #include "GameWorld.h"
 #include "Chest.h"
@@ -22,6 +24,26 @@ namespace rogalique
         {
             if (obj)
                 obj->Update(deltaTime);
+        }
+
+        // Логика подбора оружия
+        Player* player = nullptr;
+        for (auto* obj : m_gameObjects) {
+            player = dynamic_cast<Player*>(obj);
+            if (player) break;
+        }
+        
+        if (player) {
+            for (auto it = m_gameObjects.begin(); it != m_gameObjects.end(); ) {
+                WeaponItem* weapon = dynamic_cast<WeaponItem*>(*it);
+                if (weapon && weapon->CheckPickup(player->GetPosition())) {
+                    player->EquipWeapon();
+                    delete *it;
+                    it = m_gameObjects.erase(it);
+                    continue;
+                }
+                ++it;
+            }
         }
     }
     

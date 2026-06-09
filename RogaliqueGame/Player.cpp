@@ -25,6 +25,7 @@ namespace rogalique
         m_equippedWeapon.setSize(sf::Vector2f(35, 12));
         m_equippedWeapon.setFillColor(sf::Color(200, 200, 50));
         m_equippedWeapon.setOrigin(5, 6);
+        m_hasWeapon = true;
     }
 
     void Player::EquipWeapon()
@@ -113,6 +114,7 @@ namespace rogalique
 
                 m_equippedWeapon.setRotation(angle);
                 m_equippedWeapon.setPosition(playerPos.x + 18.f, playerPos.y - 5.f);
+               
 
                 window.draw(m_equippedWeapon);
             }
