@@ -7,9 +7,8 @@
 #include "SpriteComponent.h"
 #include "MovementComponent.h"
 #include "HealthComponent.h"
-#include "Application.h"           
+#include "Application.h"
 #include "Bullet.h"
-
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
@@ -27,20 +26,33 @@ namespace rogalique
         m_equippedWeapon.setSize(sf::Vector2f(35, 12));
         m_equippedWeapon.setFillColor(sf::Color(200, 200, 50));
         m_equippedWeapon.setOrigin(5, 6);
-        
+    }
+
+    void Player::SetWeapon(Weapon* weapon)
+    {
+        if (m_weapon) {
+            delete m_weapon;
+        }
+        m_weapon = weapon;
+        m_hasWeapon = true;
+        std::cout << "[Player] Equipped: " << m_weapon->GetName() << std::endl;
     }
 
     void Player::EquipWeapon()
     {
         if (!m_hasWeapon) {
-            m_hasWeapon = true;
-            std::cout << "[Player] Weapon equipped! Press F to shoot" << std::endl;
+            Weapon* starterWeapon = new Weapon("Iron Pistol", 20, 0.25f, 10);
+            SetWeapon(starterWeapon);
         }
     }
 
     void Player::Update(float deltaTime)
     {
         RogaliqueGameObject::Update(deltaTime);
+        
+        if (m_weapon) {
+            m_weapon->Update(deltaTime);
+        }
 
         m_shootCooldown -= deltaTime;
         if (m_shootCooldown < 0.0f) m_shootCooldown = 0.0f;
@@ -53,8 +65,20 @@ namespace rogalique
                 m_shootCooldown = m_fireRate;
             }
         }
+        
+        static bool rPressed = false;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+            if (!rPressed && m_weapon) {
+                m_weapon->Reload();
+                if (g_Application) {
+                    g_Application->UpdateUI();
+                }
+                rPressed = true;
+            }
+        } else {
+            rPressed = false;
+        }
 
-        // Проверка сундуков
         auto* transform = GetComponent<TransformComponent>();
         if (!transform) return;
 
@@ -79,29 +103,35 @@ namespace rogalique
 
     void Player::Shoot()
     {
-        std::cout << "[Player] BANG!" << std::endl;
-
+        if (!m_weapon) {
+            std::cout << "[Player] No weapon!" << std::endl;
+            return;
+        }
+        
+        if (!m_weapon->CanShoot()) {
+            return;
+        }
+        
         sf::Vector2i mouseScreen = sf::Mouse::getPosition(g_Application->window);
         sf::Vector2f mouseWorld = g_Application->window.mapPixelToCoords(mouseScreen);
-
+        
         auto* transform = GetComponent<TransformComponent>();
         if (!transform) return;
-
+        
         sf::Vector2f playerPos = transform->GetPosition();
         sf::Vector2f dir = mouseWorld - playerPos;
-
         float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
-        if (len > 0.0f)
-            dir /= len;
-
-        // Создаём пулю
-        Bullet* bullet = new Bullet(playerPos, dir, 600.0f);
-
-        // Добавляем в GameWorld
-        auto& world = GameWorld::GetInstance();
-        world.AddGameObject(bullet);
-
-        std::cout << "[Shoot] Direction: (" << dir.x << ", " << dir.y << ")" << std::endl;
+        if (len > 0.0f) dir /= len;
+        
+        if (m_weapon->Shoot()) {
+            Bullet* bullet = new Bullet(playerPos, dir, 600.0f);
+            auto& world = GameWorld::GetInstance();
+            world.AddGameObject(bullet);
+            
+            if (g_Application) {
+                g_Application->UpdateUI();
+            }
+        }
     }
 
     void Player::Render(sf::RenderWindow& window)
@@ -123,7 +153,6 @@ namespace rogalique
 
                 m_equippedWeapon.setRotation(angle);
                 m_equippedWeapon.setPosition(playerPos.x + 18.f, playerPos.y - 5.f);
-               
 
                 window.draw(m_equippedWeapon);
             }

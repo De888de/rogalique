@@ -50,6 +50,13 @@ namespace rogalique
         m_chestText.setCharacterSize(24);
         m_chestText.setFillColor(sf::Color::Yellow);
         m_chestText.setPosition(20, 50);
+
+        m_ammoText.setFont(m_uiFont);
+        m_ammoText.setCharacterSize(24);
+        m_ammoText.setFillColor(sf::Color::White);
+        m_ammoText.setPosition(20, 80);
+
+
         
         UpdateUI();
         
@@ -229,6 +236,7 @@ namespace rogalique
         
         window.draw(m_goldText);
         window.draw(m_chestText);
+        window.draw(m_ammoText);
         
         window.setView(previousView);
         
@@ -347,8 +355,19 @@ namespace rogalique
     
     void Application::UpdateUI()
     {
+        std::cout << "[UI] UpdateUI called" << std::endl;  // ← ДОБАВИТЬ
         m_goldText.setString("Gold: " + std::to_string(m_gold));
         m_chestText.setString("Chests: " + std::to_string(m_chestsCollected));
+        if (m_player && m_player->GetWeapon()) {
+            int ammo = m_player->GetWeapon()->GetCurrentAmmo();
+            int maxAmmo = m_player->GetWeapon()->GetMaxAmmo();
+            m_ammoText.setString("Ammo: " + std::to_string(ammo) + " / " + std::to_string(maxAmmo));
+            std::cout << "[UI] Ammo: " << ammo << "/" << maxAmmo << std::endl;  // ← ДОБАВИТЬ
+        }
+        else {
+            m_ammoText.setString("Ammo: 0 / 0");
+            std::cout << "[UI] No weapon!" << std::endl;  // ← ДОБАВИТЬ
+        }
     }
     
     void Application::SpawnWeapon(float x, float z) {

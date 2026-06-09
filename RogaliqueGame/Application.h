@@ -25,6 +25,7 @@ namespace rogalique
         void AddGold(int amount);
         void AddChest();
         void SpawnWeapon(float x, float z);
+        void UpdateUI();  // ← ПУБЛИЧНЫЙ метод
 
         sf::RenderWindow window;
         Player* GetPlayer() const { return m_player; }
@@ -33,7 +34,6 @@ namespace rogalique
         void ShowLogoSplash();
         void Update(float deltaTime);
         void Draw();
-        void UpdateUI();
         void UpdateWeapons(float dt);
         void RenderWeapons(sf::RenderWindow& window);
 
@@ -44,7 +44,7 @@ namespace rogalique
         std::vector<WeaponItem*> m_weaponItems;
         std::vector<Bullet*> m_bullets;
         sf::View m_gameView;
-        
+
         bool m_inMenu = true;
         bool m_inSoundSettings = false;
         bool m_useCamera = false;
@@ -54,6 +54,7 @@ namespace rogalique
         sf::Font m_uiFont;
         sf::Text m_goldText;
         sf::Text m_chestText;
+        sf::Text m_ammoText;  // ← ДОБАВЛЕНО
     };
 
     extern Application* g_Application;
