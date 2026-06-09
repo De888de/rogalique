@@ -7,9 +7,9 @@
 #include "SpriteComponent.h"
 #include "MovementComponent.h"
 #include "HealthComponent.h"
-#include "Application.h"           // ← Обязательно для g_Application
+#include "Application.h"           
 #include "Bullet.h"
-#include "Bullet.h"
+
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
@@ -27,7 +27,7 @@ namespace rogalique
         m_equippedWeapon.setSize(sf::Vector2f(35, 12));
         m_equippedWeapon.setFillColor(sf::Color(200, 200, 50));
         m_equippedWeapon.setOrigin(5, 6);
-        m_hasWeapon = true;
+        
     }
 
     void Player::EquipWeapon()

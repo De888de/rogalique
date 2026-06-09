@@ -362,6 +362,7 @@ namespace rogalique
             m_weaponItems[i]->Update(dt);
             
             if (m_player && m_weaponItems[i]->CheckPickup(m_player->GetPosition())) {
+                m_player->EquipWeapon();
                 delete m_weaponItems[i];
                 m_weaponItems.erase(m_weaponItems.begin() + i);
                 i--;
