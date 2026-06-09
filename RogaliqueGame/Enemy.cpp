@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "Bullet.h"
 #include "TransformComponent.h"
 #include "SpriteComponent.h"
 #include "CollisionComponent.h"

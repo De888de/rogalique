@@ -355,18 +355,18 @@ namespace rogalique
     
     void Application::UpdateUI()
     {
-        std::cout << "[UI] UpdateUI called" << std::endl;  // ← ДОБАВИТЬ
+        std::cout << "[UI] UpdateUI called" << std::endl; 
         m_goldText.setString("Gold: " + std::to_string(m_gold));
         m_chestText.setString("Chests: " + std::to_string(m_chestsCollected));
         if (m_player && m_player->GetWeapon()) {
             int ammo = m_player->GetWeapon()->GetCurrentAmmo();
             int maxAmmo = m_player->GetWeapon()->GetMaxAmmo();
             m_ammoText.setString("Ammo: " + std::to_string(ammo) + " / " + std::to_string(maxAmmo));
-            std::cout << "[UI] Ammo: " << ammo << "/" << maxAmmo << std::endl;  // ← ДОБАВИТЬ
+            std::cout << "[UI] Ammo: " << ammo << "/" << maxAmmo << std::endl;  
         }
         else {
             m_ammoText.setString("Ammo: 0 / 0");
-            std::cout << "[UI] No weapon!" << std::endl;  // ← ДОБАВИТЬ
+            std::cout << "[UI] No weapon!" << std::endl;  
         }
     }
     

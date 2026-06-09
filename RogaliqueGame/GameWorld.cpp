@@ -1,4 +1,6 @@
 #include "Player.h"
+#include "Bullet.h"
+#include "Enemy.h"
 #include "WeaponItem.h"
 #include <cmath>
 #include "GameWorld.h"
@@ -8,7 +10,7 @@
 #include <algorithm>
 #include <iostream>
 #include <random>
-#include <cmath>
+
 
 namespace rogalique
 {
@@ -155,14 +157,17 @@ namespace rogalique
     
     void GameWorld::CheckCollisions()
     {
+        // 1. Коллизии через CollisionComponent (существующий код)
         std::vector<CollisionComponent*> colliders;
+        std::cout << "[Collision] Checking collisions, objects count: " << m_gameObjects.size() << std::endl;
+
         for (size_t i = 0; i < m_gameObjects.size(); ++i)
         {
             CollisionComponent* col = m_gameObjects[i]->GetComponent<CollisionComponent>();
             if (col)
                 colliders.push_back(col);
         }
-        
+
         for (size_t i = 0; i < colliders.size(); ++i)
         {
             for (size_t j = i + 1; j < colliders.size(); ++j)
@@ -171,6 +176,51 @@ namespace rogalique
                 {
                     colliders[i]->OnCollisionEnter(colliders[j]);
                     colliders[j]->OnCollisionEnter(colliders[i]);
+                }
+            }
+        }
+
+        // 2. Пули vs Враги
+        std::cout << "[Collision] Checking bullets vs enemies, total objects: " << m_gameObjects.size() << std::endl;
+
+        for (size_t i = 0; i < m_gameObjects.size(); ++i)
+        {
+            Bullet* bullet = dynamic_cast<Bullet*>(m_gameObjects[i]);
+            if (!bullet) {
+                continue;
+            }
+            std::cout << "[Collision] Found bullet at index " << i << std::endl;
+
+            for (size_t j = 0; j < m_gameObjects.size(); ++j)
+            {
+                Enemy* enemy = dynamic_cast<Enemy*>(m_gameObjects[j]);
+                if (!enemy) continue;
+
+                std::cout << "[Collision] Checking bullet vs enemy" << std::endl;
+
+                auto* bulletTransform = bullet->GetComponent<TransformComponent>();
+                auto* enemyTransform = enemy->GetComponent<TransformComponent>();
+
+                if (!bulletTransform || !enemyTransform) continue;
+
+                sf::Vector2f bulletPos = bulletTransform->GetPosition();
+                sf::Vector2f enemyPos = enemyTransform->GetPosition();
+
+                float dx = bulletPos.x - enemyPos.x;
+                float dy = bulletPos.y - enemyPos.y;
+                float dist = std::sqrt(dx * dx + dy * dy);
+
+                std::cout << "[Collision] Distance: " << dist << std::endl;
+
+                if (dist < 25.0f)
+                {
+                    int damage = enemy->GetMaxHealth() * 0.25f;
+                    if (damage < 1) damage = 1;
+
+                    enemy->TakeDamage(damage);
+                    std::cout << "[Collision] BULLET HIT! Damage: " << damage << std::endl;
+                    DestroyGameObject(bullet);
+                    break;
                 }
             }
         }
