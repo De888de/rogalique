@@ -124,6 +124,8 @@ namespace rogalique
         if (len > 0.0f) dir /= len;
         
         if (m_weapon->Shoot()) {
+
+            float damageMultiplier = 0.25f;
             Bullet* bullet = new Bullet(playerPos, dir, 600.0f);
             auto& world = GameWorld::GetInstance();
             world.AddGameObject(bullet);

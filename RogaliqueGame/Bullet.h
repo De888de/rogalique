@@ -20,30 +20,30 @@ namespace rogalique {
             m_shape.setPosition(position);
             std::cout << "[Bullet] FIRE! Position: " << position.x << ", " << position.y << std::endl;
         }
-        
+
         void Update(float deltaTime) override {
             if (!m_active) return;
-            
+
             m_position += m_velocity * deltaTime;
             m_shape.setPosition(m_position);
-            
+
             m_lifetime += deltaTime;
-            if (m_lifetime > 3.0f) { // Живёт 3 секунды
+            if (m_lifetime > 3.0f) {
                 m_active = false;
                 auto& world = GameWorld::GetInstance();
                 world.DestroyGameObject(this);
             }
         }
-        
+
         void Render(sf::RenderWindow& window) override {
             if (m_active) {
                 window.draw(m_shape);
             }
         }
-        
+
         bool IsActive() const { return m_active; }
         sf::Vector2f GetPosition() const { return m_position; }
-        
+
     private:
         sf::Vector2f m_position;
         sf::Vector2f m_velocity;
@@ -51,5 +51,4 @@ namespace rogalique {
         bool m_active;
         float m_lifetime;
     };
-    
 }
