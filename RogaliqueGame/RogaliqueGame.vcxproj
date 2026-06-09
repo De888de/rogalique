@@ -123,6 +123,7 @@
     <ClInclude Include="BlockBuilder.h" />
     <ClInclude Include="BlockComponent.h" />
     <ClInclude Include="BrickBlock.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Chest.h" />
     <ClInclude Include="CollisionComponent.h" />
