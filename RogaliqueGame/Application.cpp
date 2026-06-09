@@ -198,24 +198,12 @@ namespace rogalique
                 m_bullets.push_back(bullet);
                 std::cout << "[App] Pew!" << std::endl;
             }
-        } else {
+        }
+        else {
             fPressed = false;
         }
         
-        // Обновление пуль
-        for (auto it = m_bullets.begin(); it != m_bullets.end(); )
-        {
-            (*it)->Update(deltaTime);
-            if (!(*it)->IsActive())
-            {
-                delete* it;
-                it = m_bullets.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
+        
 
         if (m_camera && m_useCamera)
             m_camera->Update(deltaTime);
