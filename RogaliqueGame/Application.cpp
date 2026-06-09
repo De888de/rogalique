@@ -11,6 +11,8 @@
 #include "IsometricPhysicsItem.h"
 #include "WeaponItem.h"
 #include "Bullet.h"
+#include "Enemy.h"  
+#include "HealthUI.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -21,6 +23,7 @@ namespace rogalique
 
     Application::Application()
         : window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Rogalique Game")
+        , m_gameOver(false)
     {
         window.setFramerateLimit(60);
         g_Application = this;
@@ -41,6 +44,8 @@ namespace rogalique
         {
             std::cout << "[App] Warning: Could not load UI font" << std::endl;
         }
+        
+        // UI тексты
         m_goldText.setFont(m_uiFont);
         m_goldText.setCharacterSize(24);
         m_goldText.setFillColor(sf::Color::Yellow);
@@ -50,16 +55,28 @@ namespace rogalique
         m_chestText.setCharacterSize(24);
         m_chestText.setFillColor(sf::Color::Yellow);
         m_chestText.setPosition(20, 50);
-
+        
         m_ammoText.setFont(m_uiFont);
         m_ammoText.setCharacterSize(24);
         m_ammoText.setFillColor(sf::Color::White);
         m_ammoText.setPosition(20, 80);
-
-
+        
+        // Game Over тексты
+        m_gameOverText.setFont(m_uiFont);
+        m_gameOverText.setCharacterSize(72);
+        m_gameOverText.setFillColor(sf::Color::Red);
+        m_gameOverText.setString("GAME OVER");
+        m_gameOverText.setOrigin(m_gameOverText.getLocalBounds().width / 2, m_gameOverText.getLocalBounds().height / 2);
+        m_gameOverText.setPosition(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 60);
+        
+        m_restartText.setFont(m_uiFont);
+        m_restartText.setCharacterSize(28);
+        m_restartText.setFillColor(sf::Color::White);
+        m_restartText.setString("Press [R] to Restart     Press [ESC] to Menu");
+        m_restartText.setOrigin(m_restartText.getLocalBounds().width / 2, m_restartText.getLocalBounds().height / 2);
+        m_restartText.setPosition(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 40);
         
         UpdateUI();
-        
         SpawnWeapon(500, 400);
         
         std::cout << "[App] Application ready" << std::endl;
@@ -76,8 +93,6 @@ namespace rogalique
             delete weapon;
         }
         m_weaponItems.clear();
-        
-       
     }
 
     void Application::Run()
@@ -98,6 +113,21 @@ namespace rogalique
                 if (event.type == sf::Event::Closed)
                     window.close();
                 
+                if (m_gameOver) {
+                    if (event.type == sf::Event::KeyPressed) {
+                        if (event.key.code == sf::Keyboard::R) {
+                            std::cout << "[App] Restarting game..." << std::endl;
+                            m_gameOver = false;
+                            StartGame();
+                        } else if (event.key.code == sf::Keyboard::Escape) {
+                            std::cout << "[App] Returning to menu..." << std::endl;
+                            m_gameOver = false;
+                            ReturnToMenu();
+                        }
+                    }
+                    continue;
+                }
+                
                 if (m_inSoundSettings)
                     m_soundSettings->HandleInput(event);
                 else if (m_inMenu)
@@ -107,6 +137,11 @@ namespace rogalique
                     SoundManager::GetInstance().PlaySound("click");
                     ReturnToMenu();
                 }
+            }
+            
+            if (m_gameOver) {
+                Draw();
+                continue;
             }
             
             if (m_inSoundSettings)
@@ -153,6 +188,8 @@ namespace rogalique
 
     void Application::Update(float deltaTime)
     {
+        if (m_gameOver) return;
+        
         UpdateWeapons(deltaTime);
         
         static bool iPressed = false;
@@ -193,16 +230,6 @@ namespace rogalique
             pPressed = false;
         }
         
-        // Стрельба по F
-        static bool fPressed = false;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
-        }
-        else {
-            fPressed = false;
-        }
-        
-        
-
         if (m_camera && m_useCamera)
             m_camera->Update(deltaTime);
         
@@ -214,6 +241,15 @@ namespace rogalique
 
     void Application::Draw()
     {
+        if (m_gameOver)
+        {
+            window.clear(sf::Color(0, 0, 0, 200));
+            window.draw(m_gameOverText);
+            window.draw(m_restartText);
+            window.display();
+            return;
+        }
+        
         if (m_useCamera && m_camera)
             window.setView(m_gameView);
         else
@@ -226,10 +262,7 @@ namespace rogalique
         
         RenderWeapons(window);
         
-       
-
-        
-        
+        // Сброс вида для UI
         sf::View previousView = window.getView();
         window.setView(window.getDefaultView());
         
@@ -239,7 +272,6 @@ namespace rogalique
         m_healthUI.Render(window);
         
         window.setView(previousView);
-        
         window.display();
     }
 
@@ -251,18 +283,31 @@ namespace rogalique
         
         m_gold = 0;
         m_chestsCollected = 0;
-        UpdateUI();
         
         m_player = GameWorld::GetInstance().CreateGameObject<Player>();
         GameWorld::GetInstance().SetPlayer(m_player);
+        
+        // Сброс UI здоровья
+        m_healthUI.Reset();
         
         BlockBuilder::LoadLevel("D:/xyz/roqalique/RogaliqueGame/Resources/level1.txt", WORLD_WIDTH, WORLD_HEIGHT, 40);
         
         GameWorld::GetInstance().SpawnChests(10, WORLD_WIDTH, WORLD_HEIGHT);
         
+        // Спавн врагов
+        for (int i = 0; i < 3; i++) {
+            float x = 300 + rand() % (int)(WORLD_WIDTH - 600);
+            float y = 300 + rand() % (int)(WORLD_HEIGHT - 600);
+            auto* enemy = GameWorld::GetInstance().CreateGameObject<Enemy>();
+            auto* transform = enemy->GetComponent<TransformComponent>();
+            if (transform) transform->SetPosition(sf::Vector2f(x, y));
+        }
+        
         auto* transform = m_player->GetComponent<TransformComponent>();
         if (transform)
             transform->SetPosition(sf::Vector2f(WORLD_WIDTH / 2.0f, WORLD_HEIGHT / 2.0f));
+        
+        UpdateUI();
         
         if (WORLD_WIDTH > SCREEN_WIDTH || WORLD_HEIGHT > SCREEN_HEIGHT)
         {
@@ -281,6 +326,7 @@ namespace rogalique
         }
         
         m_inMenu = false;
+        m_gameOver = false;
         std::cout << "[App] Game started!" << std::endl;
     }
 
@@ -288,6 +334,7 @@ namespace rogalique
     {
         std::cout << "[App] ReturnToMenu() called" << std::endl;
         m_inMenu = true;
+        m_gameOver = false;
         m_menu->Reset();
         m_camera.reset();
         m_useCamera = false;
@@ -295,6 +342,13 @@ namespace rogalique
         GameWorld::GetInstance().Clear();
         window.setView(window.getDefaultView());
         SoundManager::GetInstance().PlayMusicFile("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1).WAV");
+    }
+
+    void Application::ShowGameOver()
+    {
+        std::cout << "[App] ShowGameOver() called!" << std::endl;
+        m_gameOver = true;
+        std::cout << "[App] GAME OVER! m_gameOver = " << m_gameOver << std::endl;
     }
 
     void Application::ShowLogoSplash()
@@ -356,19 +410,14 @@ namespace rogalique
     
     void Application::UpdateUI()
     {
-        std::cout << "[UI] UpdateUI called" << std::endl; 
         m_goldText.setString("Gold: " + std::to_string(m_gold));
         m_chestText.setString("Chests: " + std::to_string(m_chestsCollected));
-        m_healthUI.Reset();
         if (m_player && m_player->GetWeapon()) {
             int ammo = m_player->GetWeapon()->GetCurrentAmmo();
             int maxAmmo = m_player->GetWeapon()->GetMaxAmmo();
             m_ammoText.setString("Ammo: " + std::to_string(ammo) + " / " + std::to_string(maxAmmo));
-            std::cout << "[UI] Ammo: " << ammo << "/" << maxAmmo << std::endl;  
-        }
-        else {
+        } else {
             m_ammoText.setString("Ammo: 0 / 0");
-            std::cout << "[UI] No weapon!" << std::endl;  
         }
     }
     

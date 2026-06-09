@@ -186,9 +186,22 @@ namespace rogalique
 
         std::cout << "[Player] Hit! -" << damage << " HP, Health: " << m_health << "/" << m_maxHealth << std::endl;
 
-        if (m_health <= 0) {
+        if (m_health <= 0)
+        {
+            m_health = 0;
             std::cout << "[Player] DIED! Game Over!" << std::endl;
-            // TODO: Game Over экран
+
+            // Вызываем Game Over через Application
+            if (g_Application)
+            {
+                g_Application->ShowGameOver();
+            }
+        }
+
+        // Обновляем UI
+        if (g_Application)
+        {
+            g_Application->UpdateHealthUI(m_health, m_maxHealth);
         }
     }
 

@@ -6,6 +6,7 @@
 namespace rogalique
 {
     class Player;
+    class Enemy;
     
     class GameWorld
     {

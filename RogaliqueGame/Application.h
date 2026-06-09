@@ -28,6 +28,8 @@ namespace rogalique
         void SpawnWeapon(float x, float z);
         void UpdateUI();
         void UpdateHealthUI(int current, int max) { m_healthUI.UpdateHealth(current, max); }
+        void ShowGameOver();
+        bool IsGameOver() const { return m_gameOver; }
 
         sf::RenderWindow window;
         Player* GetPlayer() const { return m_player; }
@@ -49,6 +51,7 @@ namespace rogalique
         bool m_inMenu = true;
         bool m_inSoundSettings = false;
         bool m_useCamera = false;
+        bool m_gameOver = false;
 
         int m_gold = 0;
         int m_chestsCollected = 0;
@@ -56,6 +59,8 @@ namespace rogalique
         sf::Text m_goldText;
         sf::Text m_chestText;
         sf::Text m_ammoText;
+        sf::Text m_gameOverText;
+        sf::Text m_restartText;
         
         HealthUI m_healthUI;
     };
