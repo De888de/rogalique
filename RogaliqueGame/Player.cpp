@@ -7,7 +7,9 @@
 #include "SpriteComponent.h"
 #include "MovementComponent.h"
 #include "HealthComponent.h"
-#include <cmath>
+#include "Application.h"           // ← Обязательно для g_Application
+#include <SFML/Window/Mouse.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 
 namespace rogalique
@@ -20,50 +22,41 @@ namespace rogalique
         AddComponent<HealthComponent>(100);
         AddComponent<CollisionComponent>(16.0f);
 
-        // Инициализация оружия
-        m_equippedWeapon.setSize(sf::Vector2f(30, 20));
-        m_equippedWeapon.setFillColor(sf::Color(148, 0, 211));
-        m_equippedWeapon.setOrigin(5, 10); // чуть смещено вправо от игрока
+        m_equippedWeapon.setSize(sf::Vector2f(35, 12));
+        m_equippedWeapon.setFillColor(sf::Color(200, 200, 50));
+        m_equippedWeapon.setOrigin(5, 6);
     }
 
     void Player::EquipWeapon()
     {
         if (!m_hasWeapon) {
             m_hasWeapon = true;
-            std::cout << "[Player] Weapon equipped!" << std::endl;
+            std::cout << "[Player] Weapon equipped! Press F to shoot" << std::endl;
         }
     }
 
-    void Player::Render(sf::RenderWindow& window)
-    {
-        // Сначала рендерим базовые компоненты
-        RogaliqueGameObject::Render(window);
-
-        // Рендерим оружие в руке
-        if (m_hasWeapon)
-        {
-            auto* transform = GetComponent<TransformComponent>();
-            if (transform)
-            {
-                sf::Vector2f pos = transform->GetPosition();
-                // Оружие немного справа и чуть выше от центра игрока
-                m_equippedWeapon.setPosition(pos.x + 18, pos.y - 5);
-                window.draw(m_equippedWeapon);
-            }
-        }
-    }
-    
     void Player::Update(float deltaTime)
     {
         RogaliqueGameObject::Update(deltaTime);
-        
-        // Получаем позицию из TransformComponent
+
+        m_shootCooldown -= deltaTime;
+        if (m_shootCooldown < 0.0f) m_shootCooldown = 0.0f;
+
+        if (m_hasWeapon && sf::Keyboard::isKeyPressed(sf::Keyboard::F))
+        {
+            if (m_shootCooldown <= 0.0f)
+            {
+                Shoot();
+                m_shootCooldown = m_fireRate;
+            }
+        }
+
+        // Проверка сундуков
         auto* transform = GetComponent<TransformComponent>();
         if (!transform) return;
-        
+
         sf::Vector2f playerPos = transform->GetPosition();
-        
-        // Проверка сбора сундуков
+
         auto& world = GameWorld::GetInstance();
         for (auto* obj : world.GetAllGameObjects())
         {
@@ -72,7 +65,7 @@ namespace rogalique
             {
                 float dx = playerPos.x - chest->GetPosition().x;
                 float dy = playerPos.y - chest->GetPosition().y;
-                float dist = std::sqrt(dx*dx + dy*dy);
+                float dist = std::sqrt(dx * dx + dy * dy);
                 if (dist < 32.0f)
                 {
                     chest->Collect();
@@ -80,6 +73,52 @@ namespace rogalique
             }
         }
     }
+
+    void Player::Shoot()
+    {
+        std::cout << "[Player] BANG!" << std::endl;
+
+        sf::Vector2i mouseScreen = sf::Mouse::getPosition(g_Application->window);
+        sf::Vector2f mouseWorld = g_Application->window.mapPixelToCoords(mouseScreen);
+
+        auto* transform = GetComponent<TransformComponent>();
+        if (!transform) return;
+
+        sf::Vector2f playerPos = transform->GetPosition();
+        sf::Vector2f dir = mouseWorld - playerPos;
+
+        float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+        if (len > 0.0f)
+            dir /= len;
+
+        std::cout << "[Shoot] Direction: (" << dir.x << ", " << dir.y << ")" << std::endl;
+    }
+
+    void Player::Render(sf::RenderWindow& window)
+    {
+        RogaliqueGameObject::Render(window);
+
+        if (m_hasWeapon)
+        {
+            auto* transform = GetComponent<TransformComponent>();
+            if (transform)
+            {
+                sf::Vector2f playerPos = transform->GetPosition();
+
+                sf::Vector2i mouseScreen = sf::Mouse::getPosition(g_Application->window);
+                sf::Vector2f mouseWorld = g_Application->window.mapPixelToCoords(mouseScreen);
+
+                sf::Vector2f dir = mouseWorld - playerPos;
+                float angle = std::atan2(dir.y, dir.x) * 180.0f / 3.14159265f;
+
+                m_equippedWeapon.setRotation(angle);
+                m_equippedWeapon.setPosition(playerPos.x + 18.f, playerPos.y - 5.f);
+
+                window.draw(m_equippedWeapon);
+            }
+        }
+    }
+
     sf::Vector2f Player::GetPosition() const
     {
         auto* transform = GetComponent<TransformComponent>();
@@ -87,8 +126,4 @@ namespace rogalique
             return transform->GetPosition();
         return sf::Vector2f(0, 0);
     }
-
-   
-
-    
 }
