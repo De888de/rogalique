@@ -38,6 +38,7 @@ namespace rogalique
         sm.LoadMusic("atmosphere_eerie", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_eerie.WAV");
         sm.LoadMusic("atmosphere_dark", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV");
         sm.LoadMusic("atmosphere_trepidation", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/trepidation.WAV");
+        sm.LoadSound("gameover", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/GAMEOVER.WAV");
         sm.PlayMusicFile("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1).WAV");
         
         if (!m_uiFont.loadFromFile("D:/xyz/roqalique/RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))
@@ -360,6 +361,10 @@ namespace rogalique
         std::cout << "[App] ShowGameOver() called!" << std::endl;
         m_gameOver = true;
         std::cout << "[App] GAME OVER! m_gameOver = " << m_gameOver << std::endl;
+        std::cout << "[App] GAME OVER! m_gameOver = " << m_gameOver << std::endl;
+        std::cout << "[App] ShowGameOver() called!" << std::endl;
+
+        SoundManager::GetInstance().PlaySound("gameover");
     }
 
     void Application::ShowLogoSplash()
