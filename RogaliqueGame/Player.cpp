@@ -4,6 +4,7 @@
 #include "Chest.h"
 #include "GameWorld.h"
 #include "TransformComponent.h"
+#include "SoundManager.h"
 #include "SpriteComponent.h"
 #include "MovementComponent.h"
 #include "HealthComponent.h"
@@ -180,6 +181,10 @@ namespace rogalique
     {
         if (IsInvulnerable()) return;
         if (m_health <= 0) return;
+
+        if (g_Application) {
+            SoundManager::GetInstance().PlaySound("hit");
+        }
 
         m_health -= damage;
         m_invulnerableTimer = m_invulnerableDuration;

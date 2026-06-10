@@ -39,6 +39,7 @@ namespace rogalique
         sm.LoadMusic("atmosphere_dark", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV");
         sm.LoadMusic("atmosphere_trepidation", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/trepidation.WAV");
         sm.LoadSound("gameover", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/GAMEOVER.WAV");
+        sm.LoadSound("hit", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/hukc.WAV");
         sm.PlayMusicFile("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1).WAV");
         
         if (!m_uiFont.loadFromFile("D:/xyz/roqalique/RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))
