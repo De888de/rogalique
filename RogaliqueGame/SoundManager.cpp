@@ -55,8 +55,7 @@ namespace rogalique
         if (m_currentMusic.getStatus() == sf::Music::Playing)
             m_currentMusic.stop();
         
-        // Копируем музыку (нельзя, но мы можем перезагрузить из файла)
-        // Временно: используем отдельный метод
+        
         std::cout << "[SoundManager] Playing music by name: " << name << std::endl;
         
         // Сохраняем имя текущей музыки

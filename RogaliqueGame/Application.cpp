@@ -43,6 +43,7 @@ namespace rogalique
         sm.LoadSound("hit", "RogaliqueGame/Resources/Sounds/hukc.WAV");
         sm.LoadSound("monster_hit", "RogaliqueGame/Resources/Sounds/monstr.WAV");
         sm.LoadSound("shot", "RogaliqueGame/Resources/Sounds/shot.WAV");
+        sm.LoadMusic("dungeon", "RogaliqueGame/Resources/Sounds/dungeon.WAV");
         sm.PlayMusicFile("RogaliqueGame/Resources/Sounds/main(1).WAV");
         
         if (!m_uiFont.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))

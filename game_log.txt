@@ -1,30 +1,30 @@
-[19:04:35] === GAME LOG STARTED ===
-[19:04:35] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (500.000000, 400.000000)
-[19:05:21] [EVENT] Game Started | New game beginning
-[19:05:21] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (924.000000, 768.000000)
-[19:05:21] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (1124.000000, 768.000000)
-[19:05:23] [EVENT] Weapon Pickup | Player equipped weapon
-[19:05:25] [EVENT] Weapon Pickup | Player equipped weapon
-[19:05:40] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:43] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:50] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:53] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:55] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:56] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:57] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:57] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:58] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:59] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:59] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:59] [EVENT] Enemy Died | Type: Basic Enemy
-[19:05:59] [EVENT] Player Damaged | Health: 5
-[19:06:00] [EVENT] Enemy Died | Type: Basic Enemy
-[19:06:00] [EVENT] Player Damaged | Health: 4
-[19:06:00] [EVENT] Enemy Died | Type: Basic Enemy
-[19:06:01] [EVENT] Enemy Died | Type: Basic Enemy
-[19:06:01] [EVENT] Enemy Died | Type: Basic Enemy
-[19:06:01] [EVENT] Player Damaged | Health: 3
-[19:06:02] [EVENT] Enemy Died | Type: Basic Enemy
-[19:06:03] [EVENT] Player Damaged | Health: 2
-[19:06:06] [EVENT] Player Damaged | Health: 1
-[19:06:06] [EVENT] Game Over | Player died
+[19:41:54] === GAME LOG STARTED ===
+[19:41:54] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (500.000000, 400.000000)
+[19:42:34] [EVENT] Game Started | New game beginning
+[19:42:34] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (924.000000, 768.000000)
+[19:42:34] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (1124.000000, 768.000000)
+[19:42:36] [EVENT] Weapon Pickup | Player equipped weapon
+[19:42:39] [EVENT] Weapon Pickup | Player equipped weapon
+[19:42:52] [EVENT] Enemy Died | Type: Basic Enemy
+[19:42:54] [EVENT] Enemy Died | Type: Basic Enemy
+[19:42:56] [EVENT] Enemy Died | Type: Basic Enemy
+[19:42:58] [EVENT] Enemy Died | Type: Basic Enemy
+[19:42:59] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:02] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:04] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:08] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:11] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:13] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:17] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:21] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:24] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:26] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:27] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:29] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:31] [EVENT] Enemy Died | Type: Basic Enemy
+[19:43:37] [EVENT] Player Damaged | Health: 5
+[19:43:38] [EVENT] Player Damaged | Health: 4
+[19:43:39] [EVENT] Player Damaged | Health: 3
+[19:43:40] [EVENT] Player Damaged | Health: 2
+[19:44:38] [EVENT] Player Damaged | Health: 1
+[19:44:38] [EVENT] Game Over | Player died

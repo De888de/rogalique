@@ -47,6 +47,7 @@ namespace rogalique
             "Eerie Whispers",
             "Dark Ritual",
             "Trepidation",
+            "Dungeon",
             "Horror Awakens"
         };
     };

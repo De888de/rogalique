@@ -89,48 +89,36 @@ namespace rogalique
     
     void SoundSettingsWindow::SwitchAtmosphere(int direction)
     {
+        int totalAvailable = 4; // Eerie(0), Dark(1), Trepidation(2), Dungeon(3)
         int newIndex = m_selectedMusicIndex + direction;
-        
-        // Доступные индексы: 0,1,2 (Horror Awakens под индексом 3 заблокирован)
-        if (newIndex < 0) newIndex = 2;
-        if (newIndex > 2) newIndex = 0;
-        
+
+        // Переключение в пределах доступных треков (0-3)
+        if (newIndex < 0) newIndex = totalAvailable - 1;
+        if (newIndex >= totalAvailable) newIndex = 0;
+
         if (newIndex == m_selectedMusicIndex) return;
-        
+
         m_selectedMusicIndex = newIndex;
-        
-        // Обновляем текст
-        std::string status = (m_selectedMusicIndex == 3) ? " (locked)" : " (available)";
+
+        // Обновляем текст (индекс 4 = Horror Awakens, но он не входит в переключение)
+        std::string status = " (available)";
         m_musicOptionText.setString(m_musicOptions[m_selectedMusicIndex] + status);
-        
-        // Если выбрана заблокированная — не играем
-        if (m_selectedMusicIndex == 3)
-        {
-            std::cout << "[SoundSettings] Horror Awakens is LOCKED!" << std::endl;
-            return;
-        }
-        
+
         // Меняем музыку
         std::string musicFile;
         switch (m_selectedMusicIndex)
         {
-        case 0:
-            musicFile = "RogaliqueGame/Resources/Sounds/atmosphere_eerie.WAV";
-            break;
-        case 1:
-            musicFile = "RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV";
-            break;
-        case 2:
-            musicFile = "RogaliqueGame/Resources/Sounds/trepidation.WAV";
-            break;
-        default:
-            return;
+        case 0: musicFile = "RogaliqueGame/Resources/Sounds/atmosphere_eerie.WAV"; break;
+        case 1: musicFile = "RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV"; break;
+        case 2: musicFile = "RogaliqueGame/Resources/Sounds/trepidation.WAV"; break;
+        case 3: musicFile = "RogaliqueGame/Resources/Sounds/dungeon.WAV"; break;
+        default: return;
         }
-        
+
         std::cout << "[SoundSettings] Playing: " << musicFile << std::endl;
         SoundManager::GetInstance().PlayMusicFile(musicFile);
         SoundManager::GetInstance().PlaySound("click");
-        
+
         std::cout << "[SoundSettings] Switched to: " << m_musicOptions[m_selectedMusicIndex] << std::endl;
     }
     
