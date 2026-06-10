@@ -1,5 +1,8 @@
 #include "Enemy.h"
 #include "Bullet.h"
+#include "Logger.h"
+#include "SoundManager.h"
+#include "Application.h"
 #include "TransformComponent.h"
 #include "SpriteComponent.h"
 #include "CollisionComponent.h"
@@ -58,12 +61,18 @@ namespace rogalique
     void Enemy::TakeDamage(int damage)
     {
         if (m_health <= 0) return;
+
+        if (g_Application) {
+            SoundManager::GetInstance().PlaySound("monster_hit");
+        }
         
         m_health -= damage;
         if (m_health < 0) m_health = 0;
         
         std::cout << "[Enemy] Took " << damage << " damage! HP: " << m_health << "/" << m_maxHealth << std::endl;
         UpdateUIText();
+
+        LOG_ENEMY_DEATH("Basic Enemy");
     }
 
     void Enemy::Heal(int amount)

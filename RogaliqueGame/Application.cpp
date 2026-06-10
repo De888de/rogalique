@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Player.h"
 #include "Menu.h"
+#include "Logger.h"
 #include "SoundSettingsWindow.h"
 #include "GameWorld.h"
 #include "CameraComponent.h"
@@ -40,6 +41,8 @@ namespace rogalique
         sm.LoadMusic("atmosphere_trepidation", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/trepidation.WAV");
         sm.LoadSound("gameover", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/GAMEOVER.WAV");
         sm.LoadSound("hit", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/hukc.WAV");
+        sm.LoadSound("monster_hit", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/monstr.WAV");
+        sm.LoadSound("shot", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/shot.WAV");
         sm.PlayMusicFile("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1).WAV");
         
         if (!m_uiFont.loadFromFile("D:/xyz/roqalique/RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))
@@ -281,6 +284,9 @@ namespace rogalique
     void Application::StartGame()
     {
         std::cout << "[App] Starting new game..." << std::endl;
+
+
+        LOG_EVENT("Game Started", "New game beginning");
         
         GameWorld::GetInstance().Clear();
 
@@ -365,6 +371,8 @@ namespace rogalique
         std::cout << "[App] GAME OVER! m_gameOver = " << m_gameOver << std::endl;
         std::cout << "[App] ShowGameOver() called!" << std::endl;
 
+        LOG_EVENT("Game Over", "Player died");
+
         SoundManager::GetInstance().PlaySound("gameover");
     }
 
@@ -442,6 +450,8 @@ namespace rogalique
         WeaponItem* weapon = new WeaponItem(x, z);
         m_weaponItems.push_back(weapon);
         std::cout << "[Application] Weapon spawned at (" << x << ", " << z << ")" << std::endl;
+
+        LOG_WEAPON_PICKUP("WeaponItem spawned at (" + std::to_string(x) + ", " + std::to_string(z) + ")");
     }
     
     void Application::UpdateWeapons(float dt) {
@@ -454,6 +464,8 @@ namespace rogalique
                 m_weaponItems.erase(m_weaponItems.begin() + i);
                 i--;
                 std::cout << "[Application] Weapon picked up!" << std::endl;
+
+                LOG_EVENT("Weapon Pickup", "Player equipped weapon");
             }
         }
     }

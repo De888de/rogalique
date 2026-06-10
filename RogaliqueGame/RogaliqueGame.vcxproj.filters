@@ -149,6 +149,7 @@
     <ClInclude Include="WeaponItem.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="HealthUI.h" />
+    <ClInclude Include="Logger.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\level1.txt">

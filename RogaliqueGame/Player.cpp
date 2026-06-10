@@ -1,4 +1,5 @@
 #include <cmath>
+#include "Logger.h"
 #include "CollisionComponent.h"
 #include "Player.h"
 #include "Chest.h"
@@ -134,6 +135,8 @@ namespace rogalique
         
         if (m_weapon->Shoot()) {
 
+            SoundManager::GetInstance().PlaySound("shot");
+
             float damageMultiplier = 0.25f;
             Bullet* bullet = new Bullet(playerPos, dir, 600.0f);
             auto& world = GameWorld::GetInstance();
@@ -179,6 +182,11 @@ namespace rogalique
     }
     void Player::TakeDamage(int damage)
     {
+        LOG_PLAYER_DAMAGE(m_health);
+        if (m_health <= 0) {
+            LOG_PLAYER_DEATH();
+        }
+
         if (IsInvulnerable()) return;
         if (m_health <= 0) return;
 

@@ -136,6 +136,7 @@
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="HealthUI.h" />
     <ClInclude Include="IsometricPhysicsItem.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="PhysicsTestObject.h" />

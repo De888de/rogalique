@@ -1,0 +1,8 @@
+[14:06:31] === GAME LOG STARTED ===
+[14:06:31] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (500.000000, 400.000000)
+[14:06:38] [EVENT] Game Started | New game beginning
+[14:06:38] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (924.000000, 768.000000)
+[14:06:38] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (1124.000000, 768.000000)
+[14:06:39] [EVENT] Weapon Pickup | Player equipped weapon
+[14:06:42] [EVENT] Player Damaged | Health: 5
+[14:06:44] [EVENT] Player Damaged | Health: 4

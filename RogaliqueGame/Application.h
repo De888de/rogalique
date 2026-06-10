@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include "Player.h"
+#include "Logger.h"
 #include "HealthUI.h"
 
 namespace rogalique
