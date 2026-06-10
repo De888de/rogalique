@@ -6,7 +6,7 @@ namespace rogalique
 {
     Menu::Menu()
     {
-        if (!m_font.loadFromFile("D:/xyz/roqalique/RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))
+        if (!m_font.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))
         {
             std::cout << "[Menu] Warning: Could not load font" << std::endl;
         }

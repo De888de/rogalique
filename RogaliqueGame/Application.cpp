@@ -33,19 +33,19 @@ namespace rogalique
         m_soundSettings = std::make_unique<SoundSettingsWindow>();
         
         auto& sm = SoundManager::GetInstance();
-        sm.LoadSound("logo", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/logo.WAV");
-        sm.LoadSound("click", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/clik.WAV");
-        sm.LoadSound("chest", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/chest.WAV");
-        sm.LoadMusic("atmosphere_eerie", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_eerie.WAV");
-        sm.LoadMusic("atmosphere_dark", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV");
-        sm.LoadMusic("atmosphere_trepidation", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/trepidation.WAV");
-        sm.LoadSound("gameover", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/GAMEOVER.WAV");
-        sm.LoadSound("hit", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/hukc.WAV");
-        sm.LoadSound("monster_hit", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/monstr.WAV");
-        sm.LoadSound("shot", "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/shot.WAV");
-        sm.PlayMusicFile("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1).WAV");
+        sm.LoadSound("logo", "RogaliqueGame/Resources/Sounds/logo.WAV");
+        sm.LoadSound("click", "RogaliqueGame/Resources/Sounds/clik.WAV");
+        sm.LoadSound("chest", "RogaliqueGame/Resources/Sounds/chest.WAV");
+        sm.LoadMusic("atmosphere_eerie", "RogaliqueGame/Resources/Sounds/atmosphere_eerie.WAV");
+        sm.LoadMusic("atmosphere_dark", "RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV");
+        sm.LoadMusic("atmosphere_trepidation", "RogaliqueGame/Resources/Sounds/trepidation.WAV");
+        sm.LoadSound("gameover", "RogaliqueGame/Resources/Sounds/GAMEOVER.WAV");
+        sm.LoadSound("hit", "RogaliqueGame/Resources/Sounds/hukc.WAV");
+        sm.LoadSound("monster_hit", "RogaliqueGame/Resources/Sounds/monstr.WAV");
+        sm.LoadSound("shot", "RogaliqueGame/Resources/Sounds/shot.WAV");
+        sm.PlayMusicFile("RogaliqueGame/Resources/Sounds/main(1).WAV");
         
-        if (!m_uiFont.loadFromFile("D:/xyz/roqalique/RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))
+        if (!m_uiFont.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))
         {
             std::cout << "[App] Warning: Could not load UI font" << std::endl;
         }
@@ -305,7 +305,7 @@ namespace rogalique
         // Сброс UI здоровья
         m_healthUI.Reset();
         
-        BlockBuilder::LoadLevel("D:/xyz/roqalique/RogaliqueGame/Resources/level1.txt", WORLD_WIDTH, WORLD_HEIGHT, 40);
+        BlockBuilder::LoadLevel("RogaliqueGame/Resources/level1.txt", WORLD_WIDTH, WORLD_HEIGHT, 40);
         
         GameWorld::GetInstance().SpawnChests(10, WORLD_WIDTH, WORLD_HEIGHT);
         
@@ -360,7 +360,7 @@ namespace rogalique
         m_player = nullptr;
         GameWorld::GetInstance().Clear();
         window.setView(window.getDefaultView());
-        SoundManager::GetInstance().PlayMusicFile("D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/main(1).WAV");
+        SoundManager::GetInstance().PlayMusicFile("RogaliqueGame/Resources/Sounds/main(1).WAV");
     }
 
     void Application::ShowGameOver()
@@ -382,7 +382,7 @@ namespace rogalique
         
         sf::Texture logoTexture;
         std::vector<std::string> logoPaths = {
-            "D:/xyz/roqalique/RogaliqueGame/Resources/xyz-logo.png",
+            "RogaliqueGame/Resources/xyz-logo.png",
             "../RogaliqueGame/Resources/xyz-logo.png",
             "Resources/xyz-logo.png"
         };

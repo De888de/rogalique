@@ -20,7 +20,7 @@ namespace rogalique
         AddComponent<CollisionComponent>(16.0f);
         
         // Загружаем шрифт для отображения HP
-        if (!m_font.loadFromFile("D:/xyz/roqalique/RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf")) {
+        if (!m_font.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf")) {
             std::cout << "[Enemy] Could not load font" << std::endl;
         }
         

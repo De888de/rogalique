@@ -6,7 +6,7 @@ namespace rogalique
 {
     SoundSettingsWindow::SoundSettingsWindow()
     {
-        if (!m_font.loadFromFile("D:/xyz/roqalique/RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))
+        if (!m_font.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))
         {
             std::cout << "[SoundSettings] Warning: Could not load font" << std::endl;
         }
@@ -115,13 +115,13 @@ namespace rogalique
         switch (m_selectedMusicIndex)
         {
         case 0:
-            musicFile = "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_eerie.WAV";
+            musicFile = "RogaliqueGame/Resources/Sounds/atmosphere_eerie.WAV";
             break;
         case 1:
-            musicFile = "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV";
+            musicFile = "RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV";
             break;
         case 2:
-            musicFile = "D:/xyz/roqalique/RogaliqueGame/Resources/Sounds/trepidation.WAV";
+            musicFile = "RogaliqueGame/Resources/Sounds/trepidation.WAV";
             break;
         default:
             return;
