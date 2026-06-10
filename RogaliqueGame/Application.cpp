@@ -246,6 +246,7 @@ namespace rogalique
             window.clear(sf::Color(0, 0, 0, 200));
             window.draw(m_gameOverText);
             window.draw(m_restartText);
+            window.setView(window.getDefaultView());
             window.display();
             return;
         }
@@ -280,6 +281,12 @@ namespace rogalique
         std::cout << "[App] Starting new game..." << std::endl;
         
         GameWorld::GetInstance().Clear();
+
+        // Очищаем старые предметы
+        for (auto* weapon : m_weaponItems) {
+            delete weapon;
+        }
+        m_weaponItems.clear();
         
         m_gold = 0;
         m_chestsCollected = 0;
@@ -308,6 +315,10 @@ namespace rogalique
             transform->SetPosition(sf::Vector2f(WORLD_WIDTH / 2.0f, WORLD_HEIGHT / 2.0f));
         
         UpdateUI();
+
+        // Спавн оружия на землю
+        SpawnWeapon(WORLD_WIDTH / 2 - 100, WORLD_HEIGHT / 2);
+        SpawnWeapon(WORLD_WIDTH / 2 + 100, WORLD_HEIGHT / 2);
         
         if (WORLD_WIDTH > SCREEN_WIDTH || WORLD_HEIGHT > SCREEN_HEIGHT)
         {
