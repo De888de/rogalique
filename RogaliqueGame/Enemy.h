@@ -1,5 +1,6 @@
 #pragma once
 #include "RogaliqueGameObject.h"
+#include "HealthComponent.h"
 #include <SFML/Graphics.hpp>
 
 namespace rogalique
@@ -11,19 +12,18 @@ namespace rogalique
         void Update(float deltaTime) override;
         void Render(sf::RenderWindow& window) override;
 
-        int GetHealth() const { return m_health; }
-        int GetMaxHealth() const { return m_maxHealth; }
+        int GetHealth() const;
+        int GetMaxHealth() const;
         void TakeDamage(int damage);
         void Heal(int amount);
+        bool IsAlive() const;
         
         sf::Vector2f GetPosition() const;
 
     private:
         void UpdateUIText();
         
-        int m_health = 100;
-        int m_maxHealth = 100;
-        
+        HealthComponent* m_healthComponent = nullptr;
         sf::Text m_healthText;
         sf::Font m_font;
     };

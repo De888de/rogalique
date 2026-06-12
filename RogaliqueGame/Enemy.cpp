@@ -19,6 +19,9 @@ namespace rogalique
         AddComponent<SeekerComponent>(80.0f);
         AddComponent<CollisionComponent>(16.0f);
         
+        // Добавляем HealthComponent
+        m_healthComponent = AddComponent<HealthComponent>(100);
+        
         // Загружаем шрифт для отображения HP
         if (!m_font.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf")) {
             std::cout << "[Enemy] Could not load font" << std::endl;
@@ -29,18 +32,12 @@ namespace rogalique
         m_healthText.setFillColor(sf::Color::White);
         UpdateUIText();
         
-        std::cout << "[Enemy] Created with " << m_health << " HP" << std::endl;
+        std::cout << "[Enemy] Created with " << GetHealth() << " HP" << std::endl;
     }
 
     void Enemy::Update(float deltaTime)
     {
         RogaliqueGameObject::Update(deltaTime);
-        
-        if (m_health <= 0)
-        {
-            std::cout << "[Enemy] Died!" << std::endl;
-            GameWorld::GetInstance().DestroyGameObject(this);
-        }
         
         // Обновляем позицию текста HP
         auto* transform = GetComponent<TransformComponent>();
@@ -53,45 +50,64 @@ namespace rogalique
     void Enemy::Render(sf::RenderWindow& window)
     {
         RogaliqueGameObject::Render(window);
-        if (m_health > 0) {
+        if (IsAlive()) {
             window.draw(m_healthText);
         }
     }
 
+    int Enemy::GetHealth() const
+    {
+        return m_healthComponent ? m_healthComponent->GetHealth() : 0;
+    }
+
+    int Enemy::GetMaxHealth() const
+    {
+        return m_healthComponent ? m_healthComponent->GetMaxHealth() : 0;
+    }
+
+    bool Enemy::IsAlive() const
+    {
+        return m_healthComponent && m_healthComponent->IsAlive();
+    }
+
     void Enemy::TakeDamage(int damage)
     {
-        if (m_health <= 0) return;
+        if (!IsAlive()) return;
 
         if (g_Application) {
             SoundManager::GetInstance().PlaySound("monster_hit");
         }
         
-        m_health -= damage;
-        if (m_health < 0) m_health = 0;
+        int oldHealth = GetHealth();
+        m_healthComponent->TakeDamage(damage);
+        int newHealth = GetHealth();
         
-        std::cout << "[Enemy] Took " << damage << " damage! HP: " << m_health << "/" << m_maxHealth << std::endl;
+        std::cout << "[Enemy] Took " << damage << " damage! HP: " << newHealth << "/" << GetMaxHealth() << std::endl;
         UpdateUIText();
 
-        LOG_ENEMY_DEATH("Basic Enemy");
+        if (!IsAlive()) {
+            LOG_ENEMY_DEATH("Basic Enemy");
+            std::cout << "[Enemy] Died!" << std::endl;
+            GameWorld::GetInstance().DestroyGameObject(this);
+        }
     }
 
     void Enemy::Heal(int amount)
     {
-        m_health += amount;
-        if (m_health > m_maxHealth) m_health = m_maxHealth;
+        if (!m_healthComponent) return;
+        m_healthComponent->Heal(amount);
         UpdateUIText();
     }
     
     void Enemy::UpdateUIText()
     {
-        int percent = (m_health * 100) / m_maxHealth;
+        int percent = (GetHealth() * 100) / GetMaxHealth();
         m_healthText.setString(std::to_string(percent) + "%");
     }
     
     sf::Vector2f Enemy::GetPosition() const
     {
         auto* transform = GetComponent<TransformComponent>();
-        if (transform) return transform->GetPosition();
-        return sf::Vector2f(0, 0);
+        return transform ? transform->GetPosition() : sf::Vector2f(0, 0);
     }
 }
