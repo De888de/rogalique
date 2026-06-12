@@ -49,6 +49,8 @@ namespace rogalique
         sm.LoadMusic("dungeon", "RogaliqueGame/Resources/Sounds/dungeon.WAV");
         sm.LoadSound("attack_01", "RogaliqueGame/Resources/Sounds/attack_01.WAV");
         sm.LoadSound("attack_02", "RogaliqueGame/Resources/Sounds/attack_02.WAV");
+        sm.LoadSound("metal_hit", "RogaliqueGame/Resources/Sounds/metal_hit.WAV");
+        sm.LoadSound("hit", "RogaliqueGame/Resources/Sounds/hit.WAV");
         sm.PlayMusicFile("RogaliqueGame/Resources/Sounds/main(1).WAV");
         
         if (!m_uiFont.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))

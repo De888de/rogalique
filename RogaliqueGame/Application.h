@@ -29,8 +29,10 @@ namespace rogalique
         void SpawnWeapon(float x, float z);
         void UpdateUI();
         void UpdateHealthUI(int current, int max) { m_healthUI.UpdateHealth(current, max); }
+        void UpdateArmorUI(int current, int max) { m_healthUI.UpdateArmor(current, max); }
         void ShowGameOver();
         bool IsGameOver() const { return m_gameOver; }
+
 
         sf::RenderWindow window;
         Player* GetPlayer() const { return m_player; }

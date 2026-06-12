@@ -112,6 +112,9 @@
     <ClCompile Include="AttackComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="ArmorComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -154,6 +157,7 @@
     <ClInclude Include="HealthUI.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="AttackComponent.h" />
+    <ClInclude Include="ArmorComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\level1.txt">

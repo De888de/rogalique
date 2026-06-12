@@ -10,6 +10,7 @@
 #include "SpriteComponent.h"
 #include "MovementComponent.h"
 #include "HealthComponent.h"
+#include "ArmorComponent.h"
 #include "Application.h"
 #include "Bullet.h"
 #include <SFML/Window/Mouse.hpp>
@@ -24,11 +25,21 @@ namespace rogalique
         AddComponent<SpriteComponent>("player.png", 32, 32);
         AddComponent<MovementComponent>(200.0f);
         AddComponent<HealthComponent>(5);  // 5 жизней
+        AddComponent<ArmorComponent>(5, 0.5f, 0.5f);  // 5 брони, 50% поглощения, 0.5 реген/сек
         AddComponent<CollisionComponent>(16.0f);
+
 
         m_equippedWeapon.setSize(sf::Vector2f(35, 12));
         m_equippedWeapon.setFillColor(sf::Color(200, 200, 50));
         m_equippedWeapon.setOrigin(5, 6);
+
+        auto* armor = GetComponent<ArmorComponent>();
+        if (armor) {
+            std::cout << "[Player] Armor equipped: " << armor->GetCurrentArmor() << "/" << armor->GetMaxArmor() << std::endl;
+        }
+        else {
+            std::cout << "[Player] NO ARMOR COMPONENT!" << std::endl;
+        }
     }
 
     void Player::SetWeapon(Weapon* weapon)
@@ -218,22 +229,27 @@ namespace rogalique
         assert(health && "Player must have HealthComponent");
         if (!health) return;
 
-        int oldHealth = health->GetHealth();
+        // Расчёт урона с учётом брони
+        auto* armor = GetComponent<ArmorComponent>();
+        int finalDamage = damage;
 
-        // Логируем до применения урона
-        LOG_PLAYER_DAMAGE(oldHealth);
-
-        // Звук удара
-        if (g_Application) {
+        if (armor && armor->HasArmor()) {
+            finalDamage = armor->CalculateDamage(damage);
+            std::cout << "[Player] Armor absorbed part of damage. Original: " << damage
+                << ", Final: " << finalDamage << std::endl;
+        }
+        else {
             SoundManager::GetInstance().PlaySound("hit");
         }
 
-        // Применяем урон
-        health->TakeDamage(damage);
+        int oldHealth = health->GetHealth();
+        LOG_PLAYER_DAMAGE(oldHealth);
+
+        health->TakeDamage(finalDamage);
         m_invulnerableTimer = m_invulnerableDuration;
 
         int newHealth = health->GetHealth();
-        std::cout << "[Player] Hit! -" << damage << " HP, Health: " << newHealth << "/" << GetMaxHealth() << std::endl;
+        std::cout << "[Player] Hit! -" << finalDamage << " HP, Health: " << newHealth << "/" << GetMaxHealth() << std::endl;
 
         // Проверка на смерть
         if (!IsAlive())
@@ -244,10 +260,13 @@ namespace rogalique
                 g_Application->ShowGameOver();
             }
         }
-
-        // Обновляем UI
+        // Обновляем UI здоровья и брони
         if (g_Application) {
             g_Application->UpdateHealthUI(newHealth, GetMaxHealth());
+            auto* armor = GetComponent<ArmorComponent>();
+            if (armor) {
+                g_Application->UpdateArmorUI(armor->GetCurrentArmor(), armor->GetMaxArmor());
+            }
         }
     }
 

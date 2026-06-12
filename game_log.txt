@@ -1,12 +1,24 @@
-[12:52:33] === GAME LOG STARTED ===
-[12:52:33] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (500.000000, 400.000000)
-[12:52:38] [EVENT] Game Started | New game beginning
-[12:52:38] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (924.000000, 768.000000)
-[12:52:38] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (1124.000000, 768.000000)
-[12:53:01] [EVENT] Player Damaged | Health: 5
-[12:53:02] [EVENT] Player Damaged | Health: 4
-[12:53:03] [EVENT] Player Damaged | Health: 3
-[12:53:05] [EVENT] Player Damaged | Health: 2
-[12:53:06] [EVENT] Player Damaged | Health: 1
-[12:53:06] [EVENT] Player Died | GAME OVER
-[12:53:06] [EVENT] Game Over | Player died
+[16:06:38] === GAME LOG STARTED ===
+[16:06:38] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (500.000000, 400.000000)
+[16:06:44] [EVENT] Game Started | New game beginning
+[16:06:45] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (924.000000, 768.000000)
+[16:06:45] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (1124.000000, 768.000000)
+[16:06:49] [EVENT] Player Damaged | Health: 5
+[16:06:55] [EVENT] Player Damaged | Health: 4
+[16:06:56] [EVENT] Player Damaged | Health: 3
+[16:06:57] [EVENT] Player Damaged | Health: 2
+[16:06:59] [EVENT] Player Damaged | Health: 1
+[16:06:59] [EVENT] Player Died | GAME OVER
+[16:06:59] [EVENT] Game Over | Player died
+[16:08:51] [EVENT] Game Started | New game beginning
+[16:08:52] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (924.000000, 768.000000)
+[16:08:52] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (1124.000000, 768.000000)
+[16:09:01] [EVENT] Player Damaged | Health: 5
+[16:09:17] [EVENT] Player Damaged | Health: 4
+[16:09:20] [EVENT] Player Damaged | Health: 3
+[16:09:41] [EVENT] Weapon Equipped | Iron Pistol
+[16:09:41] [EVENT] Weapon Pickup | Player equipped weapon
+[16:09:44] [EVENT] Player Damaged | Health: 2
+[16:12:33] [EVENT] Player Damaged | Health: 1
+[16:12:33] [EVENT] Player Died | GAME OVER
+[16:12:33] [EVENT] Game Over | Player died

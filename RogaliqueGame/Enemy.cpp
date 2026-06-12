@@ -26,7 +26,7 @@ namespace rogalique
         // Добавляем HealthComponent
         m_healthComponent = AddComponent<HealthComponent>(100);
 
-        AddComponent<AttackComponent>(1, 40.0f, 1.0f);
+        AddComponent<AttackComponent>(2, 40.0f, 1.0f);
         
         // Загружаем шрифт для отображения HP
         if (!m_font.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf")) {
