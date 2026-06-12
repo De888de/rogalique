@@ -26,7 +26,7 @@ namespace rogalique
         // Добавляем HealthComponent
         m_healthComponent = AddComponent<HealthComponent>(100);
 
-        AddComponent<AttackComponent>(2, 40.0f, 1.0f);
+        AddComponent<AttackComponent>(1, 40.0f, 1.0f);
         
         // Загружаем шрифт для отображения HP
         if (!m_font.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf")) {
@@ -99,6 +99,7 @@ namespace rogalique
         std::cout << "[Enemy] Took " << damage << " damage! HP: " << newHealth << "/" << GetMaxHealth() << std::endl;
         UpdateUIText();
 
+        // ЛОГ СМЕРТИ ВРАГ УМИРАЕТ
         if (!IsAlive()) {
             LOG_ENEMY_DEATH("Basic Enemy");
             std::cout << "[Enemy] Died!" << std::endl;

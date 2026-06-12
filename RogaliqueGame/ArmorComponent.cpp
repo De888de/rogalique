@@ -62,42 +62,48 @@ namespace rogalique
     int ArmorComponent::CalculateDamage(int incomingDamage)
     {
         assert(incomingDamage > 0 && "Incoming damage must be positive");
-        
+
         int finalDamage = incomingDamage;
-        
+
         if (m_currentArmor > 0)
         {
-            int absorbedDamage = static_cast<int>(incomingDamage * m_absorptionPercent);
-            absorbedDamage = std::min(absorbedDamage, m_currentArmor);
-            
-            if (absorbedDamage > 0)
+            // Весь урон идёт в броню
+            int armorDamage = incomingDamage;
+
+            // Броня поглощает урон, пока не разрушится
+            if (armorDamage >= m_currentArmor)
             {
-                m_currentArmor -= absorbedDamage;
-                finalDamage = incomingDamage - absorbedDamage;
-                
+                // Броня полностью разрушена, остаток урона идёт в здоровье
+                int remainingDamage = armorDamage - m_currentArmor;
+                m_currentArmor = 0;
+                finalDamage = remainingDamage;
+
                 SoundManager::GetInstance().PlaySound("metal_hit");
-                
-                std::cout << "[ArmorComponent] Damage: " << incomingDamage 
-                          << ", absorbed: " << absorbedDamage 
-                          << ", final: " << finalDamage 
-                          << ", armor left: " << m_currentArmor << std::endl;
-                
-                if (m_currentArmor <= 0) {
-                    SoundManager::GetInstance().PlaySound("hit");
-                }
+                SoundManager::GetInstance().PlaySound("hit"); // Звук удара по здоровью
+
+                std::cout << "[ArmorComponent] Armor BROKEN! Damage: " << incomingDamage
+                    << ", final to health: " << finalDamage << std::endl;
             }
             else
             {
-                SoundManager::GetInstance().PlaySound("hit");
+                // Броня полностью поглощает урон
+                m_currentArmor -= armorDamage;
+                finalDamage = 0;
+
+                SoundManager::GetInstance().PlaySound("metal_hit");
+
+                std::cout << "[ArmorComponent] Armor absorbed all damage. Armor left: "
+                    << m_currentArmor << "/" << m_maxArmor << std::endl;
             }
         }
         else
         {
+            // Нет брони — урон по здоровью
             SoundManager::GetInstance().PlaySound("hit");
             std::cout << "[ArmorComponent] No armor, full damage: " << finalDamage << std::endl;
         }
-        
-        return std::max(1, finalDamage);
+
+        return std::max(0, finalDamage);
     }
     
     void ArmorComponent::Reset()

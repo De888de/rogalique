@@ -43,7 +43,7 @@ namespace rogalique
         sm.LoadMusic("atmosphere_dark", "RogaliqueGame/Resources/Sounds/atmosphere_dark.WAV");
         sm.LoadMusic("atmosphere_trepidation", "RogaliqueGame/Resources/Sounds/trepidation.WAV");
         sm.LoadSound("gameover", "RogaliqueGame/Resources/Sounds/GAMEOVER.WAV");
-        sm.LoadSound("hit", "RogaliqueGame/Resources/Sounds/hukc.WAV");
+        sm.LoadSound("death_scream", "RogaliqueGame/Resources/Sounds/hukc.WAV");
         sm.LoadSound("monster_hit", "RogaliqueGame/Resources/Sounds/monstr.WAV");
         sm.LoadSound("shot", "RogaliqueGame/Resources/Sounds/shot.WAV");
         sm.LoadMusic("dungeon", "RogaliqueGame/Resources/Sounds/dungeon.WAV");

@@ -1,4 +1,4 @@
-#include <cmath>
+п»ї#include <cmath>
 #include <cassert>
 #include "Logger.h"
 #include "CollisionComponent.h"
@@ -24,8 +24,8 @@ namespace rogalique
         AddComponent<TransformComponent>();
         AddComponent<SpriteComponent>("player.png", 32, 32);
         AddComponent<MovementComponent>(200.0f);
-        AddComponent<HealthComponent>(5);  // 5 жизней
-        AddComponent<ArmorComponent>(5, 0.5f, 0.5f);  // 5 брони, 50% поглощения, 0.5 реген/сек
+        AddComponent<HealthComponent>(5);  // 5 Р¶РёР·РЅРµР№
+        AddComponent<ArmorComponent>(5, 0.5f, 0.5f);  // 5 Р±СЂРѕРЅРё, 50% РїРѕРіР»РѕС‰РµРЅРёСЏ, 0.5 СЂРµРіРµРЅ/СЃРµРє
         AddComponent<CollisionComponent>(16.0f);
 
 
@@ -65,17 +65,17 @@ namespace rogalique
     {
         RogaliqueGameObject::Update(deltaTime);
 
-        // Обновление неуязвимости
+        // РћР±РЅРѕРІР»РµРЅРёРµ РЅРµСѓСЏР·РІРёРјРѕСЃС‚Рё
         if (m_invulnerableTimer > 0.0f) {
             m_invulnerableTimer -= deltaTime;
         }
 
-        // Обновление оружия
+        // РћР±РЅРѕРІР»РµРЅРёРµ РѕСЂСѓР¶РёСЏ
         if (m_weapon) {
             m_weapon->Update(deltaTime);
         }
 
-        // Стрельба
+        // РЎС‚СЂРµР»СЊР±Р°
         m_shootCooldown -= deltaTime;
         if (m_shootCooldown < 0.0f) m_shootCooldown = 0.0f;
 
@@ -88,7 +88,7 @@ namespace rogalique
             }
         }
 
-        // Перезарядка
+        // РџРµСЂРµР·Р°СЂСЏРґРєР°
         static bool rPressed = false;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
             if (!rPressed && m_weapon) {
@@ -103,7 +103,7 @@ namespace rogalique
             rPressed = false;
         }
 
-        // Проверка сундуков
+        // РџСЂРѕРІРµСЂРєР° СЃСѓРЅРґСѓРєРѕРІ
         auto* transform = GetComponent<TransformComponent>();
         if (!transform) return;
 
@@ -151,7 +151,7 @@ namespace rogalique
         if (m_weapon->Shoot()) {
             SoundManager::GetInstance().PlaySound("shot");
 
-            // 25% урон от максимального здоровья врага
+            // 25% СѓСЂРѕРЅ РѕС‚ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ Р·РґРѕСЂРѕРІСЊСЏ РІСЂР°РіР°
             float damageMultiplier = 0.25f;
             Bullet* bullet = new Bullet(playerPos, dir, 600.0f);
             auto& world = GameWorld::GetInstance();
@@ -195,7 +195,7 @@ namespace rogalique
         return transform ? transform->GetPosition() : sf::Vector2f(0, 0);
     }
 
-    // ========== HealthComponent методы ==========
+    // ========== HealthComponent РјРµС‚РѕРґС‹ ==========
 
     int Player::GetHealth() const
     {
@@ -219,40 +219,55 @@ namespace rogalique
     {
         assert(damage > 0 && "Damage must be positive");
 
-        // Проверка на неуязвимость
         if (IsInvulnerable()) {
             std::cout << "[Player] Invulnerable, no damage" << std::endl;
             return;
         }
 
         auto* health = GetComponent<HealthComponent>();
-        assert(health && "Player must have HealthComponent");
+        auto* armor = GetComponent<ArmorComponent>();
+
         if (!health) return;
 
-        // Расчёт урона с учётом брони
-        auto* armor = GetComponent<ArmorComponent>();
         int finalDamage = damage;
-
-        if (armor && armor->HasArmor()) {
+        if (armor) {
             finalDamage = armor->CalculateDamage(damage);
-            std::cout << "[Player] Armor absorbed part of damage. Original: " << damage
-                << ", Final: " << finalDamage << std::endl;
         }
-        else {
-            SoundManager::GetInstance().PlaySound("hit");
+
+        if (finalDamage <= 0) {
+            if (g_Application && armor) {
+                g_Application->UpdateArmorUI(armor->GetCurrentArmor(), armor->GetMaxArmor());
+            }
+            return;
         }
 
         int oldHealth = health->GetHealth();
-        LOG_PLAYER_DAMAGE(oldHealth);
 
+        // РџСЂРёРјРµРЅСЏРµРј СѓСЂРѕРЅ
         health->TakeDamage(finalDamage);
         m_invulnerableTimer = m_invulnerableDuration;
 
         int newHealth = health->GetHealth();
+
+        //  РљР РРљ РџР•Р РЎРћРќРђР–Рђ (С‚РѕР»СЊРєРѕ РЅР° РїРѕСЃР»РµРґРЅРёС… 3 СЃРµСЂРґРµС‡РєР°С…)
+        int healthPercent = (newHealth * 100) / GetMaxHealth();  // 5 = 100%, 3 = 60%, 1 = 20%
+
+        if (newHealth <= 3) {  // РџРѕСЃР»РµРґРЅРёРµ 3 СЃРµСЂРґС†Р° (60% Р·РґРѕСЂРѕРІСЊСЏ)
+            SoundManager::GetInstance().PlaySound("hukc");
+            std::cout << "[Player] DEATH SCREAM! (Critical health: " << newHealth << "/5)" << std::endl;
+        }
+        else if (oldHealth > 3 && newHealth <= 3) {
+            // РџРµСЂРµС…РѕРґ С‡РµСЂРµР· РїРѕСЂРѕРі 3 СЃРµСЂРґРµС†
+            SoundManager::GetInstance().PlaySound("hukc");
+            std::cout << "[Player] CRITICAL HEALTH SCREAM!" << std::endl;
+        }
+
+        // Р›РѕРі РџРћРЎР›Р• РїСЂРёРјРµРЅРµРЅРёСЏ СѓСЂРѕРЅР° 
+        LOG_PLAYER_DAMAGE(newHealth);
         std::cout << "[Player] Hit! -" << finalDamage << " HP, Health: " << newHealth << "/" << GetMaxHealth() << std::endl;
 
-        // Проверка на смерть
-        if (!IsAlive())
+        // Р›РѕРі СЃРјРµСЂС‚Рё С‚РѕР»СЊРєРѕ РµСЃР»Рё Р·РґРѕСЂРѕРІСЊРµ = 0
+        if (newHealth <= 0)
         {
             LOG_PLAYER_DEATH();
             std::cout << "[Player] DIED! Game Over!" << std::endl;
@@ -260,10 +275,10 @@ namespace rogalique
                 g_Application->ShowGameOver();
             }
         }
-        // Обновляем UI здоровья и брони
+
+        // РћР±РЅРѕРІР»СЏРµРј UI
         if (g_Application) {
             g_Application->UpdateHealthUI(newHealth, GetMaxHealth());
-            auto* armor = GetComponent<ArmorComponent>();
             if (armor) {
                 g_Application->UpdateArmorUI(armor->GetCurrentArmor(), armor->GetMaxArmor());
             }
