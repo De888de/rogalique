@@ -17,6 +17,9 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <random>
+#include <cstdlib>
+#include <ctime>
 
 namespace rogalique
 {
@@ -44,6 +47,8 @@ namespace rogalique
         sm.LoadSound("monster_hit", "RogaliqueGame/Resources/Sounds/monstr.WAV");
         sm.LoadSound("shot", "RogaliqueGame/Resources/Sounds/shot.WAV");
         sm.LoadMusic("dungeon", "RogaliqueGame/Resources/Sounds/dungeon.WAV");
+        sm.LoadSound("attack_01", "RogaliqueGame/Resources/Sounds/attack_01.WAV");
+        sm.LoadSound("attack_02", "RogaliqueGame/Resources/Sounds/attack_02.WAV");
         sm.PlayMusicFile("RogaliqueGame/Resources/Sounds/main(1).WAV");
         
         if (!m_uiFont.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))

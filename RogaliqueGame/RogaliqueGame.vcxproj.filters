@@ -109,6 +109,9 @@
     <ClCompile Include="HealthUI.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="AttackComponent.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -150,6 +153,7 @@
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="HealthUI.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="AttackComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\level1.txt">

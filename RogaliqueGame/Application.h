@@ -41,6 +41,7 @@ namespace rogalique
         void Draw();
         void UpdateWeapons(float dt);
         void RenderWeapons(sf::RenderWindow& window);
+        void PlayRandomAttackSound();
 
         Player* m_player = nullptr;
         std::unique_ptr<Menu> m_menu;

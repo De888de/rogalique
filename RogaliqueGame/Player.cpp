@@ -206,6 +206,8 @@ namespace rogalique
 
     void Player::TakeDamage(int damage)
     {
+        assert(damage > 0 && "Damage must be positive");
+
         // Проверка на неуязвимость
         if (IsInvulnerable()) {
             std::cout << "[Player] Invulnerable, no damage" << std::endl;
@@ -213,6 +215,7 @@ namespace rogalique
         }
 
         auto* health = GetComponent<HealthComponent>();
+        assert(health && "Player must have HealthComponent");
         if (!health) return;
 
         int oldHealth = health->GetHealth();

@@ -7,8 +7,12 @@
 #include "SpriteComponent.h"
 #include "CollisionComponent.h"
 #include "SeekerComponent.h"
+#include "AttackComponent.h"
 #include "GameWorld.h"
 #include <iostream>
+#include <cassert>
+
+
 
 namespace rogalique
 {
@@ -21,6 +25,8 @@ namespace rogalique
         
         // Добавляем HealthComponent
         m_healthComponent = AddComponent<HealthComponent>(100);
+
+        AddComponent<AttackComponent>(1, 40.0f, 1.0f);
         
         // Загружаем шрифт для отображения HP
         if (!m_font.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf")) {
@@ -31,6 +37,11 @@ namespace rogalique
         m_healthText.setCharacterSize(16);
         m_healthText.setFillColor(sf::Color::White);
         UpdateUIText();
+
+        
+        class AttackComponent;
+
+        AttackComponent* m_attackComponent = nullptr;
         
         std::cout << "[Enemy] Created with " << GetHealth() << " HP" << std::endl;
     }
@@ -72,6 +83,9 @@ namespace rogalique
 
     void Enemy::TakeDamage(int damage)
     {
+        assert(damage > 0 && "Damage must be positive");
+        assert(m_healthComponent && "Enemy must have HealthComponent");
+
         if (!IsAlive()) return;
 
         if (g_Application) {

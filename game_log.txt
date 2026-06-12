@@ -1,30 +1,12 @@
-[19:41:54] === GAME LOG STARTED ===
-[19:41:54] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (500.000000, 400.000000)
-[19:42:34] [EVENT] Game Started | New game beginning
-[19:42:34] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (924.000000, 768.000000)
-[19:42:34] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (1124.000000, 768.000000)
-[19:42:36] [EVENT] Weapon Pickup | Player equipped weapon
-[19:42:39] [EVENT] Weapon Pickup | Player equipped weapon
-[19:42:52] [EVENT] Enemy Died | Type: Basic Enemy
-[19:42:54] [EVENT] Enemy Died | Type: Basic Enemy
-[19:42:56] [EVENT] Enemy Died | Type: Basic Enemy
-[19:42:58] [EVENT] Enemy Died | Type: Basic Enemy
-[19:42:59] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:02] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:04] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:08] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:11] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:13] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:17] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:21] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:24] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:26] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:27] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:29] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:31] [EVENT] Enemy Died | Type: Basic Enemy
-[19:43:37] [EVENT] Player Damaged | Health: 5
-[19:43:38] [EVENT] Player Damaged | Health: 4
-[19:43:39] [EVENT] Player Damaged | Health: 3
-[19:43:40] [EVENT] Player Damaged | Health: 2
-[19:44:38] [EVENT] Player Damaged | Health: 1
-[19:44:38] [EVENT] Game Over | Player died
+[12:52:33] === GAME LOG STARTED ===
+[12:52:33] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (500.000000, 400.000000)
+[12:52:38] [EVENT] Game Started | New game beginning
+[12:52:38] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (924.000000, 768.000000)
+[12:52:38] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (1124.000000, 768.000000)
+[12:53:01] [EVENT] Player Damaged | Health: 5
+[12:53:02] [EVENT] Player Damaged | Health: 4
+[12:53:03] [EVENT] Player Damaged | Health: 3
+[12:53:05] [EVENT] Player Damaged | Health: 2
+[12:53:06] [EVENT] Player Damaged | Health: 1
+[12:53:06] [EVENT] Player Died | GAME OVER
+[12:53:06] [EVENT] Game Over | Player died

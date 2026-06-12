@@ -7,6 +7,7 @@
 #include "Chest.h"
 #include "CollisionComponent.h"
 #include "TransformComponent.h"
+#include "AttackComponent.h"
 #include "Application.h"
 #include <algorithm>
 #include <iostream>
@@ -210,47 +211,47 @@ namespace rogalique
             }
         }
         
-        // 3. Игрок vs Враги - урон при касании (прямая проверка расстояния)
-        if (m_player)
+        // 3. Игрок vs Враги - атака через AttackComponent
+        if (m_player && m_player->IsAlive())
         {
-            auto* playerTransform = m_player->GetComponent<TransformComponent>();
-            if (playerTransform)
+            std::cout << "[Collision] === ENEMY ATTACK CHECK ===" << std::endl;
+            std::cout << "[Collision] Player HP: " << m_player->GetHealth() << std::endl;
+
+            int enemyCount = 0;
+            for (auto* enemyObj : m_gameObjects)
             {
-                sf::Vector2f playerPos = playerTransform->GetPosition();
+                Enemy* enemy = dynamic_cast<Enemy*>(enemyObj);
+                if (!enemy) continue;
+                if (!enemy->IsAlive()) {
+                    std::cout << "[Collision] Enemy " << enemyCount << " is dead" << std::endl;
+                    continue;
+                }
 
-                for (auto* enemyObj : m_gameObjects)
+                enemyCount++;
+                std::cout << "[Collision] Enemy " << enemyCount << " is alive" << std::endl;
+
+                auto* attackComp = enemy->GetComponent<AttackComponent>();
+                if (!attackComp) {
+                    std::cout << "[Collision] Enemy " << enemyCount << " has NO AttackComponent!" << std::endl;
+                    continue;
+                }
+
+                bool canAttack = attackComp->CanAttack();
+                bool inRange = attackComp->IsInRange(m_player);
+
+                std::cout << "[Collision] Enemy " << enemyCount
+                    << ": canAttack=" << canAttack
+                    << ", inRange=" << inRange << std::endl;
+
+                if (canAttack && inRange)
                 {
-                    Enemy* enemy = dynamic_cast<Enemy*>(enemyObj);
-                    if (!enemy) continue;
-
-                    auto* enemyTransform = enemy->GetComponent<TransformComponent>();
-                    if (!enemyTransform) continue;
-
-                    sf::Vector2f enemyPos = enemyTransform->GetPosition();
-
-                    float dx = playerPos.x - enemyPos.x;
-                    float dy = playerPos.y - enemyPos.y;
-                    float dist = std::sqrt(dx * dx + dy * dy);
-
-                    // Если расстояние меньше 35 пикселей
-                    if (dist < 35.0f)
-                    {
-                        std::cout << "[Collision] COLLISION! Player-enemy distance: " << dist << std::endl;
-
-                        // Наносим урон без проверок (для теста)
-                        if (!m_player->IsInvulnerable())
-                        {
-                            m_player->TakeDamage(1);
-                            std::cout << "[Collision] Player health: " << m_player->GetHealth() << std::endl;
-
-                            if (g_Application) {
-                                g_Application->UpdateHealthUI(m_player->GetHealth(), m_player->GetMaxHealth());
-                            }
-                        }
-                        break;
-                    }
+                    std::cout << "[Collision] Enemy " << enemyCount << " ATTACKING!" << std::endl;
+                    attackComp->Attack(m_player);
+                    std::cout << "[Collision] After attack, Player HP: " << m_player->GetHealth() << std::endl;
+                    break;
                 }
             }
+            std::cout << "[Collision] Total enemies checked: " << enemyCount << std::endl;
         }
     }
 }

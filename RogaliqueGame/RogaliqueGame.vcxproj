@@ -91,6 +91,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="AttackComponent.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="BlockBuilder.cpp" />
     <ClCompile Include="BlockComponent.cpp" />
@@ -126,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="AttackComponent.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlockBuilder.h" />
     <ClInclude Include="BlockComponent.h" />
