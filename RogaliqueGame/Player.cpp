@@ -24,21 +24,13 @@ namespace rogalique
         AddComponent<TransformComponent>();
         AddComponent<SpriteComponent>("player.png", 32, 32);
         AddComponent<MovementComponent>(200.0f);
-        AddComponent<HealthComponent>(5);  // 5 жизней
-        AddComponent<ArmorComponent>(5, 0.5f, 0.5f);  // 5 брони, 50% поглощения, 0.5 реген/сек
+        AddComponent<HealthComponent>(5);
+        AddComponent<ArmorComponent>(5, 0.5f, 0.5f);
         AddComponent<CollisionComponent>(16.0f);
-
-
-        m_equippedWeapon.setSize(sf::Vector2f(35, 12));
-        m_equippedWeapon.setFillColor(sf::Color(200, 200, 50));
-        m_equippedWeapon.setOrigin(5, 6);
 
         auto* armor = GetComponent<ArmorComponent>();
         if (armor) {
             std::cout << "[Player] Armor equipped: " << armor->GetCurrentArmor() << "/" << armor->GetMaxArmor() << std::endl;
-        }
-        else {
-            std::cout << "[Player] NO ARMOR COMPONENT!" << std::endl;
         }
     }
 
@@ -48,15 +40,14 @@ namespace rogalique
             delete m_weapon;
         }
         m_weapon = weapon;
-        m_hasWeapon = true;
         LOG_EVENT("Weapon Equipped", weapon->GetName());
         std::cout << "[Player] Equipped: " << m_weapon->GetName() << std::endl;
     }
 
     void Player::EquipWeapon()
     {
-        if (!m_hasWeapon) {
-            Weapon* starterWeapon = new Weapon("Iron Pistol", 20, 0.25f, 10);
+        if (!m_weapon) {
+            Weapon* starterWeapon = new Weapon("Iron Pistol", 20, 0.25f, 10, 600.0f, 32.0f);
             SetWeapon(starterWeapon);
         }
     }
@@ -70,22 +61,21 @@ namespace rogalique
             m_invulnerableTimer -= deltaTime;
         }
 
-        // Обновление оружия
+        // Обновление оружия (кулдаун)
         if (m_weapon) {
             m_weapon->Update(deltaTime);
         }
 
         // Стрельба
-        m_shootCooldown -= deltaTime;
-        if (m_shootCooldown < 0.0f) m_shootCooldown = 0.0f;
-
-        if (m_hasWeapon && sf::Keyboard::isKeyPressed(sf::Keyboard::F))
-        {
-            if (m_shootCooldown <= 0.0f)
-            {
+        static bool fPressed = false;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
+            if (!fPressed && HasWeapon()) {
                 Shoot();
-                m_shootCooldown = m_fireRate;
+                fPressed = true;
             }
+        }
+        else {
+            fPressed = false;
         }
 
         // Перезарядка
@@ -93,9 +83,6 @@ namespace rogalique
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
             if (!rPressed && m_weapon) {
                 m_weapon->Reload();
-                if (g_Application) {
-                    g_Application->UpdateUI();
-                }
                 rPressed = true;
             }
         }
@@ -133,33 +120,21 @@ namespace rogalique
             return;
         }
 
-        if (!m_weapon->CanShoot()) {
-            return;
-        }
+        // Получаем позицию игрока
+        auto* transform = GetComponent<TransformComponent>();
+        if (!transform) return;
+        sf::Vector2f playerPos = transform->GetPosition();
 
+        // Получаем позицию курсора
         sf::Vector2i mouseScreen = sf::Mouse::getPosition(g_Application->window);
         sf::Vector2f mouseWorld = g_Application->window.mapPixelToCoords(mouseScreen);
 
-        auto* transform = GetComponent<TransformComponent>();
-        if (!transform) return;
+        // Оружие делает всё
+        Bullet* bullet = m_weapon->Shoot(playerPos, mouseWorld);
 
-        sf::Vector2f playerPos = transform->GetPosition();
-        sf::Vector2f dir = mouseWorld - playerPos;
-        float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
-        if (len > 0.0f) dir /= len;
-
-        if (m_weapon->Shoot()) {
+        if (bullet) {
             SoundManager::GetInstance().PlaySound("shot");
-
-            // 25% урон от максимального здоровья врага
-            float damageMultiplier = 0.25f;
-            Bullet* bullet = new Bullet(playerPos, dir, 600.0f);
-            auto& world = GameWorld::GetInstance();
-            world.AddGameObject(bullet);
-
-            if (g_Application) {
-                g_Application->UpdateUI();
-            }
+            GameWorld::GetInstance().AddGameObject(bullet);
         }
     }
 
@@ -167,7 +142,8 @@ namespace rogalique
     {
         RogaliqueGameObject::Render(window);
 
-        if (m_hasWeapon)
+        // Оружие рисует само себя
+        if (m_weapon && HasWeapon())
         {
             auto* transform = GetComponent<TransformComponent>();
             if (transform)
@@ -178,12 +154,10 @@ namespace rogalique
                 sf::Vector2f mouseWorld = g_Application->window.mapPixelToCoords(mouseScreen);
 
                 sf::Vector2f dir = mouseWorld - playerPos;
-                float angle = std::atan2(dir.y, dir.x) * 180.0f / 3.14159265f;
+                float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+                if (len > 0.0f) dir /= len;
 
-                m_equippedWeapon.setRotation(angle);
-                m_equippedWeapon.setPosition(playerPos.x + 18.f, playerPos.y - 5.f);
-
-                window.draw(m_equippedWeapon);
+                m_weapon->Render(window, playerPos, dir);
             }
         }
     }
@@ -191,7 +165,6 @@ namespace rogalique
     sf::Vector2f Player::GetPosition() const
     {
         auto* transform = GetComponent<TransformComponent>();
-        assert(transform && "Player must have TransformComponent");
         return transform ? transform->GetPosition() : sf::Vector2f(0, 0);
     }
 
@@ -243,31 +216,23 @@ namespace rogalique
 
         int oldHealth = health->GetHealth();
 
-        // Применяем урон
         health->TakeDamage(finalDamage);
         m_invulnerableTimer = m_invulnerableDuration;
 
         int newHealth = health->GetHealth();
 
-        //  КРИК ПЕРСОНАЖА (только на последних 3 сердечках)
-        int healthPercent = (newHealth * 100) / GetMaxHealth();  // 5 = 100%, 3 = 60%, 1 = 20%
-
-        if (newHealth <= 3) {  // Последние 3 сердца (60% здоровья)
-            SoundManager::GetInstance().PlaySound("hukc");
-            std::cout << "[Player] DEATH SCREAM! (Critical health: " << newHealth << "/5)" << std::endl;
+        // Звук
+        if (newHealth <= 3) {
+            SoundManager::GetInstance().PlaySound("death_scream");
         }
-        else if (oldHealth > 3 && newHealth <= 3) {
-            // Переход через порог 3 сердец
-            SoundManager::GetInstance().PlaySound("hukc");
-            std::cout << "[Player] CRITICAL HEALTH SCREAM!" << std::endl;
+        else {
+            SoundManager::GetInstance().PlaySound("hit");
         }
 
-        // Лог ПОСЛЕ применения урона 
         LOG_PLAYER_DAMAGE(newHealth);
         std::cout << "[Player] Hit! -" << finalDamage << " HP, Health: " << newHealth << "/" << GetMaxHealth() << std::endl;
 
-        // Лог смерти только если здоровье = 0
-        if (newHealth <= 0)
+        if (!IsAlive())
         {
             LOG_PLAYER_DEATH();
             std::cout << "[Player] DIED! Game Over!" << std::endl;
@@ -276,7 +241,6 @@ namespace rogalique
             }
         }
 
-        // Обновляем UI
         if (g_Application) {
             g_Application->UpdateHealthUI(newHealth, GetMaxHealth());
             if (armor) {

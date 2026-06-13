@@ -158,6 +158,7 @@
     <ClInclude Include="Logger.h" />
     <ClInclude Include="AttackComponent.h" />
     <ClInclude Include="ArmorComponent.h" />
+    <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\level1.txt">

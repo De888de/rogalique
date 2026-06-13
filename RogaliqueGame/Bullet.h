@@ -10,17 +10,17 @@ namespace rogalique {
 
     class Bullet : public RogaliqueGameObject {
     public:
-        Bullet(sf::Vector2f position, sf::Vector2f direction, float speed = 500.0f)
+        Bullet(sf::Vector2f position, sf::Vector2f direction, float speed, int damage)
             : m_active(true)
             , m_lifetime(0.0f)
+            , m_damage(damage)
         {
-            // Добавляем компоненты
             auto* transform = AddComponent<TransformComponent>();
             if (transform) {
                 transform->SetPosition(position);
             }
             
-            AddComponent<CollisionComponent>(4.0f);  // Радиус коллизии 4 пикселя
+            AddComponent<CollisionComponent>(4.0f);
             
             m_velocity = direction * speed;
             
@@ -29,13 +29,12 @@ namespace rogalique {
             m_shape.setOrigin(4.0f, 4.0f);
             m_shape.setPosition(position);
             
-            std::cout << "[Bullet] FIRE! Position: " << position.x << ", " << position.y << std::endl;
+            std::cout << "[Bullet] FIRE! Damage: " << m_damage << " | Position: " << position.x << ", " << position.y << std::endl;
         }
 
         void Update(float deltaTime) override {
             if (!m_active) return;
 
-            // Обновляем позицию через TransformComponent
             auto* transform = GetComponent<TransformComponent>();
             if (transform) {
                 sf::Vector2f pos = transform->GetPosition();
@@ -45,7 +44,7 @@ namespace rogalique {
             }
 
             m_lifetime += deltaTime;
-            if (m_lifetime > 3.0f) { // Живёт 3 секунды
+            if (m_lifetime > 3.0f) {
                 m_active = false;
                 auto& world = GameWorld::GetInstance();
                 world.DestroyGameObject(this);
@@ -56,17 +55,15 @@ namespace rogalique {
             if (m_active) {
                 window.draw(m_shape);
             }
-            
-            // Рендер компонентов (если нужно)
             RogaliqueGameObject::Render(window);
         }
 
         bool IsActive() const { return m_active; }
+        int GetDamage() const { return m_damage; }
         
         sf::Vector2f GetPosition() const {
             auto* transform = GetComponent<TransformComponent>();
-            if (transform) return transform->GetPosition();
-            return sf::Vector2f(0, 0);
+            return transform ? transform->GetPosition() : sf::Vector2f(0, 0);
         }
 
     private:
@@ -74,5 +71,6 @@ namespace rogalique {
         sf::CircleShape m_shape;
         bool m_active;
         float m_lifetime;
+        int m_damage;
     };
 }

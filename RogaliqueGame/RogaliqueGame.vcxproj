@@ -125,6 +125,7 @@
     <ClCompile Include="Wall.cpp" />
     <ClCompile Include="WallComponent.cpp" />
     <ClCompile Include="WeaponItem.cpp" />
+    <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="UIComponent.h" />
     <ClInclude Include="Wall.h" />
     <ClInclude Include="WallComponent.h" />
+    <ClInclude Include="Weapon.h" />
     <ClInclude Include="WeaponItem.h" />
   </ItemGroup>
   <ItemGroup>

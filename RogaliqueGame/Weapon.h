@@ -4,72 +4,42 @@
 
 namespace rogalique {
 
+    class Bullet;
+    class Player;
+    
     class Weapon {
     public:
-        Weapon() 
-            : m_name("Iron Pistol")
-            , m_maxAmmo(20)
-            , m_currentAmmo(20)
-            , m_fireRate(0.25f)
-            , m_damage(10)
-            , m_shootCooldown(0.0f)
-        {
-            std::cout << "[Weapon] Created: " << m_name << " | Ammo: " << m_currentAmmo << "/" << m_maxAmmo << std::endl;
-        }
+        Weapon(std::string name, int maxAmmo, float fireRate, int damage, float bulletSpeed = 600.0f, float muzzleOffset = 32.0f);
         
-        Weapon(std::string name, int maxAmmo, float fireRate, int damage)
-            : m_name(name)
-            , m_maxAmmo(maxAmmo)
-            , m_currentAmmo(maxAmmo)
-            , m_fireRate(fireRate)
-            , m_damage(damage)
-            , m_shootCooldown(0.0f)
-        {
-            std::cout << "[Weapon] Created: " << m_name << " | Ammo: " << m_currentAmmo << "/" << m_maxAmmo << " | Damage: " << m_damage << std::endl;
-        }
+        void Update(float deltaTime);
+        void Render(sf::RenderWindow& window, sf::Vector2f playerPos, sf::Vector2f direction);
         
-        void Update(float deltaTime) {
-            if (m_shootCooldown > 0) {
-                m_shootCooldown -= deltaTime;
-            }
-        }
+        Bullet* Shoot(sf::Vector2f playerPos, sf::Vector2f targetPos);
+        void Reload();
         
-        bool CanShoot() const {
-            return m_shootCooldown <= 0.0f && m_currentAmmo > 0;
-        }
-        
-        bool Shoot() {
-            if (!CanShoot()) {
-                if (m_currentAmmo <= 0) {
-                    std::cout << "[Weapon] " << m_name << " is EMPTY! Reload with R!" << std::endl;
-                }
-                return false;
-            }
-            
-            m_currentAmmo--;
-            m_shootCooldown = m_fireRate;
-            std::cout << "[Weapon] " << m_name << " BANG! Ammo: " << m_currentAmmo << "/" << m_maxAmmo << std::endl;
-            return true;
-        }
-        
-        void Reload() {
-            m_currentAmmo = m_maxAmmo;
-            std::cout << "[Weapon] " << m_name << " reloaded! Ammo: " << m_currentAmmo << "/" << m_maxAmmo << std::endl;
-        }
+        bool CanShoot() const { return m_shootCooldown <= 0.0f && m_currentAmmo > 0; }
         
         int GetCurrentAmmo() const { return m_currentAmmo; }
         int GetMaxAmmo() const { return m_maxAmmo; }
         int GetDamage() const { return m_damage; }
         std::string GetName() const { return m_name; }
-        float GetFireRate() const { return m_fireRate; }
+        
+        void SetMuzzleOffset(float offset) { m_muzzleOffset = offset; }
         
     private:
+        sf::Vector2f CalculateMuzzlePosition(sf::Vector2f playerPos, sf::Vector2f direction) const;
+        void UpdateUI() const;
+        
         std::string m_name;
         int m_maxAmmo;
         int m_currentAmmo;
         float m_fireRate;
         float m_shootCooldown;
         int m_damage;
+        float m_bulletSpeed;
+        float m_muzzleOffset;
+        
+        // Визуал оружия
+        sf::RectangleShape m_weaponSprite;
     };
-    
 }
