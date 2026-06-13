@@ -51,6 +51,7 @@ namespace rogalique
         sm.LoadSound("attack_02", "RogaliqueGame/Resources/Sounds/attack_02.WAV");
         sm.LoadSound("metal_hit", "RogaliqueGame/Resources/Sounds/metal_hit.WAV");
         sm.LoadSound("hit", "RogaliqueGame/Resources/Sounds/hit.WAV");
+        sm.LoadSound("pickup", "RogaliqueGame/Resources/Sounds/picking.WAV");
         sm.PlayMusicFile("RogaliqueGame/Resources/Sounds/main(1).WAV");
         
         if (!m_uiFont.loadFromFile("RogaliqueGame/Resources/Fonts/Roboto-Regular.ttf"))
@@ -468,6 +469,7 @@ namespace rogalique
             
             if (m_player && m_weaponItems[i]->CheckPickup(m_player->GetPosition())) {
                 m_player->EquipWeapon();
+                SoundManager::GetInstance().PlaySound("pickup");
                 delete m_weaponItems[i];
                 m_weaponItems.erase(m_weaponItems.begin() + i);
                 i--;

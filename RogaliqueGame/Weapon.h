@@ -6,7 +6,7 @@ namespace rogalique {
 
     class Bullet;
     class Player;
-    
+
     class Weapon {
     public:
         Weapon(std::string name, int maxAmmo, float fireRate, int damage, float bulletSpeed = 600.0f, float muzzleOffset = 32.0f);

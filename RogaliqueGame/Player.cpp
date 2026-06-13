@@ -129,7 +129,7 @@ namespace rogalique
         sf::Vector2i mouseScreen = sf::Mouse::getPosition(g_Application->window);
         sf::Vector2f mouseWorld = g_Application->window.mapPixelToCoords(mouseScreen);
 
-        // Оружие делает всё
+        
         Bullet* bullet = m_weapon->Shoot(playerPos, mouseWorld);
 
         if (bullet) {
