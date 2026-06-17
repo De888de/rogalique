@@ -13,6 +13,7 @@
 #include "WeaponItem.h"
 #include "Bullet.h"
 #include "Enemy.h"  
+#include "DungeonManager.h"
 #include "HealthUI.h"
 #include <iostream>
 #include <vector>
@@ -100,6 +101,11 @@ namespace rogalique
     {
         g_Application = nullptr;
         if (m_player)
+    if (m_dungeonManager) {
+        m_dungeonManager->Clear();
+        m_dungeonManager.reset();
+    }
+
             GameWorld::GetInstance().Clear();
         SoundManager::GetInstance().StopMusic();
         
@@ -203,6 +209,11 @@ namespace rogalique
     void Application::Update(float deltaTime)
     {
         if (m_gameOver) return;
+    
+    if (m_dungeonManager) {
+        m_dungeonManager->Update(deltaTime);
+    }
+
         
         UpdateWeapons(deltaTime);
         
@@ -274,6 +285,14 @@ namespace rogalique
         
         auto& world = GameWorld::GetInstance();
         world.Render(window);
+    
+    if (m_dungeonManager) {
+        auto* level = m_dungeonManager->GetCurrentLevel();
+        if (level) {
+            level->GetPortal().Render(window);
+        }
+    }
+
         
         RenderWeapons(window);
         
@@ -292,51 +311,30 @@ namespace rogalique
 
     void Application::StartGame()
     {
-        std::cout << "[App] Starting new game..." << std::endl;
-
+        std::cout << "[App] Starting new game with Dungeon Generation..." << std::endl;
 
         LOG_EVENT("Game Started", "New game beginning");
-        
+
         GameWorld::GetInstance().Clear();
 
-        // Очищаем старые предметы
         for (auto* weapon : m_weaponItems) {
             delete weapon;
         }
         m_weaponItems.clear();
-        
+
         m_gold = 0;
         m_chestsCollected = 0;
-        
+
         m_player = GameWorld::GetInstance().CreateGameObject<Player>();
         GameWorld::GetInstance().SetPlayer(m_player);
-        
-        // Сброс UI здоровья
-        m_healthUI.Reset();
-        
-        BlockBuilder::LoadLevel("RogaliqueGame/Resources/level1.txt", WORLD_WIDTH, WORLD_HEIGHT, 40);
-        
-        GameWorld::GetInstance().SpawnChests(10, WORLD_WIDTH, WORLD_HEIGHT);
-        
-        // Спавн врагов
-        for (int i = 0; i < 3; i++) {
-            float x = 300 + rand() % (int)(WORLD_WIDTH - 600);
-            float y = 300 + rand() % (int)(WORLD_HEIGHT - 600);
-            auto* enemy = GameWorld::GetInstance().CreateGameObject<Enemy>();
-            auto* transform = enemy->GetComponent<TransformComponent>();
-            if (transform) transform->SetPosition(sf::Vector2f(x, y));
-        }
-        
-        auto* transform = m_player->GetComponent<TransformComponent>();
-        if (transform)
-            transform->SetPosition(sf::Vector2f(WORLD_WIDTH / 2.0f, WORLD_HEIGHT / 2.0f));
-        
-        UpdateUI();
+        m_player->EquipWeapon();
 
-        // Спавн оружия на землю
-        SpawnWeapon(WORLD_WIDTH / 2 - 100, WORLD_HEIGHT / 2);
-        SpawnWeapon(WORLD_WIDTH / 2 + 100, WORLD_HEIGHT / 2);
-        
+        m_healthUI.Reset();
+
+        // СОЗДАЁМ DUNGEON MANAGER И ГЕНЕРИРУЕМ ПЕРВЫЙ УРОВЕНЬ
+        m_dungeonManager = std::make_unique<DungeonManager>(m_player);
+        m_dungeonManager->GenerateNextLevel();
+
         if (WORLD_WIDTH > SCREEN_WIDTH || WORLD_HEIGHT > SCREEN_HEIGHT)
         {
             m_useCamera = true;
@@ -352,12 +350,13 @@ namespace rogalique
             m_useCamera = false;
             m_camera.reset();
         }
-        
+
+        UpdateUI();
         m_inMenu = false;
         m_gameOver = false;
-        std::cout << "[App] Game started!" << std::endl;
-    }
 
+        std::cout << "[App] Dungeon Game started!" << std::endl;
+    }
     void Application::ReturnToMenu()
     {
         std::cout << "[App] ReturnToMenu() called" << std::endl;
@@ -367,6 +366,17 @@ namespace rogalique
         m_camera.reset();
         m_useCamera = false;
         m_player = nullptr;
+    if (m_dungeonManager) {
+        m_dungeonManager->Clear();
+        m_dungeonManager.reset();
+    }
+
+    // Очищаем DungeonManager
+    if (m_dungeonManager) {
+        m_dungeonManager->Clear();
+        m_dungeonManager.reset();
+    }
+
         GameWorld::GetInstance().Clear();
         window.setView(window.getDefaultView());
         SoundManager::GetInstance().PlayMusicFile("RogaliqueGame/Resources/Sounds/main(1).WAV");

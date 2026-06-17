@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Logger.h"
 #include "HealthUI.h"
+#include "DungeonManager.h"
 
 namespace rogalique
 {
@@ -49,6 +50,7 @@ namespace rogalique
         std::unique_ptr<Menu> m_menu;
         std::unique_ptr<CameraComponent> m_camera;
         std::unique_ptr<SoundSettingsWindow> m_soundSettings;
+        std::unique_ptr<DungeonManager> m_dungeonManager;
         std::vector<WeaponItem*> m_weaponItems;
         sf::View m_gameView;
         

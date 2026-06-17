@@ -115,6 +115,21 @@
     <ClCompile Include="ArmorComponent.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="DungeonLevel.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="DungeonManager.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MazeGenerator.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Portal.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -159,6 +174,10 @@
     <ClInclude Include="AttackComponent.h" />
     <ClInclude Include="ArmorComponent.h" />
     <ClInclude Include="Weapon.h" />
+    <ClInclude Include="DungeonLevel.h" />
+    <ClInclude Include="DungeonManager.h" />
+    <ClInclude Include="MazeGenerator.h" />
+    <ClInclude Include="Portal.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\level1.txt">

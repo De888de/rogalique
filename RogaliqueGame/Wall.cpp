@@ -11,7 +11,7 @@ namespace rogalique
         transform->SetPosition(sf::Vector2f(x, y));
         
         auto* sprite = AddComponent<SpriteComponent>("", width, height);
-        sprite->SetFallbackColor(sf::Color(150, 50, 50)); // кирпичный
+        sprite->SetFallbackColor(sf::Color(100, 70, 50));
         
         auto* collision = AddComponent<CollisionComponent>(std::max(width, height) / 2.0f);
         collision->SetTrigger(false);

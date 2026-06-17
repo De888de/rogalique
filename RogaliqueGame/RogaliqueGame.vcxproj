@@ -101,6 +101,8 @@
     <ClCompile Include="Chest.cpp" />
     <ClCompile Include="CollisionComponent.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="DungeonLevel.cpp" />
+    <ClCompile Include="DungeonManager.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameMain.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -108,10 +110,12 @@
     <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="HealthUI.cpp" />
     <ClCompile Include="IsometricPhysicsItem.cpp" />
+    <ClCompile Include="MazeGenerator.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
     <ClCompile Include="PhysicsTestObject.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Portal.cpp" />
     <ClCompile Include="ResourceSystem.cpp" />
     <ClCompile Include="RigidbodyComponent.cpp" />
     <ClCompile Include="RogaliqueGameObject.cpp" />
@@ -140,6 +144,8 @@
     <ClInclude Include="Chest.h" />
     <ClInclude Include="CollisionComponent.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="DungeonLevel.h" />
+    <ClInclude Include="DungeonManager.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameSettings.h" />
@@ -148,10 +154,12 @@
     <ClInclude Include="HealthUI.h" />
     <ClInclude Include="IsometricPhysicsItem.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="MazeGenerator.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="PhysicsTestObject.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Portal.h" />
     <ClInclude Include="ResourceSystem.h" />
     <ClInclude Include="RigidbodyComponent.h" />
     <ClInclude Include="RogaliqueGameObject.h" />
