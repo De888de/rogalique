@@ -25,10 +25,6 @@ void DungeonManager::GenerateNextLevel() {
     m_currentLevel = std::make_unique<DungeonLevel>();
     m_currentLevel->Generate(m_levelNumber, m_player);
     
-    // ПОКАЗЫВАЕМ ОКНО С ИНФОРМАЦИЕЙ
-    m_showInfo = true;
-    m_infoWindow.Show(m_levelNumber, m_currentLevel->GetRequiredChests());
-    
     if (m_player) {
         sf::Vector2f startPos = m_currentLevel->GetPlayerStart();
         auto* transform = m_player->GetComponent<TransformComponent>();
@@ -43,12 +39,6 @@ void DungeonManager::GenerateNextLevel() {
 
 void DungeonManager::Update(float deltaTime) {
     if (!m_currentLevel || !m_player) return;
-    
-    // Если показываем окно - обрабатываем его
-    if (m_showInfo) {
-        m_infoWindow.Update(deltaTime);
-        return;
-    }
     
     if (m_isTransitioning) {
         m_transitionTimer += deltaTime;
@@ -89,7 +79,6 @@ void DungeonManager::Clear() {
     }
     m_levelNumber = 0;
     m_isTransitioning = false;
-    m_showInfo = false;
 }
 
 }

@@ -1,7 +1,6 @@
 #pragma once
 #include "DungeonLevel.h"
 #include "Player.h"
-#include "LevelInfoWindow.h"
 #include <memory>
 
 namespace rogalique {
@@ -20,12 +19,6 @@ public:
     bool IsTransitioning() const { return m_isTransitioning; }
     float GetTransitionProgress() const { return m_transitionTimer / m_transitionDuration; }
     
-    // Информационное окно
-    bool IsInfoWindowActive() const { return m_showInfo; }
-    void UpdateInfoWindow(float deltaTime) { m_infoWindow.Update(deltaTime); }
-    void RenderInfoWindow(sf::RenderWindow& window) { m_infoWindow.Render(window); }
-    void CloseInfoWindow() { m_showInfo = false; m_infoWindow.Close(); }
-    
 private:
     void StartTransition();
     void CompleteTransition();
@@ -37,10 +30,6 @@ private:
     bool m_isTransitioning = false;
     float m_transitionTimer = 0.0f;
     float m_transitionDuration = 1.5f;
-    
-    // Информационное окно
-    LevelInfoWindow m_infoWindow;
-    bool m_showInfo = false;
 };
 
 }

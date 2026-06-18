@@ -13,8 +13,12 @@ DungeonLevel::DungeonLevel() : m_maze(41, 41) {}
 
 void DungeonLevel::Generate(int levelNumber, Player* player) {
     m_levelNumber = levelNumber;
-    m_levelComplete = false;
+    m_requiredChests = levelNumber;
+    m_collectedChests = 0;
+    m_chests.clear();
+    
     std::cout << "[DungeonLevel] Generating level " << levelNumber << std::endl;
+    std::cout << "[DungeonLevel] Need to find " << m_requiredChests << " chests!" << std::endl;
     
     int size = 41 + (levelNumber - 1) * 4;
     m_maze = MazeGenerator(size, size);
@@ -36,23 +40,17 @@ void DungeonLevel::Generate(int levelNumber, Player* player) {
         m_playerStart = MazeToWorld(m_maze.GetWidth() / 2, m_maze.GetHeight() / 2);
     }
     
-    // Портал в последней комнате (пока неактивен)
     if (rooms.size() > 1) {
         sf::Vector2i portalRoom = rooms[rooms.size() - 1];
         sf::Vector2f portalPos = MazeToWorld(portalRoom.x, portalRoom.y);
         m_portal.SetPosition(portalPos.x, portalPos.y);
         m_portal.Deactivate();
-        std::cout << "[DungeonLevel] Portal at (" << portalPos.x << ", " << portalPos.y << ")" << std::endl;
     }
     
-    // Спавним сундук перехода (в случайной комнате, не в стартовой и не в портальной)
-    SpawnExitChest();
-    
-    // Спавним врагов (для атмосферы, но они не обязательны для перехода)
+    SpawnChests();
     SpawnEnemies(levelNumber);
     
     std::cout << "[DungeonLevel] Level " << levelNumber << " generated!" << std::endl;
-    std::cout << "[DungeonLevel] Find the golden chest to open the portal!" << std::endl;
 }
 
 void DungeonLevel::SpawnWalls() {
@@ -77,53 +75,86 @@ void DungeonLevel::SpawnWalls() {
     std::cout << "[DungeonLevel] Spawned " << wallCount << " walls" << std::endl;
 }
 
-void DungeonLevel::SpawnExitChest() {
-    std::cout << "[DungeonLevel] SpawnExitChest called!" << std::endl;
-
+void DungeonLevel::SpawnChests() {
+    std::cout << "[DungeonLevel] Spawning " << m_requiredChests << " chests..." << std::endl;
+    
+    std::vector<sf::Vector2i> walkableCells;
     auto rooms = m_maze.GetRooms();
-    if (rooms.empty()) {
-        std::cout << "[DungeonLevel] No rooms!" << std::endl;
+    
+    if (rooms.size() < 2) {
+        std::cout << "[DungeonLevel] Not enough rooms!" << std::endl;
         return;
     }
-
-    // Находим центральную комнату
-    int centerX = m_maze.GetWidth() / 2;
-    int centerY = m_maze.GetHeight() / 2;
-
-    int bestRoomIdx = 0;
-    float bestDist = 999999.0f;
-
-    for (size_t i = 0; i < rooms.size(); i++) {
-        float dx = rooms[i].x - centerX;
-        float dy = rooms[i].y - centerY;
-        float dist = dx * dx + dy * dy;
-        if (dist < bestDist) {
-            bestDist = dist;
-            bestRoomIdx = i;
+    
+    // Собираем все проходимые клетки из всех комнат (кроме первой и последней)
+    for (int i = 1; i < (int)rooms.size() - 1; i++) {
+        sf::Vector2i center = rooms[i];
+        // Проверяем область 3x3 вокруг центра комнаты
+        for (int dy = -2; dy <= 2; dy++) {
+            for (int dx = -2; dx <= 2; dx++) {
+                int mx = center.x + dx;
+                int my = center.y + dy;
+                if (m_maze.IsWalkable(mx, my)) {
+                    // Проверяем что клетка не занята стеной
+                    bool isWall = false;
+                    for (int wy = -1; wy <= 1 && !isWall; wy++) {
+                        for (int wx = -1; wx <= 1 && !isWall; wx++) {
+                            if (!m_maze.IsWalkable(mx + wx, my + wy)) {
+                                isWall = true;
+                            }
+                        }
+                    }
+                    if (!isWall) {
+                        walkableCells.push_back({mx, my});
+                    }
+                }
+            }
         }
     }
-
-    sf::Vector2i roomCenter = rooms[bestRoomIdx];
-    std::cout << "[DungeonLevel] Central room at: (" << roomCenter.x << ", " << roomCenter.y << ")" << std::endl;
-
-    // ПРОСТО спавним в центре комнаты
-    sf::Vector2f worldPos = MazeToWorld(roomCenter.x, roomCenter.y);
-    std::cout << "[DungeonLevel] Spawning chest at world: (" << worldPos.x << ", " << worldPos.y << ")" << std::endl;
-
-    m_exitChest = GameWorld::GetInstance().CreateGameObject<Chest>();
-    if (m_exitChest) {
-        auto* transform = m_exitChest->GetComponent<TransformComponent>();
-        if (transform) {
-            transform->SetPosition(worldPos);
+    
+    // Если мало клеток - добавляем все проходимые клетки лабиринта
+    if (walkableCells.size() < m_requiredChests) {
+        std::cout << "[DungeonLevel] Not enough cells in rooms, searching whole maze..." << std::endl;
+        for (int y = 1; y < m_maze.GetHeight() - 1; y++) {
+            for (int x = 1; x < m_maze.GetWidth() - 1; x++) {
+                if (m_maze.IsWalkable(x, y)) {
+                    walkableCells.push_back({x, y});
+                }
+            }
         }
-        std::cout << "[DungeonLevel] Exit chest spawned at CENTER of room!" << std::endl;
     }
-    else {
-        std::cout << "[DungeonLevel] Failed to create chest!" << std::endl;
+    
+    // Перемешиваем
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::shuffle(walkableCells.begin(), walkableCells.end(), rng);
+    
+    // Создаём сундуки
+    int spawned = 0;
+    for (auto& pos : walkableCells) {
+        if (spawned >= m_requiredChests) break;
+        
+        sf::Vector2f worldPos = MazeToWorld(pos.x, pos.y);
+        Chest* chest = GameWorld::GetInstance().CreateGameObject<Chest>();
+        if (chest) {
+            auto* transform = chest->GetComponent<TransformComponent>();
+            if (transform) {
+                transform->SetPosition(worldPos);
+            }
+            m_chests.push_back(chest);
+            std::cout << "[DungeonLevel] Chest " << (spawned+1) << "/" << m_requiredChests 
+                      << " spawned at (" << worldPos.x << ", " << worldPos.y << ")" << std::endl;
+            spawned++;
+        }
+    }
+    
+    if (spawned < m_requiredChests) {
+        std::cout << "[DungeonLevel] WARNING: Only " << spawned << " of " << m_requiredChests 
+                  << " chests spawned! Not enough space." << std::endl;
     }
 }
 void DungeonLevel::SpawnEnemies(int level) {
-    int enemyCount = level * 2 + 1; // Немного врагов для атмосферы
+    int enemyCount = level * 2 + 1;
     auto rooms = m_maze.GetRooms();
     
     if (rooms.size() < 3) return;
@@ -145,7 +176,6 @@ void DungeonLevel::SpawnEnemies(int level) {
         
         for (int j = 0; j < enemiesInRoom && spawned < enemyCount; j++) {
             sf::Vector2i roomCenter = rooms[roomIdx];
-    std::cout << "[DungeonLevel] Room center: (" << roomCenter.x << ", " << roomCenter.y << ") IsWalkable: " << m_maze.IsWalkable(roomCenter.x, roomCenter.y) << std::endl;
             
             int offsetX = (rng() % 20) - 10;
             int offsetY = (rng() % 20) - 10;
@@ -168,25 +198,26 @@ void DungeonLevel::SpawnEnemies(int level) {
 void DungeonLevel::Update(float deltaTime) {
     m_portal.Update(deltaTime);
     
-    // Проверяем собран ли сундук
-    if (!m_levelComplete) {
-        CheckChestCollected();
+    if (!IsLevelComplete()) {
+        CheckChestsCollected();
     }
 }
 
-void DungeonLevel::CheckChestCollected() {
-    if (m_levelComplete) return;
-    if (!m_exitChest) return;
+void DungeonLevel::CheckChestsCollected() {
+    if (IsLevelComplete()) return;
     
-    // Проверяем собран ли сундук
-    if (m_exitChest->IsCollected()) {
-        m_levelComplete = true;
+    int collected = 0;
+    for (Chest* chest : m_chests) {
+        if (chest && chest->IsCollected()) {
+            collected++;
+        }
+    }
+    m_collectedChests = collected;
+    
+    if (IsLevelComplete()) {
         m_portal.Activate();
-        std::cout << "[DungeonLevel] 🎉 CHEST COLLECTED! PORTAL OPENED!" << std::endl;
+        std::cout << "[DungeonLevel] 🎉 ALL " << m_requiredChests << " CHESTS COLLECTED! PORTAL OPENED!" << std::endl;
         SoundManager::GetInstance().PlaySound("chest");
-        
-        // Удаляем сундук
-        m_exitChest = nullptr;
     }
 }
 
@@ -201,12 +232,12 @@ void DungeonLevel::Clear() {
     }
     m_walls.clear();
     
-    if (m_exitChest) {
-        GameWorld::GetInstance().DestroyGameObject(m_exitChest);
-        m_exitChest = nullptr;
+    for (Chest* chest : m_chests) {
+        GameWorld::GetInstance().DestroyGameObject(chest);
     }
+    m_chests.clear();
     
-    m_levelComplete = false;
+    m_collectedChests = 0;
     m_portal.Deactivate();
 }
 

@@ -12,9 +12,9 @@
 #include "IsometricPhysicsItem.h"
 #include "WeaponItem.h"
 #include "Bullet.h"
-#include "Enemy.h"  
-#include "DungeonManager.h"
+#include "Enemy.h"
 #include "HealthUI.h"
+#include "DungeonManager.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -60,7 +60,6 @@ namespace rogalique
             std::cout << "[App] Warning: Could not load UI font" << std::endl;
         }
         
-        // UI тексты
         m_goldText.setFont(m_uiFont);
         m_goldText.setCharacterSize(24);
         m_goldText.setFillColor(sf::Color::Yellow);
@@ -76,7 +75,6 @@ namespace rogalique
         m_ammoText.setFillColor(sf::Color::White);
         m_ammoText.setPosition(20, 80);
         
-        // Game Over тексты
         m_gameOverText.setFont(m_uiFont);
         m_gameOverText.setCharacterSize(72);
         m_gameOverText.setFillColor(sf::Color::Red);
@@ -101,11 +99,6 @@ namespace rogalique
     {
         g_Application = nullptr;
         if (m_player)
-    if (m_dungeonManager) {
-        m_dungeonManager->Clear();
-        m_dungeonManager.reset();
-    }
-
             GameWorld::GetInstance().Clear();
         SoundManager::GetInstance().StopMusic();
         
@@ -209,11 +202,19 @@ namespace rogalique
     void Application::Update(float deltaTime)
     {
         if (m_gameOver) return;
-    
-    if (m_dungeonManager) {
-        m_dungeonManager->Update(deltaTime);
-    }
-
+        
+        // Обновляем DungeonManager
+        if (m_dungeonManager) {
+            // Проверяем активное ли информационное окно
+            if (m_dungeonManager->IsInfoWindowActive()) {
+                m_dungeonManager->UpdateInfoWindow(deltaTime);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+                    m_dungeonManager->CloseInfoWindow();
+                }
+                return; // Не обновляем остальное
+            }
+            m_dungeonManager->Update(deltaTime);
+        }
         
         UpdateWeapons(deltaTime);
         
@@ -285,18 +286,16 @@ namespace rogalique
         
         auto& world = GameWorld::GetInstance();
         world.Render(window);
-    
-    if (m_dungeonManager) {
-        auto* level = m_dungeonManager->GetCurrentLevel();
-        if (level) {
-            level->GetPortal().Render(window);
+        
+        if (m_dungeonManager) {
+            auto* level = m_dungeonManager->GetCurrentLevel();
+            if (level) {
+                level->GetPortal().Render(window);
+            }
         }
-    }
-
         
         RenderWeapons(window);
         
-        // Сброс вида для UI
         sf::View previousView = window.getView();
         window.setView(window.getDefaultView());
         
@@ -305,6 +304,11 @@ namespace rogalique
         window.draw(m_ammoText);
         m_healthUI.Render(window);
         
+        // Рендерим информационное окно
+        if (m_dungeonManager && m_dungeonManager->IsInfoWindowActive()) {
+            m_dungeonManager->RenderInfoWindow(window);
+        }
+        
         window.setView(previousView);
         window.display();
     }
@@ -312,29 +316,28 @@ namespace rogalique
     void Application::StartGame()
     {
         std::cout << "[App] Starting new game with Dungeon Generation..." << std::endl;
-
+        
         LOG_EVENT("Game Started", "New game beginning");
-
+        
         GameWorld::GetInstance().Clear();
-
+        
         for (auto* weapon : m_weaponItems) {
             delete weapon;
         }
         m_weaponItems.clear();
-
+        
         m_gold = 0;
         m_chestsCollected = 0;
-
+        
         m_player = GameWorld::GetInstance().CreateGameObject<Player>();
         GameWorld::GetInstance().SetPlayer(m_player);
         m_player->EquipWeapon();
-
+        
         m_healthUI.Reset();
-
-        // СОЗДАЁМ DUNGEON MANAGER И ГЕНЕРИРУЕМ ПЕРВЫЙ УРОВЕНЬ
+        
         m_dungeonManager = std::make_unique<DungeonManager>(m_player);
         m_dungeonManager->GenerateNextLevel();
-
+        
         if (WORLD_WIDTH > SCREEN_WIDTH || WORLD_HEIGHT > SCREEN_HEIGHT)
         {
             m_useCamera = true;
@@ -350,13 +353,14 @@ namespace rogalique
             m_useCamera = false;
             m_camera.reset();
         }
-
+        
         UpdateUI();
         m_inMenu = false;
         m_gameOver = false;
-
+        
         std::cout << "[App] Dungeon Game started!" << std::endl;
     }
+
     void Application::ReturnToMenu()
     {
         std::cout << "[App] ReturnToMenu() called" << std::endl;
@@ -366,17 +370,12 @@ namespace rogalique
         m_camera.reset();
         m_useCamera = false;
         m_player = nullptr;
-    if (m_dungeonManager) {
-        m_dungeonManager->Clear();
-        m_dungeonManager.reset();
-    }
-
-    // Очищаем DungeonManager
-    if (m_dungeonManager) {
-        m_dungeonManager->Clear();
-        m_dungeonManager.reset();
-    }
-
+        
+        if (m_dungeonManager) {
+            m_dungeonManager->Clear();
+            m_dungeonManager.reset();
+        }
+        
         GameWorld::GetInstance().Clear();
         window.setView(window.getDefaultView());
         SoundManager::GetInstance().PlayMusicFile("RogaliqueGame/Resources/Sounds/main(1).WAV");
@@ -386,12 +385,7 @@ namespace rogalique
     {
         std::cout << "[App] ShowGameOver() called!" << std::endl;
         m_gameOver = true;
-        std::cout << "[App] GAME OVER! m_gameOver = " << m_gameOver << std::endl;
-        std::cout << "[App] GAME OVER! m_gameOver = " << m_gameOver << std::endl;
-        std::cout << "[App] ShowGameOver() called!" << std::endl;
-
         LOG_EVENT("Game Over", "Player died");
-
         SoundManager::GetInstance().PlaySound("gameover");
     }
 
@@ -469,7 +463,6 @@ namespace rogalique
         WeaponItem* weapon = new WeaponItem(x, z);
         m_weaponItems.push_back(weapon);
         std::cout << "[Application] Weapon spawned at (" << x << ", " << z << ")" << std::endl;
-
         LOG_WEAPON_PICKUP("WeaponItem spawned at (" + std::to_string(x) + ", " + std::to_string(z) + ")");
     }
     
@@ -484,7 +477,6 @@ namespace rogalique
                 m_weaponItems.erase(m_weaponItems.begin() + i);
                 i--;
                 std::cout << "[Application] Weapon picked up!" << std::endl;
-
                 LOG_EVENT("Weapon Pickup", "Player equipped weapon");
             }
         }
