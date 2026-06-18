@@ -47,25 +47,27 @@ void DungeonLevel::Generate(int levelNumber, Player* player) {
 }
 
 void DungeonLevel::SpawnWalls() {
-    const auto& grid = m_maze.GetGrid();
     int width = m_maze.GetWidth();
     int height = m_maze.GetHeight();
     
+    int wallCount = 0;
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            if (m_maze.IsWall(x, y)) {
+            // Используем IsWalkable для проверки
+            if (!m_maze.IsWalkable(x, y)) {
                 sf::Vector2f worldPos = MazeToWorld(x, y);
                 Wall* wall = GameWorld::GetInstance().CreateGameObject<Wall>(
                     worldPos.x, worldPos.y, CELL_SIZE, CELL_SIZE
                 );
                 if (wall) {
                     m_walls.push_back(wall);
+                    wallCount++;
                 }
             }
         }
     }
+    std::cout << "[DungeonLevel] Spawned " << wallCount << " walls" << std::endl;
 }
-
 void DungeonLevel::SpawnEnemies(int level) {
     int enemyCount = level * 2 + 3;
     auto rooms = m_maze.GetRooms();

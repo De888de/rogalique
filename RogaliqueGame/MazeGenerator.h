@@ -34,6 +34,7 @@ private:
     bool HasUnvisitedNeighbors(int x, int y) const;
     std::vector<Direction> GetUnvisitedNeighbors(int x, int y) const;
     void RemoveWall(int x1, int y1, int x2, int y2);
+    void CarveRoom(int x, int y);
     sf::Vector2i GetRandomNeighbor(int x, int y, Direction dir) const;
 
     int m_width, m_height;

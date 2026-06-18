@@ -47,14 +47,35 @@ void MazeGenerator::Generate(unsigned int seed) {
             stack.push({nx, ny});
         }
     }
+    
     std::cout << "[MazeGenerator] Maze generation complete!" << std::endl;
+}
+
+void MazeGenerator::CarveRoom(int x, int y) {
+    // Комната 6x6 (радиус 3)
+    int roomSize = 3;
+    for (int dy = -roomSize; dy <= roomSize; dy++) {
+        for (int dx = -roomSize; dx <= roomSize; dx++) {
+            int cx = x + dx, cy = y + dy;
+            if (cx > 0 && cx < m_width - 1 && cy > 0 && cy < m_height - 1) {
+                m_grid[cy][cx].isRoom = true;
+                m_grid[cy][cx].visited = true;
+                m_grid[cy][cx].walls[NORTH] = false;
+                m_grid[cy][cx].walls[EAST] = false;
+                m_grid[cy][cx].walls[SOUTH] = false;
+                m_grid[cy][cx].walls[WEST] = false;
+            }
+        }
+    }
+    m_roomCenters.push_back({x, y});
 }
 
 void MazeGenerator::CarveRooms(int roomCount) {
     std::vector<sf::Vector2i> possibleRooms;
     
-    for (int y = 1; y < m_height - 1; y += 2) {
-        for (int x = 1; x < m_width - 1; x += 2) {
+    // Ищем места для комнат
+    for (int y = 3; y < m_height - 3; y += 4) {
+        for (int x = 3; x < m_width - 3; x += 4) {
             if (m_grid[y][x].visited) {
                 possibleRooms.push_back({x, y});
             }
@@ -64,33 +85,50 @@ void MazeGenerator::CarveRooms(int roomCount) {
     std::shuffle(possibleRooms.begin(), possibleRooms.end(), m_rng);
     int roomsToCarve = std::min(roomCount, (int)possibleRooms.size());
     
+    // Создаём комнаты
     for (int i = 0; i < roomsToCarve; i++) {
         auto [x, y] = possibleRooms[i];
-        
-        for (int dy = -1; dy <= 1; dy++) {
-            for (int dx = -1; dx <= 1; dx++) {
-                int cx = x + dx, cy = y + dy;
-                if (cx > 0 && cx < m_width - 1 && cy > 0 && cy < m_height - 1) {
-                    m_grid[cy][cx].isRoom = true;
-                    if (dy == 0 || dx == 0) {
-                        m_grid[cy][cx].walls[NORTH] = false;
-                        m_grid[cy][cx].walls[EAST] = false;
-                        m_grid[cy][cx].walls[SOUTH] = false;
-                        m_grid[cy][cx].walls[WEST] = false;
+        CarveRoom(x, y);
+        std::cout << "[MazeGenerator] Created room at (" << x << ", " << y << ")" << std::endl;
+    }
+    
+    // ====== НОВЫЙ ПРОСТОЙ СПОСОБ ======
+    // Просто убираем ВСЕ стены вокруг каждой комнаты
+    std::cout << "[MazeGenerator] Unlocking " << m_roomCenters.size() << " rooms..." << std::endl;
+    
+    for (auto [cx, cy] : m_roomCenters) {
+        // Проходим по всем клеткам вокруг комнаты (радиус 4)
+        for (int dy = -4; dy <= 4; dy++) {
+            for (int dx = -4; dx <= 4; dx++) {
+                int nx = cx + dx;
+                int ny = cy + dy;
+                
+                // Проверяем что в пределах карты
+                if (nx > 0 && nx < m_width - 1 && ny > 0 && ny < m_height - 1) {
+                    // Убираем все стены вокруг комнаты
+                    m_grid[ny][nx].walls[NORTH] = false;
+                    m_grid[ny][nx].walls[EAST] = false;
+                    m_grid[ny][nx].walls[SOUTH] = false;
+                    m_grid[ny][nx].walls[WEST] = false;
+                    m_grid[ny][nx].visited = true;
+                    
+                    // Если это не комната - помечаем как проход
+                    if (!m_grid[ny][nx].isRoom) {
+                        m_grid[ny][nx].isRoom = false;
                     }
                 }
             }
         }
-        m_roomCenters.push_back({x, y});
+        std::cout << "[MazeGenerator] Unlocked room at (" << cx << ", " << cy << ")" << std::endl;
     }
-    std::cout << "[MazeGenerator] Carved " << m_roomCenters.size() << " rooms" << std::endl;
+    
+    std::cout << "[MazeGenerator] Carved and unlocked " << m_roomCenters.size() << " rooms" << std::endl;
 }
-
 void MazeGenerator::RemoveDeadEnds(float probability) {
     int removed = 0;
     for (int y = 1; y < m_height - 1; y++) {
         for (int x = 1; x < m_width - 1; x++) {
-            if (!m_grid[y][x].visited) continue;
+            if (!m_grid[y][x].visited || m_grid[y][x].isRoom) continue;
             
             int wallCount = 0;
             for (int i = 0; i < 4; i++) {
@@ -114,16 +152,25 @@ void MazeGenerator::RemoveDeadEnds(float probability) {
 
 bool MazeGenerator::IsWall(int x, int y) const {
     if (x < 0 || x >= m_width || y < 0 || y >= m_height) return true;
-    return !m_grid[y][x].visited || m_grid[y][x].walls[NORTH] || 
-           m_grid[y][x].walls[EAST] || m_grid[y][x].walls[SOUTH] || 
-           m_grid[y][x].walls[WEST];
+    if (!m_grid[y][x].visited) return true;
+    if (m_grid[y][x].isRoom) return false;
+    
+    // Стена если есть стена сверху ИЛИ слева
+    if (x % 2 == 0 && y % 2 == 0) return true;
+    if (x % 2 == 1 && y % 2 == 0) {
+        return m_grid[y][x].walls[NORTH] || m_grid[y][x].walls[SOUTH];
+    }
+    if (x % 2 == 0 && y % 2 == 1) {
+        return m_grid[y][x].walls[EAST] || m_grid[y][x].walls[WEST];
+    }
+    return false;
 }
 
 bool MazeGenerator::IsWalkable(int x, int y) const {
     if (x < 0 || x >= m_width || y < 0 || y >= m_height) return false;
-    return m_grid[y][x].visited && !IsWall(x, y);
+    // Временно: все посещённые клетки проходимы
+    return m_grid[y][x].visited;
 }
-
 sf::Vector2i MazeGenerator::GetRoomCenter(int index) const {
     if (index < 0 || index >= (int)m_roomCenters.size()) {
         return {m_width / 2, m_height / 2};
