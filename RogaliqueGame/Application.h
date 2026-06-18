@@ -75,6 +75,6 @@ namespace rogalique
 
     constexpr int SCREEN_WIDTH = 1024;
     constexpr int SCREEN_HEIGHT = 768;
-    constexpr float WORLD_WIDTH = SCREEN_WIDTH * 2.0f;
-    constexpr float WORLD_HEIGHT = SCREEN_HEIGHT * 2.0f;
+    constexpr float WORLD_WIDTH = SCREEN_WIDTH * 3.0f;
+    constexpr float WORLD_HEIGHT = SCREEN_HEIGHT * 3.0f;
 }
