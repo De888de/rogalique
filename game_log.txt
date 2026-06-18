@@ -1,4 +1,16 @@
-[09:48:55] === GAME LOG STARTED ===
-[09:48:55] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (500.000000, 400.000000)
-[09:48:59] [EVENT] Game Started | New game beginning
-[09:48:59] [EVENT] Weapon Equipped | Iron Pistol
+[12:49:20] === GAME LOG STARTED ===
+[12:49:20] [EVENT] Weapon Pickup | Weapon: WeaponItem spawned at (500.000000, 400.000000)
+[12:49:24] [EVENT] Game Started | New game beginning
+[12:49:24] [EVENT] Weapon Equipped | Iron Pistol
+[12:50:12] [EVENT] Enemy Died | Type: Basic Enemy
+[12:51:11] [EVENT] Enemy Died | Type: Basic Enemy
+[12:54:45] [EVENT] Player Damaged | Health: 4
+[12:54:50] [EVENT] Player Damaged | Health: 3
+[12:55:07] [EVENT] Player Damaged | Health: 2
+[12:55:07] [EVENT] Enemy Died | Type: Basic Enemy
+[12:55:32] [EVENT] Player Damaged | Health: 1
+[12:56:03] [EVENT] Player Damaged | Health: 0
+[12:56:03] [EVENT] Player Died | GAME OVER
+[12:56:03] [EVENT] Game Over | Player died
+[12:56:07] [EVENT] Game Started | New game beginning
+[12:56:07] [EVENT] Weapon Equipped | Iron Pistol
