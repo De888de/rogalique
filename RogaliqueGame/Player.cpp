@@ -26,7 +26,7 @@ namespace rogalique
         AddComponent<MovementComponent>(200.0f);
         AddComponent<HealthComponent>(5);
         AddComponent<ArmorComponent>(5, 0.5f, 0.5f);
-        AddComponent<CollisionComponent>(16.0f);
+        AddComponent<CollisionComponent>(10.0f);
 
         auto* armor = GetComponent<ArmorComponent>();
         if (armor) {
