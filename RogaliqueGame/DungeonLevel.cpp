@@ -13,6 +13,7 @@ DungeonLevel::DungeonLevel() : m_maze(41, 41) {}
 
 void DungeonLevel::Generate(int levelNumber, Player* player) {
     m_levelNumber = levelNumber;
+    m_levelComplete = false;
     std::cout << "[DungeonLevel] Generating level " << levelNumber << std::endl;
     
     int size = 41 + (levelNumber - 1) * 4;
@@ -35,15 +36,23 @@ void DungeonLevel::Generate(int levelNumber, Player* player) {
         m_playerStart = MazeToWorld(m_maze.GetWidth() / 2, m_maze.GetHeight() / 2);
     }
     
+    // Портал в последней комнате (пока неактивен)
     if (rooms.size() > 1) {
         sf::Vector2i portalRoom = rooms[rooms.size() - 1];
         sf::Vector2f portalPos = MazeToWorld(portalRoom.x, portalRoom.y);
         m_portal.SetPosition(portalPos.x, portalPos.y);
         m_portal.Deactivate();
+        std::cout << "[DungeonLevel] Portal at (" << portalPos.x << ", " << portalPos.y << ")" << std::endl;
     }
     
+    // Спавним сундук перехода (в случайной комнате, не в стартовой и не в портальной)
+    SpawnExitChest();
+    
+    // Спавним врагов (для атмосферы, но они не обязательны для перехода)
     SpawnEnemies(levelNumber);
-    m_allEnemiesDefeated = false;
+    
+    std::cout << "[DungeonLevel] Level " << levelNumber << " generated!" << std::endl;
+    std::cout << "[DungeonLevel] Find the golden chest to open the portal!" << std::endl;
 }
 
 void DungeonLevel::SpawnWalls() {
@@ -53,7 +62,6 @@ void DungeonLevel::SpawnWalls() {
     int wallCount = 0;
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            // Используем IsWalkable для проверки
             if (!m_maze.IsWalkable(x, y)) {
                 sf::Vector2f worldPos = MazeToWorld(x, y);
                 Wall* wall = GameWorld::GetInstance().CreateGameObject<Wall>(
@@ -68,8 +76,38 @@ void DungeonLevel::SpawnWalls() {
     }
     std::cout << "[DungeonLevel] Spawned " << wallCount << " walls" << std::endl;
 }
+
+void DungeonLevel::SpawnExitChest() {
+    auto rooms = m_maze.GetRooms();
+    if (rooms.size() < 3) {
+        std::cout << "[DungeonLevel] Not enough rooms for chest!" << std::endl;
+        return;
+    }
+    
+    // Выбираем случайную комнату (не первую и не последнюю)
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::uniform_int_distribution<int> dist(1, (int)rooms.size() - 2);
+    int roomIdx = dist(rng);
+    
+    sf::Vector2i roomCenter = rooms[roomIdx];
+    sf::Vector2f worldPos = MazeToWorld(roomCenter.x, roomCenter.y);
+    
+    // Создаём сундук
+    m_exitChest = GameWorld::GetInstance().CreateGameObject<Chest>();
+    if (m_exitChest) {
+        auto* transform = m_exitChest->GetComponent<TransformComponent>();
+        if (transform) {
+            transform->SetPosition(worldPos);
+        }
+        // Делаем сундук особенным (золотым)
+        std::cout << "[DungeonLevel] Exit chest spawned at (" 
+                  << worldPos.x << ", " << worldPos.y << ")" << std::endl;
+    }
+}
+
 void DungeonLevel::SpawnEnemies(int level) {
-    int enemyCount = level * 2 + 3;
+    int enemyCount = level * 2 + 1; // Немного врагов для атмосферы
     auto rooms = m_maze.GetRooms();
     
     if (rooms.size() < 3) return;
@@ -97,48 +135,41 @@ void DungeonLevel::SpawnEnemies(int level) {
             sf::Vector2f worldPos = MazeToWorld(roomCenter.x + offsetX/32, roomCenter.y + offsetY/32);
             
             Enemy* enemy = GameWorld::GetInstance().CreateGameObject<Enemy>();
-            auto* transform = enemy->GetComponent<TransformComponent>();
-            if (transform) {
-                transform->SetPosition(worldPos);
+            if (enemy) {
+                auto* transform = enemy->GetComponent<TransformComponent>();
+                if (transform) {
+                    transform->SetPosition(worldPos);
+                }
+                m_enemies.push_back(enemy);
+                spawned++;
             }
-            
-            auto* health = enemy->GetComponent<HealthComponent>();
-            if (health) {
-                int maxHealth = 20 + level * 10;
-                // health->SetMaxHealth(maxHealth); // FIXME: нет такого метода
-                // health->SetHealth(maxHealth); // FIXME: нет такого метода
-            }
-            
-            m_enemies.push_back(enemy);
-            spawned++;
         }
     }
+    std::cout << "[DungeonLevel] Spawned " << spawned << " enemies" << std::endl;
 }
 
 void DungeonLevel::Update(float deltaTime) {
     m_portal.Update(deltaTime);
     
-    if (!m_allEnemiesDefeated) {
-        CheckEnemiesDefeated();
+    // Проверяем собран ли сундук
+    if (!m_levelComplete) {
+        CheckChestCollected();
     }
 }
 
-void DungeonLevel::CheckEnemiesDefeated() {
-    if (m_allEnemiesDefeated) return;
+void DungeonLevel::CheckChestCollected() {
+    if (m_levelComplete) return;
+    if (!m_exitChest) return;
     
-    bool allDead = true;
-    for (Enemy* enemy : m_enemies) {
-        if (enemy->IsAlive()) {
-            allDead = false;
-            break;
-        }
-    }
-    
-    if (allDead) {
-        m_allEnemiesDefeated = true;
+    // Проверяем собран ли сундук
+    if (m_exitChest->IsCollected()) {
+        m_levelComplete = true;
         m_portal.Activate();
-        std::cout << "[DungeonLevel] ALL ENEMIES DEFEATED! PORTAL OPENED!" << std::endl;
+        std::cout << "[DungeonLevel] 🎉 CHEST COLLECTED! PORTAL OPENED!" << std::endl;
         SoundManager::GetInstance().PlaySound("chest");
+        
+        // Удаляем сундук
+        m_exitChest = nullptr;
     }
 }
 
@@ -153,7 +184,12 @@ void DungeonLevel::Clear() {
     }
     m_walls.clear();
     
-    m_allEnemiesDefeated = false;
+    if (m_exitChest) {
+        GameWorld::GetInstance().DestroyGameObject(m_exitChest);
+        m_exitChest = nullptr;
+    }
+    
+    m_levelComplete = false;
     m_portal.Deactivate();
 }
 
