@@ -78,34 +78,50 @@ void DungeonLevel::SpawnWalls() {
 }
 
 void DungeonLevel::SpawnExitChest() {
+    std::cout << "[DungeonLevel] SpawnExitChest called!" << std::endl;
+
     auto rooms = m_maze.GetRooms();
-    if (rooms.size() < 3) {
-        std::cout << "[DungeonLevel] Not enough rooms for chest!" << std::endl;
+    if (rooms.empty()) {
+        std::cout << "[DungeonLevel] No rooms!" << std::endl;
         return;
     }
-    
-    // Выбираем случайную комнату (не первую и не последнюю)
-    std::random_device rd;
-    std::mt19937 rng(rd());
-    std::uniform_int_distribution<int> dist(1, (int)rooms.size() - 2);
-    int roomIdx = dist(rng);
-    
-    sf::Vector2i roomCenter = rooms[roomIdx];
+
+    // Находим центральную комнату
+    int centerX = m_maze.GetWidth() / 2;
+    int centerY = m_maze.GetHeight() / 2;
+
+    int bestRoomIdx = 0;
+    float bestDist = 999999.0f;
+
+    for (size_t i = 0; i < rooms.size(); i++) {
+        float dx = rooms[i].x - centerX;
+        float dy = rooms[i].y - centerY;
+        float dist = dx * dx + dy * dy;
+        if (dist < bestDist) {
+            bestDist = dist;
+            bestRoomIdx = i;
+        }
+    }
+
+    sf::Vector2i roomCenter = rooms[bestRoomIdx];
+    std::cout << "[DungeonLevel] Central room at: (" << roomCenter.x << ", " << roomCenter.y << ")" << std::endl;
+
+    // ПРОСТО спавним в центре комнаты
     sf::Vector2f worldPos = MazeToWorld(roomCenter.x, roomCenter.y);
-    
-    // Создаём сундук
+    std::cout << "[DungeonLevel] Spawning chest at world: (" << worldPos.x << ", " << worldPos.y << ")" << std::endl;
+
     m_exitChest = GameWorld::GetInstance().CreateGameObject<Chest>();
     if (m_exitChest) {
         auto* transform = m_exitChest->GetComponent<TransformComponent>();
         if (transform) {
             transform->SetPosition(worldPos);
         }
-        // Делаем сундук особенным (золотым)
-        std::cout << "[DungeonLevel] Exit chest spawned at (" 
-                  << worldPos.x << ", " << worldPos.y << ")" << std::endl;
+        std::cout << "[DungeonLevel] Exit chest spawned at CENTER of room!" << std::endl;
+    }
+    else {
+        std::cout << "[DungeonLevel] Failed to create chest!" << std::endl;
     }
 }
-
 void DungeonLevel::SpawnEnemies(int level) {
     int enemyCount = level * 2 + 1; // Немного врагов для атмосферы
     auto rooms = m_maze.GetRooms();
@@ -129,6 +145,7 @@ void DungeonLevel::SpawnEnemies(int level) {
         
         for (int j = 0; j < enemiesInRoom && spawned < enemyCount; j++) {
             sf::Vector2i roomCenter = rooms[roomIdx];
+    std::cout << "[DungeonLevel] Room center: (" << roomCenter.x << ", " << roomCenter.y << ") IsWalkable: " << m_maze.IsWalkable(roomCenter.x, roomCenter.y) << std::endl;
             
             int offsetX = (rng() % 20) - 10;
             int offsetY = (rng() % 20) - 10;

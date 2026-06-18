@@ -9,10 +9,11 @@ namespace rogalique
         Chest();
         void Update(float deltaTime) override;
         void Render(sf::RenderWindow& window) override;
-        
+
         bool IsCollected() const { return m_isCollected; }
         void Collect();
-        
+        sf::Vector2f GetPosition() const;
+
     private:
         sf::RectangleShape m_shape;
         bool m_isCollected = false;
